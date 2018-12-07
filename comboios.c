@@ -27,3 +27,28 @@ void mostra_ponto(PONTO pt){
 
   printf("\nPonto: %s\nTipo: %s\nCor: %s\n", pt.id, tipo, cor);
 }
+
+int leitor_configs(TRAIN_LIST *train_list, LINHA *linhas, int *dim_X, int *dim_Y){
+  FILE *config = fopen("config.txt", "r");
+  char leitura[100];
+  char aux_string[100];
+  int aux_int[5];
+
+  if(config==NULL){
+    printf("Erro de leitura de config;\n");
+    exit(0);
+  }
+
+  while( fgets(leitura, 100, config) != NULL){
+    if ( (leitura[0] >= '0' && <='9') || (leitura[0] >= 'A' && <='Z') ){
+      if (sscanf(leitura, "%d %d", aux_int[0], aux_int[1]) == 2){
+        *dim_X = aux_int[0];
+        *dim_Y = aux_int[1];
+      }
+      if (sscanf(leitura, "LINHA: %s", aux_string) == 1){
+        strcpy()
+      };
+      sscanf(leitura, "%s")
+    }
+  }
+}

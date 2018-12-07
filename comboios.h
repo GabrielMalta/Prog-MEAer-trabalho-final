@@ -2,9 +2,6 @@
 #include <stdlib.h>
 // #include <SDL.h>
 
-#define DIMX 900
-#define DIMY 600
-
 #define SIM 1
 #define NAO 0
 
@@ -38,7 +35,18 @@ typedef struct node{
   PONTO pt;
   struct node *ant[3];
   struct node *pr[3];
+} LISTA_PONTOS;
+
+typedef struct linha{
+  char id[4];
+  LISTA_PONTOS lista_pt;
+  struct linha *pr;
 } LINHA;
+
+// typedef struct lista_linhas{
+//   LINHA l;
+//   struct lista_linhas *pr;
+// } LINHAS;
 
 typedef struct comboio{
   char id[2];
@@ -46,6 +54,12 @@ typedef struct comboio{
   float r_bolas;
   int cor_locom;
   CARRUAGEM *car;
+} TRAIN;
+
+typedef struct lista_comboios{
+  TRAIN train;
+  struct lista_comboios *pr;
+} TRAIN_LIST;
 
 typedef struct carruagem{
   int cor;
@@ -54,4 +68,4 @@ typedef struct carruagem{
 
 void mostra_ponto(PONTO pt);
 
-int leitor_configs();
+int leitor_configs(TRAIN_LIST *train_list, LINHAS *linhas, int *dim_X, int *dim_Y);
