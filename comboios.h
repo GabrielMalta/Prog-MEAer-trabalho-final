@@ -2,7 +2,7 @@
 #include <stdlib.h>
 // #include <SDL.h>
 
-#define DIMX 901
+#define DIMX 900
 #define DIMY 600
 
 #define SIM 1
