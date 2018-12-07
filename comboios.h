@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+// #include <SDL.h>
 
 #define DIMX 900
 #define DIMY 600
@@ -24,28 +25,30 @@
 #define BRANCO 9
 
 typedef struct{
-  int tipo;
-  int cor;
+  char id[4];
   float x, y;
+  int cor;
+  int tipo;
+  float dim;
+  int entradas;
   int saidas;
 } PONTO;
 
 typedef struct node{
   PONTO pt;
+  struct node *ant[3];
   struct node *pr[3];
 } LINHA;
 
 typedef struct comboio{
   char id[2];
+  int dim;
+  float r_bolas;
   int cor_locom;
   CARRUAGEM *car;
-  int size;
-  float x, y;
-} TRAIN;
 
 typedef struct carruagem{
   int cor;
-  float x, y;
   struct carruagem *pr;
 } CARRUAGEM;
 

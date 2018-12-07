@@ -1,0 +1,17 @@
+% Dimensão da janela Largura x, altura y
+800 600
+
+% LINHA: – palavra-chave seguido do identidicador
+LINHA: L1
+
+% Informacao dos pontos, ordem implica sentido de ligação
+P1 20 30 AZUL ENT 6 0 1
+P2 60 80 AZUL VIA 2 1 1
+P20 100 120 VERMELHO EST 6 1 1
+
+% LINHA: – palavra-chave seguido do identidicador
+LINHA: L2
+
+% COMBOIO: Palavra chave para identificar um comboio
+COMBOIO: C1 1 3 VERMELHO L1 P1 L1 P20
+COMBOIO: C2 3 3 AZUL L2 P1 L3 P13
