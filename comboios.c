@@ -45,7 +45,7 @@ int leitor_configs(TRAIN_LIST *train_list, LINHA *linhas, int *dim_X, int *dim_Y
         *dim_X = aux_int[0];
         *dim_Y = aux_int[1];
       }
-      if (sscanf(leitura, "LINHA: %s", aux_string) == 1){
+      else if (sscanf(leitura, "LINHA: %s", aux_string) == 1){
         strcpy()
       };
       sscanf(leitura, "%s")

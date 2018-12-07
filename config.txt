@@ -8,7 +8,7 @@ LINHA: L1
 P1 20 30 AZUL ENT 6 0 1
 P2 60 80 AZUL VIA 2 1 1
 P20 100 120 VERMELHO EST 6 1 0
-
+    
 % LINHA: – palavra-chave seguido do identidicador
 LINHA: L2
 
