@@ -40,11 +40,19 @@ typedef struct node{
   struct node *pr[3];
 } LINHA;
 
+// typedef struct lista_linhas{
+//   LINHA l;
+//   struct lista_linhas *pr;
+// } LISTA LINHAS;
+
 typedef struct comboio{
   char id[2];
   int dim;
   float r_bolas;
   int cor[4];
 } COMBOIO;
+
+// typedef struct lista_comboios
+// }
 
 void mostra_ponto(PONTO pt);
