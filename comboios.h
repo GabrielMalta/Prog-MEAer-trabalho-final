@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-// #include <SDL.h>
+#include <string.h>
+
 
 #define DIMX 900
 #define DIMY 600
@@ -25,8 +26,8 @@
 #define BRANCO 9
 
 typedef struct{
-  char id[4];
-  float x, y;
+  char id[5];
+  int x, y;
   int cor;
   int tipo;
   float dim;
@@ -35,21 +36,36 @@ typedef struct{
 } PONTO;
 
 typedef struct node{
+  // char id[5];
   PONTO pt;
-  struct node *ant[3];
-  struct node *pr[3];
+  // struct node *ant[3];
+  struct node *pr;
+} LISTA_PONTOS;
+
+typedef struct {
+  char id[5];
+  LISTA_PONTOS *l;
 } LINHA;
 
-typedef struct comboio{
-  char id[2];
+typedef struct{
+  char id[3];
   int dim;
-  float r_bolas;
-  int cor_locom;
-  CARRUAGEM *car;
-
-typedef struct carruagem{
-  int cor;
-  struct carruagem *pr;
-} CARRUAGEM;
+  int r_bolas;
+  int cor[4];
+  char orig_l[5];
+  char orig_pt[5];
+  char dest_l[5];
+  char dest_pt[5];
+} COMBOIO;
 
 void mostra_ponto(PONTO pt);
+
+void mostra_boio(COMBOIO boio);
+
+int numero_cor(char string[]);
+
+int numero_tipo(char string[]);
+
+char * cor_numero(int no);
+
+void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y);
