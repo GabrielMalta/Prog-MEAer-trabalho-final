@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// #include <SDL.h>
+
 
 #define DIMX 900
 #define DIMY 600
@@ -57,11 +57,6 @@ typedef struct{
   char dest_l[5];
   char dest_pt[5];
 } COMBOIO;
-
-// typedef struct lista_comboios{
-//   COMBOIO train;
-//   struct lista_comboios *pr;
-// } LISTA_COMBOIOS;
 
 void mostra_ponto(PONTO pt);
 

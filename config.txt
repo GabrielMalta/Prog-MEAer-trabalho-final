@@ -7,6 +7,7 @@ LINHA: L1
 % Informacao dos pontos, ordem implica sentido de ligação
 P1 20 30 AZUL ENT 6 0 1
 P2 60 80 AZUL VIA 2 1 1
+
 P3 45 80 VERDE EST 6 1 1
 P4 90 100 VERDE VIA 2 1 1
 P20 100 120 VERMELHO SAI 6 1 0

@@ -1,5 +1,4 @@
 // gcc -Wall -pedantic -c comboios.c; gcc -Wall -pedantic -c main.c; gcc main.o comboios.o -o comboios
-
 #include "comboios.h"
 
 int main(void){
