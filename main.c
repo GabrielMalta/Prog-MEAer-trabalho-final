@@ -13,6 +13,7 @@ int main(void){
   printf("cheguei\n");
   fflush(stdout);
   for(i=0; linha[i] !=NULL; i++){
+    printf("/----LINHA %s----/\n", linha[i]->id);
     for(ap = linha[i]->l; ap!= NULL; ap=ap->pr){
       mostra_ponto(ap->pt);
     }
