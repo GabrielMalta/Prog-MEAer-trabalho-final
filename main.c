@@ -11,8 +11,6 @@ int main(void){
   int i;
 
   leitor_configs(&trains, &linhas, &dimensaoX, &dimensaoY);
-  printf("cheguei\n");
-  fflush(stdout);
   for(i=0; linhas[i] !=NULL; i++){
     printf("/----LINHA %s----/\n", linhas[i]->id);
     for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr){

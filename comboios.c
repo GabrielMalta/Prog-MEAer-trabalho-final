@@ -93,14 +93,10 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
         (*linhas)[numero_linhas-1] = nova_linha;
         (*linhas)[numero_linhas-1]->l = NULL;
         (*linhas)[numero_linhas] = NULL;
-        printf("%p\n", (void*) (*linhas)[numero_linhas-1]);
         fflush(stdout);
       }
       //se for ponto
       else if (sscanf(leitura, "%s %d %d %s %s %d %d %d", aux_string[0], aux_int, aux_int+1, aux_string[1], aux_string[2], aux_int+2, aux_int+3, aux_int+4) == 8){
-
-        printf("%s %d %d %s %s %d %d %d\n", aux_string[0], aux_int[0], aux_int[1], aux_string[1], aux_string[2], aux_int[2], aux_int[3], aux_int[4]);
-
         nova_lista_pt = (LISTA_PONTOS*) calloc(1, sizeof(LISTA_PONTOS));
         // aux_string[0][5] = '\0';
         strcpy(nova_lista_pt->pt.id, aux_string[0]);
@@ -124,8 +120,6 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
       else if (sscanf(leitura, "COMBOIO: %s %d %d %s %s %s %s %s", aux_string[0], aux_int, aux_int+1, aux_string[1], aux_string[2], aux_string[3], aux_string[4], aux_string[5]) == 8){
         numero_comboios++;
         novo_boio = (COMBOIO*) calloc(1, sizeof(COMBOIO));
-        printf("COMBOIO: %s %d %d %s %s %s %s %s",aux_string[0], aux_int[0], aux_int[1], aux_string[1], aux_string[2], aux_string[3], aux_string[4], aux_string[5]);
-
         strcpy(novo_boio->id, aux_string[0]);
         novo_boio->dim = aux_int[0];
         novo_boio->r_bolas = aux_int[1];
