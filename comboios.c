@@ -1,5 +1,8 @@
 #include "comboios.h"
 
+SDL_Window* janela = 0;
+SDL_Renderer* pintor = 0;
+
 void mostra_ponto(PONTO pt){
   char tipo[8];
   switch(pt.tipo){
@@ -144,4 +147,41 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
 void mostra_boio(COMBOIO boio){
   printf("\n/----COMBOIO %s----/ \nDimensao:%d \nR_bolas:%d \nCor locom.:%s \nLinha,Ponto origem:%s,%s \nLinha,ponto destino:%s,%s \n", boio.id, boio.dim, boio.r_bolas, cor_numero(boio.cor[0]), boio.orig_l, boio.orig_pt, boio.dest_l, boio.dest_pt);
   fflush(stdout);
+}
+
+int inicializa_janela(int dim_X, int dim_Y){
+  if(SDL_Init(SDL_INIT_EVERYTHING) >= 0){
+    janela = SDL_CreateWindow("I like trains",
+    SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, dim_X, dim_Y, SDL_WINDOW_SHOWN);
+    if(janela != 0){
+      pintor = SDL_CreateRenderer(janela, -1, 0);
+      // superficie = SDL_GetWindowSurface(janela);
+      return 1;
+    }
+  }
+  printf("Erro: na abertura do SDL2\n");
+  return 0;
+}
+
+void atualiza_render(COMBOIO **comboios, LINHA **linhas){
+  int i;
+
+  SDL_SetRenderDrawColor(pintor, 235, 235, 235, 255);
+  SDL_RenderClear(pintor);
+
+  // for(i = 0; i<10; i++)
+    filledCircleColor(pintor, 50, 50, 20, hexdec_CINZENTO);
+    filledCircleColor(pintor, 100, 50, 20, hexdec_VERMELHO);
+    filledCircleColor(pintor, 150, 50, 20, hexdec_VERDE);
+    filledCircleColor(pintor, 200, 50, 20, hexdec_AZUL);
+    filledCircleColor(pintor, 250, 50, 20, hexdec_CIANO);
+    filledCircleColor(pintor, 50, 100, 20, hexdec_AMARELO);
+    filledCircleColor(pintor, 100, 100, 20, hexdec_CASTANHO);
+    filledCircleColor(pintor, 150, 100, 20, hexdec_PRETO);
+    filledCircleColor(pintor, 200, 100, 20, hexdec_ROXO);
+    filledCircleColor(pintor, 250, 100, 20, hexdec_BRANCO);
+
+  SDL_RenderPresent(pintor);
+  SDL_Delay(5000);
+  SDL_Quit();
 }
