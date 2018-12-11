@@ -137,17 +137,13 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
         liga_pontos(aux_string, linhas);
       }
       //se for comboio
-      else if (sscanf(leitura, "COMBOIO: %s %d %d %s %s %s %s %s", aux_string[0], aux_int, aux_int+1, aux_string[1], aux_string[2], aux_string[3], aux_string[4], aux_string[5]) == 8){
+      else if (sscanf(leitura, "COMBOIO: %s %d %s %s %s %d", aux_string[0], aux_int, aux_string[1], aux_string[2], aux_string[3], aux_int+1) == 8){
         numero_comboios++;
         novo_boio = (COMBOIO*) calloc(1, sizeof(COMBOIO));
         strcpy(novo_boio->id, aux_string[0]);
-        novo_boio->dim = aux_int[0];
         novo_boio->r_bolas = aux_int[1];
         novo_boio->cor[0] = numero_cor(aux_string[1]);
-        strcpy(novo_boio->orig_l, aux_string[2]);
-        strcpy(novo_boio->orig_pt, aux_string[3]);
-        strcpy(novo_boio->dest_l, aux_string[4]);
-        strcpy(novo_boio->dest_pt, aux_string[5]);
+        novo_boio->origem = procura_ponto(aux_string[2], aux_string[3], *linhas);
 
         *comboios = realloc(*comboios, (numero_comboios+1)*sizeof(LINHA*));
         (*comboios)[numero_comboios-1] = novo_boio;
@@ -159,7 +155,7 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
 }
 
 void mostra_boio(COMBOIO boio){
-  printf("\n/----COMBOIO %s----/ \nDimensao:%d \nR_bolas:%d \nCor locom.:%s \nLinha,Ponto origem:%s,%s \nLinha,ponto destino:%s,%s \n", boio.id, boio.dim, boio.r_bolas, cor_numero(boio.cor[0]), boio.orig_l, boio.orig_pt, boio.dest_l, boio.dest_pt);
+  printf("\n/----COMBOIO %s----/ \nDimensao:%d \nR_bolas:%d \nCor locom.:%s \nPonto origem:%s\n", boio.id, boio.dim, boio.r_bolas, cor_numero(boio.cor[0]), boio.origem->pt.id);
   fflush(stdout);
 }
 
@@ -169,7 +165,6 @@ int inicializa_janela(int dim_X, int dim_Y){
     SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, dim_X, dim_Y, SDL_WINDOW_SHOWN);
     if(janela != 0){
       pintor = SDL_CreateRenderer(janela, -1, 0);
-      // superficie = SDL_GetWindowSurface(janela);
       return 1;
     }
   }
@@ -180,25 +175,12 @@ int inicializa_janela(int dim_X, int dim_Y){
 void liga_pontos(char aux_string[6][10], LINHA ***linhas){
   LISTA_PONTOS *aux_pt = NULL, *pt1 = NULL, *pt2 = NULL;
   int i;
-  // else if (sscanf(leitura, "LIGAR: %s %s %s %s", aux_string[0], aux_string[1], aux_string[2], aux_string[3]) == 4){
+
   printf("LIGAR: %s %s %s %s\n", aux_string[0], aux_string[1], aux_string[2], aux_string[3]);
   fflush(stdout);
-  for(i = 0; (*linhas)[i] != NULL; i++){
-    if (strcmp(aux_string[0], (*linhas)[i]->id) == 0){
-      for(aux_pt=(*linhas)[i]->l; aux_pt != NULL; aux_pt=aux_pt->pr[0]){
-        if(strcmp(aux_string[1], aux_pt->pt.id) == 0){
-          pt1= aux_pt;
-        }
-      }
-    }
-    if (strcmp(aux_string[2], (*linhas)[i]->id) == 0){
-      for(aux_pt=(*linhas)[i]->l; aux_pt != NULL; aux_pt=aux_pt->pr[0]){
-        if(strcmp(aux_string[3], aux_pt->pt.id) == 0){
-          pt2= aux_pt;
-        }
-      }
-    }
-  }
+
+  pt1 = procura_ponto(aux_string[0], aux_string[1], *linhas);
+  pt2 = procura_ponto(aux_string[2], aux_string[3], *linhas);
   if (pt1 == NULL || pt2 == NULL){
     printf("ERRO de ligacao de pontos\n");
     fflush (stdout);
@@ -211,20 +193,20 @@ void liga_pontos(char aux_string[6][10], LINHA ***linhas){
 
 
 
-void atualiza_render(COMBOIO **comboios, LINHA **linhas, int dim_X, int dim_Y){
+void atualiza_render(COMBOIO **comboios, LINHA **linhas){
 
   SDL_SetRenderDrawColor(pintor, 235, 235, 235, 255);
   SDL_RenderClear(pintor);
 
-  desenha_ligacoes(linhas, dim_X, dim_Y);
-  desenha_ponto(linhas, dim_X, dim_Y);
+  desenha_ligacoes(linhas);
+  desenha_pontos(linhas);
 
   SDL_RenderPresent(pintor);
   SDL_Delay(5000);
   SDL_Quit();
 }
 
-void desenha_ponto( LINHA **linhas, int dim_X, int dim_Y){
+void desenha_pontos( LINHA **linhas){
   LISTA_PONTOS *ap;
   int i;
   for(i=0; linhas[i] !=NULL; i++){
@@ -241,7 +223,7 @@ void desenha_ponto( LINHA **linhas, int dim_X, int dim_Y){
   }
 }
 
-void desenha_ligacoes( LINHA **linhas, int dim_X, int dim_Y){
+void desenha_ligacoes( LINHA **linhas){
   LISTA_PONTOS *ap;
   int i;
 
@@ -255,5 +237,57 @@ void desenha_ligacoes( LINHA **linhas, int dim_X, int dim_Y){
         SDL_RenderDrawLine(pintor, ap->pt.x, (ap->pt.y), ap->pr[1]->pt.x, (ap->pr[1]->pt.y));
       }
     }
+  }
+}
+
+LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LINHA **linhas){
+  LISTA_PONTOS *aux_pt;
+  int i;
+
+  for(i = 0; linhas[i] != NULL; i++){
+    if (strcmp(id_linha, linhas[i]->id) == 0){
+      for(aux_pt=linhas[i]->l; aux_pt != NULL; aux_pt=aux_pt->pr[0]){
+        if(strcmp(id_ponto, aux_pt->pt.id) == 0){
+          return aux_pt;
+        }
+      }
+    }
+  }
+  return NULL;
+}
+
+// void incializa_boio(GRAF_BOIO *thomas, LINHA **linhas, COMBOIO **comboios){
+//   thomas->boio=comboios[0];
+//   thomas->x=
+//   float theta;
+//   char ultima_linha[5];
+//   char ultimo_ponto[5];
+// }
+
+void mexe_comboio(GRAF_BOIO *comboio, LINHA **linhas){
+  int deltaX, deltaY;
+  float m, b;
+  float x_a_somar, y_a_somar;
+  //y = m x + b <=> y = deltaY / deltaX x + b;
+  LISTA_PONTOS *pt1 = NULL, pt2 = NULL;
+
+  pt1 = procura_ponto(comboio->ultima_linha, comboio->ultimo_ponto, linhas);
+  pt2 = pt1->pr[0];
+
+  deltaX = pt2->pt.x - pt1->pt.x;
+  deltaY = pt2->pt.y - pt1->pt.y;
+
+  m = (float) deltaY/deltaX;
+  b = (float) pt1->pt.y - m*pt1->pt.x;
+
+  x_a_somar = sqrt(m*m+1)*PIXEIS_p_TICK;
+  y_a_somar = m*x_a_somar;
+
+  filledCircleColor(pintor, comboio->x, comboio->y, hexdec_cor_numero( comboio->boio->cor[0]));
+
+  if(sqrt(pow((comboio->x - pt2->pt.x),2)+pow((comboio->y - pt2->pt.y),2)) < 2){
+    comboio->x = pt2->pt.x;
+    comboio->y = pt2->pt.y;
+    strcpy(comboio->ultimo_ponto, pt2->id);
   }
 }

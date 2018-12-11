@@ -7,6 +7,7 @@ int main(void){
   LINHA **linhas = NULL;
   LISTA_PONTOS *ap;
   COMBOIO **trains = NULL;
+  GRAF_BOIO thomas;
   int dimensaoX, dimensaoY;
   int i;
 
@@ -23,7 +24,7 @@ int main(void){
   }
 
   if ( inicializa_janela(dimensaoX,dimensaoY) != 0 ){
-    atualiza_render(trains, linhas, dimensaoX, dimensaoY);
+    atualiza_render(trains, linhas);
   }
 
   return 0;

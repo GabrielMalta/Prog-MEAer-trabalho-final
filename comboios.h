@@ -12,8 +12,7 @@
 
 // SDL_Surface *superficie = 0;
 
-#define DIMX 900
-#define DIMY 600
+#define PIXEIS_p_TICK 2
 
 #define SIM 1
 #define NAO 0
@@ -68,16 +67,18 @@ typedef struct{
   int dim;
   int r_bolas;
   int cor[4];
-  char orig_l[5];
-  char orig_pt[5];
-  char dest_l[5];
-  char dest_pt[5];
+  // char orig_l[5];
+  // char orig_pt[5];
+  LISTA_PONTOS *origem;
 } COMBOIO;
 
-// typedef struct lista_comboios{
-//   COMBOIO train;
-//   struct lista_comboios *pr;
-// } LISTA_COMBOIOS;
+typedef struct{
+  COMBOIO *boio;
+  int x, y;
+  float theta;
+  char ultima_linha[5];
+  char ultimo_ponto[5];
+} GRAF_BOIO;
 
 void mostra_ponto(PONTO pt);
 
@@ -95,10 +96,12 @@ void liga_pontos(char aux_string[6][10], LINHA ***linhas);
 
 int inicializa_janela(int dim_X, int dim_Y);
 
-void atualiza_render(COMBOIO **comboios, LINHA **linhas, int dim_X, int dim_Y);
+void atualiza_render(COMBOIO **comboios, LINHA **linhas);
 
-void desenha_ponto( LINHA **linhas, int dim_X, int dim_Y);
+void desenha_pontos( LINHA **linhas);
 
-void desenha_ligacoes( LINHA **linhas, int dim_X, int dim_Y);
+void desenha_ligacoes( LINHA **linhas);
+
+LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LINHA **linhas);
 
 #endif
