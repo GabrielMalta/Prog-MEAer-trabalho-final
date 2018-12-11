@@ -65,43 +65,47 @@ typedef struct {
 typedef struct{
   char id[3];
   int dim;
-  int r_bolas;
   int cor[4];
   // char orig_l[5];
   // char orig_pt[5];
   LISTA_PONTOS *origem;
+  float tempo_spawn;
 } COMBOIO;
 
 typedef struct{
   COMBOIO *boio;
-  int x, y;
-  float theta;
-  char ultima_linha[5];
-  char ultimo_ponto[5];
+  float x, y;
+  // char ultima_linha[5];
+  // char ultimo_ponto[5];
+  LISTA_PONTOS *ultimo_ponto;
 } GRAF_BOIO;
 
-void mostra_ponto(PONTO pt);
+void mostra_ponto( PONTO pt);
 
-void mostra_boio(COMBOIO boio);
+void mostra_boio( COMBOIO boio);
 
-int numero_cor(char string[]);
+int numero_cor( char string[]);
 
-int numero_tipo(char string[]);
+int numero_tipo( char string[]);
 
-char * cor_numero(int no);
+char * cor_numero( int no);
 
-void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y);
+void leitor_configs( COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y);
 
-void liga_pontos(char aux_string[6][10], LINHA ***linhas);
+void liga_pontos( char aux_string[6][10], LINHA ***linhas);
 
-int inicializa_janela(int dim_X, int dim_Y);
+int inicializa_janela( int dim_X, int dim_Y);
 
-void atualiza_render(COMBOIO **comboios, LINHA **linhas);
+void atualiza_render( COMBOIO **comboios, LINHA **linhas);
 
 void desenha_pontos( LINHA **linhas);
 
 void desenha_ligacoes( LINHA **linhas);
 
-LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LINHA **linhas);
+LISTA_PONTOS * procura_ponto( char *id_linha, char *id_ponto, LINHA **linhas);
+
+void mexe_comboio( GRAF_BOIO *comboio, LINHA **linhas);
+
+void inicializa_boios(GRAF_BOIO ***boios_graficos, COMBOIO **comboios, LINHA **linhas);
 
 #endif

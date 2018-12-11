@@ -137,17 +137,21 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
         liga_pontos(aux_string, linhas);
       }
       //se for comboio
-      else if (sscanf(leitura, "COMBOIO: %s %d %s %s %s %d", aux_string[0], aux_int, aux_string[1], aux_string[2], aux_string[3], aux_int+1) == 8){
+      else if (sscanf(leitura, "COMBOIO: %s %d %s %s %s %d", aux_string[0], aux_int, aux_string[1], aux_string[2], aux_string[3], aux_int+1) == 6){
         numero_comboios++;
         novo_boio = (COMBOIO*) calloc(1, sizeof(COMBOIO));
         strcpy(novo_boio->id, aux_string[0]);
-        novo_boio->r_bolas = aux_int[1];
         novo_boio->cor[0] = numero_cor(aux_string[1]);
+        novo_boio->dim = aux_int[0];
         novo_boio->origem = procura_ponto(aux_string[2], aux_string[3], *linhas);
+        novo_boio->tempo_spawn = aux_int[1];
 
         *comboios = realloc(*comboios, (numero_comboios+1)*sizeof(LINHA*));
         (*comboios)[numero_comboios-1] = novo_boio;
         (*comboios)[numero_comboios] = NULL;
+
+        printf("%p\n",(void*)  (*comboios)[numero_comboios-1]);
+        fflush(stdout);
 
       }
     }
@@ -155,7 +159,15 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
 }
 
 void mostra_boio(COMBOIO boio){
-  printf("\n/----COMBOIO %s----/ \nDimensao:%d \nR_bolas:%d \nCor locom.:%s \nPonto origem:%s\n", boio.id, boio.dim, boio.r_bolas, cor_numero(boio.cor[0]), boio.origem->pt.id);
+  printf("\n/----COMBOIO %s----/\n", boio.id);
+  fflush(stdout);
+  printf("Dimensao:%d\n", boio.dim);
+  fflush(stdout);
+  printf("Cor locom.:%s\n", cor_numero(boio.cor[0]));
+  fflush(stdout);
+  printf("Ponto origem:%s\n", boio.origem->pt.id);
+  fflush(stdout);
+  printf("Tempo de spawn:%.2f\n", boio.tempo_spawn);
   fflush(stdout);
 }
 
@@ -176,8 +188,8 @@ void liga_pontos(char aux_string[6][10], LINHA ***linhas){
   LISTA_PONTOS *aux_pt = NULL, *pt1 = NULL, *pt2 = NULL;
   int i;
 
-  printf("LIGAR: %s %s %s %s\n", aux_string[0], aux_string[1], aux_string[2], aux_string[3]);
-  fflush(stdout);
+  // printf("LIGAR: %s %s %s %s\n", aux_string[0], aux_string[1], aux_string[2], aux_string[3]);
+  // fflush(stdout);
 
   pt1 = procura_ponto(aux_string[0], aux_string[1], *linhas);
   pt2 = procura_ponto(aux_string[2], aux_string[3], *linhas);
@@ -187,11 +199,9 @@ void liga_pontos(char aux_string[6][10], LINHA ***linhas){
     exit(0);
   }
   pt1->pr[1]=pt2;
-  mostra_ponto(pt1->pt);
-  mostra_ponto(pt1->pr[1]->pt);
+  // mostra_ponto(pt1->pt);
+  // mostra_ponto(pt1->pr[1]->pt);
 }
-
-
 
 void atualiza_render(COMBOIO **comboios, LINHA **linhas){
 
@@ -201,9 +211,7 @@ void atualiza_render(COMBOIO **comboios, LINHA **linhas){
   desenha_ligacoes(linhas);
   desenha_pontos(linhas);
 
-  SDL_RenderPresent(pintor);
-  SDL_Delay(5000);
-  SDL_Quit();
+  // SDL_RenderPresent(pintor);
 }
 
 void desenha_pontos( LINHA **linhas){
@@ -256,38 +264,65 @@ LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LINHA **linhas){
   return NULL;
 }
 
-// void incializa_boio(GRAF_BOIO *thomas, LINHA **linhas, COMBOIO **comboios){
-//   thomas->boio=comboios[0];
-//   thomas->x=
-//   float theta;
-//   char ultima_linha[5];
-//   char ultimo_ponto[5];
-// }
+void inicializa_boios(GRAF_BOIO ***boios_graficos, COMBOIO **comboios, LINHA **linhas){
+  GRAF_BOIO *auxiliar;
+  int numero_comboios, j;
+  for (numero_comboios=0; comboios[numero_comboios] != NULL; numero_comboios++){}
+
+  *boios_graficos = (GRAF_BOIO**) calloc(numero_comboios, sizeof(GRAF_BOIO*));
+
+  for (j=0; j<numero_comboios; j++){
+    auxiliar = (GRAF_BOIO*) calloc(1, sizeof(GRAF_BOIO));
+
+    auxiliar->boio = comboios[j];
+    auxiliar->x = auxiliar->boio->origem->pt.x;
+    auxiliar->y = auxiliar->boio->origem->pt.y;
+    auxiliar->ultimo_ponto = auxiliar->boio->origem;
+    (*boios_graficos)[j] = auxiliar;
+
+  }
+}
 
 void mexe_comboio(GRAF_BOIO *comboio, LINHA **linhas){
-  int deltaX, deltaY;
-  float m, b;
+  float deltaX, deltaY;
+  float m;
   float x_a_somar, y_a_somar;
-  //y = m x + b <=> y = deltaY / deltaX x + b;
-  LISTA_PONTOS *pt1 = NULL, pt2 = NULL;
+  LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
 
-  pt1 = procura_ponto(comboio->ultima_linha, comboio->ultimo_ponto, linhas);
+  pt1 = comboio->ultimo_ponto;
   pt2 = pt1->pr[0];
+
+
+  if( pt2 == NULL){
+    pt2 = pt1->pr[1];
+  }
+  if( pt2 == NULL){
+    printf("boio chegou ao fim");
+    SDL_Quit();
+    exit(0);
+  }
 
   deltaX = pt2->pt.x - pt1->pt.x;
   deltaY = pt2->pt.y - pt1->pt.y;
 
   m = (float) deltaY/deltaX;
-  b = (float) pt1->pt.y - m*pt1->pt.x;
 
-  x_a_somar = sqrt(m*m+1)*PIXEIS_p_TICK;
+  x_a_somar = deltaX/abs(deltaX)  *  PIXEIS_p_TICK/sqrt(m*m+1);
   y_a_somar = m*x_a_somar;
 
-  filledCircleColor(pintor, comboio->x, comboio->y, hexdec_cor_numero( comboio->boio->cor[0]));
+  filledCircleColor(pintor, comboio->x, comboio->y, 4, hexdec_cor_numero( comboio->boio->cor[0]));
 
-  if(sqrt(pow((comboio->x - pt2->pt.x),2)+pow((comboio->y - pt2->pt.y),2)) < 2){
+  comboio->x += x_a_somar;
+  comboio->y += y_a_somar;
+
+  deltaX = pt2->pt.x - comboio->x;
+  deltaY = pt2->pt.y - comboio->y;
+
+  if( deltaY * deltaY + deltaX * deltaX < PIXEIS_p_TICK * PIXEIS_p_TICK ){
     comboio->x = pt2->pt.x;
     comboio->y = pt2->pt.y;
-    strcpy(comboio->ultimo_ponto, pt2->id);
+    comboio->ultimo_ponto = pt2;
   }
+  SDL_RenderPresent(pintor);
+  SDL_Delay(33);
 }

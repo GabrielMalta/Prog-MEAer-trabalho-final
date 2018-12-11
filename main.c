@@ -7,25 +7,45 @@ int main(void){
   LINHA **linhas = NULL;
   LISTA_PONTOS *ap;
   COMBOIO **trains = NULL;
-  GRAF_BOIO thomas;
+  GRAF_BOIO **boios_graficos = NULL;
   int dimensaoX, dimensaoY;
   int i;
+  SDL_Event event;
+  int fim = 0;
 
   leitor_configs(&trains, &linhas, &dimensaoX, &dimensaoY);
-  for(i=0; linhas[i] !=NULL; i++){
-    printf("/----LINHA %s----/\n", linhas[i]->id);
-    for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr[0]){
-      mostra_ponto(ap->pt);
-    }
-  }
-
+  // for(i=0; linhas[i] !=NULL; i++){
+  //   printf("/----LINHA %s----/\n", linhas[i]->id);
+  //   for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr[0]){
+  //     mostra_ponto(ap->pt);
+  //   }
+  // }
+  printf("chegou1\n");
+  fflush(stdout);
   for(i=0; trains[i] != NULL; i++){
+    printf("%d comboio\n", i);
+    fflush(stdout);
     mostra_boio( *(trains[i]));
   }
 
-  if ( inicializa_janela(dimensaoX,dimensaoY) != 0 ){
-    atualiza_render(trains, linhas);
+  printf("chegou2\n");
+  fflush(stdout);
+  inicializa_boios(&boios_graficos, trains, linhas);
+  printf("chegou3\n");
+  fflush(stdout);
+  if ( inicializa_janela(dimensaoX,dimensaoY) == 0 ){
+    exit(0);
   }
+  while (fim != 1){
+    atualiza_render(trains, linhas);
+    mexe_comboio(boios_graficos[0], linhas);
+		// SDL_WaitEvent(&event);
+    SDL_PollEvent( &event );
+    if ((event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) || event.type == SDL_QUIT) {
+      fim = 1;
+    }
+	}
+  SDL_Quit();
 
   return 0;
 }
