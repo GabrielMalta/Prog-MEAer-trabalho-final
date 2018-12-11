@@ -311,6 +311,7 @@ void mexe_comboio(GRAF_BOIO *comboio, LINHA **linhas){
   y_a_somar = m*x_a_somar;
 
   filledCircleColor(pintor, comboio->x, comboio->y, 4, hexdec_cor_numero( comboio->boio->cor[0]));
+  aacircleColor(pintor, comboio->x, comboio->y, 4, hexdec_PRETO);
 
   comboio->x += x_a_somar;
   comboio->y += y_a_somar;
@@ -323,6 +324,9 @@ void mexe_comboio(GRAF_BOIO *comboio, LINHA **linhas){
     comboio->y = pt2->pt.y;
     comboio->ultimo_ponto = pt2;
   }
+}
+
+void render(void){
   SDL_RenderPresent(pintor);
   SDL_Delay(33);
 }

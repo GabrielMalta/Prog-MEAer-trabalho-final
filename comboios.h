@@ -108,4 +108,6 @@ void mexe_comboio( GRAF_BOIO *comboio, LINHA **linhas);
 
 void inicializa_boios(GRAF_BOIO ***boios_graficos, COMBOIO **comboios, LINHA **linhas);
 
+void render(void);
+
 #endif

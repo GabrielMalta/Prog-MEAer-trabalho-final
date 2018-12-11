@@ -28,18 +28,17 @@ int main(void){
     mostra_boio( *(trains[i]));
   }
 
-  printf("chegou2\n");
-  fflush(stdout);
+
   inicializa_boios(&boios_graficos, trains, linhas);
-  printf("chegou3\n");
-  fflush(stdout);
   if ( inicializa_janela(dimensaoX,dimensaoY) == 0 ){
     exit(0);
   }
   while (fim != 1){
     atualiza_render(trains, linhas);
-    mexe_comboio(boios_graficos[0], linhas);
-		// SDL_WaitEvent(&event);
+    for (i=0; boios_graficos[i] != NULL; i++){
+      mexe_comboio(boios_graficos[i], linhas);
+    }
+    render();
     SDL_PollEvent( &event );
     if ((event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) || event.type == SDL_QUIT) {
       fim = 1;
