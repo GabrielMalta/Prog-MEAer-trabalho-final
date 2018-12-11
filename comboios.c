@@ -61,10 +61,28 @@ char * cor_numero(int no){
   exit(0);
 }
 
+Uint32 hexdec_cor_numero(int no){
+  // converte o numero para um string de cor correspondente
+  switch(no){
+    case CINZENTO: return hexdec_CINZENTO;
+    case VERMELHO: return hexdec_VERMELHO;
+    case ROXO:     return hexdec_ROXO;
+    case AZUL:     return hexdec_AZUL;
+    case CIANO:    return hexdec_CIANO;
+    case VERDE:    return hexdec_VERDE;
+    case AMARELO:  return hexdec_AMARELO;
+    case CASTANHO: return hexdec_CASTANHO;
+    case PRETO:    return hexdec_PRETO;
+    case BRANCO:   return hexdec_BRANCO;
+  }
+  printf("Erro hexdec_cor_numero\n");
+  exit(0);
+}
+
 void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y){
   FILE *config = fopen("config.txt", "r");
   LINHA *nova_linha = NULL;
-  LISTA_PONTOS *nova_lista_pt = NULL, *atual=NULL;
+  LISTA_PONTOS *aux_pt = NULL, *aux_pt2 = NULL, *atual=NULL;
   COMBOIO *novo_boio = NULL;
 
   int numero_linhas=0;
@@ -73,6 +91,7 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
   char leitura[100];
   char aux_string[6][10];
   int aux_int[5];
+  int i;
 
   if(config==NULL){
     printf("Erro de abertura de config;\n");
@@ -96,25 +115,27 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
         fflush(stdout);
       }
       //se for ponto
-      else if (sscanf(leitura, "%s %d %d %s %s %d %d %d", aux_string[0], aux_int, aux_int+1, aux_string[1], aux_string[2], aux_int+2, aux_int+3, aux_int+4) == 8){
-        nova_lista_pt = (LISTA_PONTOS*) calloc(1, sizeof(LISTA_PONTOS));
+      else if (sscanf(leitura, "%s %d %d %s %s", aux_string[0], aux_int, aux_int+1, aux_string[1], aux_string[2]) == 5){
+        aux_pt = (LISTA_PONTOS*) calloc(1, sizeof(LISTA_PONTOS));
         // aux_string[0][5] = '\0';
-        strcpy(nova_lista_pt->pt.id, aux_string[0]);
-        nova_lista_pt->pt.x = aux_int[0];
-        nova_lista_pt->pt.y = aux_int[1];
-        nova_lista_pt->pt.cor = numero_cor(aux_string[1]);
-        nova_lista_pt->pt.tipo = numero_tipo(aux_string[2]);
-        nova_lista_pt->pt.dim = aux_int[2];
-        nova_lista_pt->pt.entradas = aux_int[3];
-        nova_lista_pt->pt.saidas = aux_int[4];
+        strcpy(aux_pt->pt.id, aux_string[0]);
+        aux_pt->pt.x = aux_int[0];
+        aux_pt->pt.y = aux_int[1];
+        aux_pt->pt.cor = numero_cor(aux_string[1]);
+        aux_pt->pt.tipo = numero_tipo(aux_string[2]);
+
         if ((*linhas)[numero_linhas-1]->l == NULL){
-          (*linhas)[numero_linhas-1]->l = nova_lista_pt;
-          atual = nova_lista_pt;
+          (*linhas)[numero_linhas-1]->l = aux_pt;
+          atual = aux_pt;
         }
         else{
-          atual->pr = nova_lista_pt;
-          atual = nova_lista_pt;
+          atual->pr[0] = aux_pt;
+          atual = aux_pt;
         }
+      }
+      //Ligacao de pontos
+      else if (sscanf(leitura, "LIGAR: %s %s %s %s", aux_string[0], aux_string[1], aux_string[2], aux_string[3]) == 4){
+        liga_pontos(aux_string, linhas);
       }
       //se for comboio
       else if (sscanf(leitura, "COMBOIO: %s %d %d %s %s %s %s %s", aux_string[0], aux_int, aux_int+1, aux_string[1], aux_string[2], aux_string[3], aux_string[4], aux_string[5]) == 8){
@@ -157,25 +178,77 @@ int inicializa_janela(int dim_X, int dim_Y){
   return 0;
 }
 
-void atualiza_render(COMBOIO **comboios, LINHA **linhas){
+void liga_pontos(char aux_string[6][10], LINHA ***linhas){
+  LISTA_PONTOS *aux_pt = NULL, *aux_pt2 = NULL;
+  int i;
+  // else if (sscanf(leitura, "LIGAR: %s %s %s %s", aux_string[0], aux_string[1], aux_string[2], aux_string[3]) == 4){
+  printf("LIGAR: %s %s %s %s\n", aux_string[0], aux_string[1], aux_string[2], aux_string[3]);
+  fflush(stdout);
+  for(i = 0; (*linhas)[i] != NULL; i++){
+    if (strcmp(aux_string[0], (*linhas)[i]->id) == 0){
+      for(aux_pt=(*linhas)[i]->l; strcmp(aux_pt->pt.id, aux_string[1]) != 0; aux_pt=aux_pt->pr[0]){
+        if (aux_pt->pr[0] == NULL){
+          printf("ERRO de ligacao, ponto nao encontrado\n");
+          fflush(stdout);
+          exit(0);
+        }
+      }
+    }
+    if (strcmp(aux_string[2], (*linhas)[i]->id) == 0){
+      for(aux_pt2=(*linhas)[i]->l; strcmp(aux_pt2->pt.id, aux_string[3]) != 0; aux_pt2=aux_pt2->pr[0]){
+        if (aux_pt2->pr[0] == NULL){
+          printf("ERRO de ligacao, ponto nao encontrado\n");
+          fflush(stdout);
+          exit(0);
+        }
+      }
+    }
+  }
+  aux_pt->pr[1]=aux_pt2;
+  mostra_ponto(aux_pt->pt);
+  mostra_ponto(aux_pt->pr[1]->pt);
+}
+
+
+
+void atualiza_render(COMBOIO **comboios, LINHA **linhas, int dim_X, int dim_Y){
   int i;
 
   SDL_SetRenderDrawColor(pintor, 235, 235, 235, 255);
   SDL_RenderClear(pintor);
 
-  // for(i = 0; i<10; i++)
-    filledCircleColor(pintor, 50, 50, 20, hexdec_CINZENTO);
-    filledCircleColor(pintor, 100, 50, 20, hexdec_VERMELHO);
-    filledCircleColor(pintor, 150, 50, 20, hexdec_VERDE);
-    filledCircleColor(pintor, 200, 50, 20, hexdec_AZUL);
-    filledCircleColor(pintor, 250, 50, 20, hexdec_CIANO);
-    filledCircleColor(pintor, 50, 100, 20, hexdec_AMARELO);
-    filledCircleColor(pintor, 100, 100, 20, hexdec_CASTANHO);
-    filledCircleColor(pintor, 150, 100, 20, hexdec_PRETO);
-    filledCircleColor(pintor, 200, 100, 20, hexdec_ROXO);
-    filledCircleColor(pintor, 250, 100, 20, hexdec_BRANCO);
+  desenha_ligacoes(linhas, dim_X, dim_Y);
+  desenha_ponto(linhas, dim_X, dim_Y);
 
   SDL_RenderPresent(pintor);
   SDL_Delay(5000);
   SDL_Quit();
+}
+
+void desenha_ponto( LINHA **linhas, int dim_X, int dim_Y){
+  LISTA_PONTOS *ap;
+  int i;
+  for(i=0; linhas[i] !=NULL; i++){
+    for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr[0]){
+      filledCircleColor(pintor, ap->pt.x, dim_Y-(ap->pt.y), 6, hexdec_cor_numero(ap->pt.cor));
+      aacircleColor(pintor, ap->pt.x, dim_Y-(ap->pt.y), 6, hexdec_PRETO);
+    }
+  }
+}
+
+void desenha_ligacoes( LINHA **linhas, int dim_X, int dim_Y){
+  LISTA_PONTOS *ap;
+  int i;
+
+  SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
+  for(i=0; linhas[i] !=NULL; i++){
+    for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr[0]){
+      if( ap->pr[0] != NULL){
+        SDL_RenderDrawLine(pintor, ap->pt.x, dim_Y-(ap->pt.y), ap->pr[0]->pt.x, dim_Y-(ap->pr[0]->pt.y));
+      }
+      if( ap->pr[1] != NULL){
+        SDL_RenderDrawLine(pintor, ap->pt.x, dim_Y-(ap->pt.y), ap->pr[1]->pt.x, dim_Y-(ap->pr[1]->pt.y));
+      }
+    }
+  }
 }

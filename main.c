@@ -13,7 +13,7 @@ int main(void){
   leitor_configs(&trains, &linhas, &dimensaoX, &dimensaoY);
   for(i=0; linhas[i] !=NULL; i++){
     printf("/----LINHA %s----/\n", linhas[i]->id);
-    for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr){
+    for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr[0]){
       mostra_ponto(ap->pt);
     }
   }
@@ -23,7 +23,7 @@ int main(void){
   }
 
   if ( inicializa_janela(dimensaoX,dimensaoY) != 0 ){
-    atualiza_render(trains, linhas);
+    atualiza_render(trains, linhas, dimensaoX, dimensaoY);
   }
 
   return 0;

@@ -50,16 +50,12 @@ typedef struct{
   int x, y;
   int cor;
   int tipo;
-  float dim;
-  int entradas;
-  int saidas;
 } PONTO;
 
 typedef struct node{
-  // char id[5];
   PONTO pt;
   // struct node *ant[3];
-  struct node *pr;
+  struct node *pr[2];
 } LISTA_PONTOS;
 
 typedef struct {
@@ -95,8 +91,14 @@ char * cor_numero(int no);
 
 void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y);
 
+void liga_pontos(char aux_string[6][10], LINHA ***linhas);
+
 int inicializa_janela(int dim_X, int dim_Y);
 
-void atualiza_render(COMBOIO **comboios, LINHA **linhas);
+void atualiza_render(COMBOIO **comboios, LINHA **linhas, int dim_X, int dim_Y);
+
+void desenha_ponto( LINHA **linhas, int dim_X, int dim_Y);
+
+void desenha_ligacoes( LINHA **linhas, int dim_X, int dim_Y);
 
 #endif
