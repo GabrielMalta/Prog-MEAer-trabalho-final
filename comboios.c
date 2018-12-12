@@ -13,7 +13,7 @@ void mostra_ponto(PONTO pt){
     case 4: strcpy(tipo, "Via");    break;
     default: printf("Erro traducao de tipo\n"); break;
   }
-  printf("\nPonto: %s\nTipo: %s\nCor: %s\n", pt.id, tipo, cor_numero(pt.cor));
+  printf("\nPonto: %s\nTipo: %s\nCor: %s\n", pt.id, tipo, cor_codigo(pt.cor));
   fflush (stdout);
 }
 
@@ -26,61 +26,61 @@ int numero_tipo(char string[]){ //funciona
   return 0;
 }
 
-int numero_cor(char string[]){ //funciona
-  // converte a string de cor num inteiro para armazenar
-  if (strcmp("CINZENTO", string) == 0) return CINZENTO;
-  if (strcmp("VERMELHO", string) == 0) return VERMELHO;
-  if (strcmp("ROXO", string) == 0) return ROXO;
-  if (strcmp("AZUL", string) == 0) return AZUL;
-  if (strcmp("CIANO", string) == 0) return CIANO;
-  if (strcmp("VERDE", string) == 0) return VERDE;
-  if (strcmp("AMARELO", string) == 0) return AMARELO;
-  if (strcmp("CASTANHO", string) == 0) return CASTANHO;
-  if (strcmp("PRETO", string) == 0) return PRETO;
-  if (strcmp("BRANCO", string) == 0) return BRANCO;
+Uint32 codigo_cor(char string[]){ //funciona
+  // converte a string de cor para hexadecimal para armazenar
+  if (strcmp("CINZENTO", string) == 0) return hexdec_CINZENTO;
+  if (strcmp("VERMELHO", string) == 0) return hexdec_VERMELHO;
+  if (strcmp("ROXO", string) == 0) return hexdec_ROXO;
+  if (strcmp("AZUL", string) == 0) return hexdec_AZUL;
+  if (strcmp("CIANO", string) == 0) return hexdec_CIANO;
+  if (strcmp("VERDE", string) == 0) return hexdec_VERDE;
+  if (strcmp("AMARELO", string) == 0) return hexdec_AMARELO;
+  if (strcmp("CASTANHO", string) == 0) return hexdec_CASTANHO;
+  if (strcmp("PRETO", string) == 0) return hexdec_PRETO;
+  if (strcmp("BRANCO", string) == 0) return hexdec_BRANCO;
   printf("Erro leitura de cor\n");
   exit(0);
-  return 0;
+  // return NULL;
 }
 
-char * cor_numero(int no){
+char * cor_codigo(Uint32 no){
   // converte o numero para um string de cor correspondente
   switch(no){
-    case CINZENTO: return "Cinzento";
-    case VERMELHO: return "Vermelho";
-    case ROXO:     return "Roxo";
-    case AZUL:     return "Azul";
-    case CIANO:    return "Ciano";
-    case VERDE:    return "Verde";
-    case AMARELO:  return "Amarelo";
-    case CASTANHO: return "Castanho";
-    case PRETO:    return "Preto";
-    case BRANCO:   return "Branco";
+    case hexdec_CINZENTO: return "Cinzento";
+    case hexdec_VERMELHO: return "Vermelho";
+    case hexdec_ROXO:     return "Roxo";
+    case hexdec_AZUL:     return "Azul";
+    case hexdec_CIANO:    return "Ciano";
+    case hexdec_VERDE:    return "Verde";
+    case hexdec_AMARELO:  return "Amarelo";
+    case hexdec_CASTANHO: return "Castanho";
+    case hexdec_PRETO:    return "Preto";
+    case hexdec_BRANCO:   return "Branco";
   }
   printf("Erro cor_numero\n");
   exit(0);
 }
 
-Uint32 hexdec_cor_numero(int no){
-  // converte o numero para um string de cor correspondente
-  switch(no){
-    case CINZENTO: return hexdec_CINZENTO;
-    case VERMELHO: return hexdec_VERMELHO;
-    case ROXO:     return hexdec_ROXO;
-    case AZUL:     return hexdec_AZUL;
-    case CIANO:    return hexdec_CIANO;
-    case VERDE:    return hexdec_VERDE;
-    case AMARELO:  return hexdec_AMARELO;
-    case CASTANHO: return hexdec_CASTANHO;
-    case PRETO:    return hexdec_PRETO;
-    case BRANCO:   return hexdec_BRANCO;
-  }
-  printf("Erro hexdec_cor_numero\n");
-  exit(0);
-}
+// Uint32 hexdec_cor_numero(int no){
+//   // converte o numero para um string de cor correspondente
+//   switch(no){
+//     case CINZENTO: return hexdec_CINZENTO;
+//     case VERMELHO: return hexdec_VERMELHO;
+//     case ROXO:     return hexdec_ROXO;
+//     case AZUL:     return hexdec_AZUL;
+//     case CIANO:    return hexdec_CIANO;
+//     case VERDE:    return hexdec_VERDE;
+//     case AMARELO:  return hexdec_AMARELO;
+//     case CASTANHO: return hexdec_CASTANHO;
+//     case PRETO:    return hexdec_PRETO;
+//     case BRANCO:   return hexdec_BRANCO;
+//   }
+//   printf("Erro hexdec_cor_numero\n");
+//   exit(0);
+// }
 
-void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y){
-  FILE *config = fopen("config.txt", "r");
+void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y, char *nome_ficheiro){
+  FILE *config = fopen(nome_ficheiro, "r");
   LINHA *nova_linha = NULL;
   LISTA_PONTOS *aux_pt = NULL, *atual=NULL;
   COMBOIO *novo_boio = NULL;
@@ -93,7 +93,8 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
   int aux_int[5];
 
   if(config==NULL){
-    printf("Erro de abertura de config;\n");
+    printf("Erro de abertura de config;\n\"%s\" nao encontrado\n", nome_ficheiro);
+    printf("Utilizacao: ./comboios <ficheiro.txt>\n");
     exit(0);
   }
 
@@ -120,7 +121,7 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
         strcpy(aux_pt->pt.id, aux_string[0]);
         aux_pt->pt.x = aux_int[0];
         aux_pt->pt.y = aux_int[1];
-        aux_pt->pt.cor = numero_cor(aux_string[1]);
+        aux_pt->pt.cor = codigo_cor(aux_string[1]);
         aux_pt->pt.tipo = numero_tipo(aux_string[2]);
 
         if ((*linhas)[numero_linhas-1]->l == NULL){
@@ -141,7 +142,7 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
         numero_comboios++;
         novo_boio = (COMBOIO*) calloc(1, sizeof(COMBOIO));
         strcpy(novo_boio->id, aux_string[0]);
-        novo_boio->cor[0] = numero_cor(aux_string[1]);
+        novo_boio->cor[0] = codigo_cor(aux_string[1]);
         novo_boio->dim = aux_int[0];
         novo_boio->origem = procura_ponto(aux_string[2], aux_string[3], *linhas);
         novo_boio->tempo_spawn = aux_int[1];
@@ -164,7 +165,7 @@ void mostra_boio(COMBOIO boio){
   fflush(stdout);
   printf("Dimensao:%d\n", boio.dim);
   fflush(stdout);
-  printf("Cor locom.:%s\n", cor_numero(boio.cor[0]));
+  printf("Cor locom.:%s\n", cor_codigo(boio.cor[0]));
   fflush(stdout);
   printf("Ponto origem:%s\n", boio.origem->pt.id);
   fflush(stdout);
@@ -221,11 +222,11 @@ void desenha_pontos( LINHA **linhas){
   for(i=0; linhas[i] !=NULL; i++){
     for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr[0]){
       if (ap->pt.tipo == EST){
-        filledCircleColor(pintor, ap->pt.x, ap->pt.y, 10, hexdec_cor_numero(ap->pt.cor));
+        filledCircleColor(pintor, ap->pt.x, ap->pt.y, 10, ap->pt.cor);
         aacircleColor(pintor, ap->pt.x, ap->pt.y, 10, hexdec_PRETO);
       }
       else{
-        filledCircleColor(pintor, ap->pt.x, ap->pt.y, 2, hexdec_cor_numero(ap->pt.cor));
+        filledCircleColor(pintor, ap->pt.x, ap->pt.y, 2, ap->pt.cor);
         aacircleColor(pintor, ap->pt.x, ap->pt.y, 2, hexdec_PRETO);
       }
     }
@@ -311,7 +312,7 @@ void mexe_comboio(GRAF_BOIO *comboio, LINHA **linhas){
   x_a_somar = deltaX/abs(deltaX)  *  comboio->boio->veloc/sqrt(m*m+1);
   y_a_somar = m*x_a_somar;
 
-  filledCircleColor(pintor, comboio->x, comboio->y, 6, hexdec_cor_numero( comboio->boio->cor[0]));
+  filledCircleColor(pintor, comboio->x, comboio->y, 6, comboio->boio->cor[0]);
   aacircleColor(pintor, comboio->x, comboio->y, 6, hexdec_PRETO);
 
   comboio->x += x_a_somar;

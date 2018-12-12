@@ -47,7 +47,7 @@
 typedef struct{
   char id[5];
   int x, y;
-  int cor;
+  Uint32 cor;
   int tipo;
 } PONTO;
 
@@ -65,9 +65,7 @@ typedef struct {
 typedef struct{
   char id[3];
   int dim;
-  int cor[4];
-  // char orig_l[5];
-  // char orig_pt[5];
+  Uint32 cor[4];
   LISTA_PONTOS *origem;
   float tempo_spawn;
   float veloc;
@@ -83,13 +81,13 @@ void mostra_ponto( PONTO pt);
 
 void mostra_boio( COMBOIO boio);
 
-int numero_cor( char string[]);
+Uint32 codigo_cor( char string[]);
 
 int numero_tipo( char string[]);
 
-char * cor_numero( int no);
+char * cor_codigo( Uint32 no);
 
-void leitor_configs( COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y);
+void leitor_configs( COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y, char *nome_ficheiro);
 
 void liga_pontos( char aux_string[6][10], LINHA ***linhas);
 

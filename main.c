@@ -3,7 +3,7 @@
 
 #include "comboios.h"
 
-int main(void){
+int main(int argc, char *argv[]){
   LINHA **linhas = NULL;
   LISTA_PONTOS *ap;
   COMBOIO **trains = NULL;
@@ -13,15 +13,13 @@ int main(void){
   SDL_Event event;
   int fim = 0;
 
-  leitor_configs(&trains, &linhas, &dimensaoX, &dimensaoY);
+  leitor_configs(&trains, &linhas, &dimensaoX, &dimensaoY, argv[1]);
   // for(i=0; linhas[i] !=NULL; i++){
   //   printf("/----LINHA %s----/\n", linhas[i]->id);
   //   for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr[0]){
   //     mostra_ponto(ap->pt);
   //   }
   // }
-  printf("chegou1\n");
-  fflush(stdout);
   for(i=0; trains[i] != NULL; i++){
     printf("%d comboio\n", i);
     fflush(stdout);
