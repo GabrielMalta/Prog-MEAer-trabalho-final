@@ -70,13 +70,12 @@ typedef struct{
   // char orig_pt[5];
   LISTA_PONTOS *origem;
   float tempo_spawn;
+  float veloc;
 } COMBOIO;
 
 typedef struct{
   COMBOIO *boio;
   float x, y;
-  // char ultima_linha[5];
-  // char ultimo_ponto[5];
   LISTA_PONTOS *ultimo_ponto;
 } GRAF_BOIO;
 

@@ -137,7 +137,7 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
         liga_pontos(aux_string, linhas);
       }
       //se for comboio
-      else if (sscanf(leitura, "COMBOIO: %s %d %s %s %s %d", aux_string[0], aux_int, aux_string[1], aux_string[2], aux_string[3], aux_int+1) == 6){
+      else if (sscanf(leitura, "COMBOIO: %s %d %s %s %s %d %d", aux_string[0], aux_int, aux_string[1], aux_string[2], aux_string[3], aux_int+1, aux_int+2) == 7){
         numero_comboios++;
         novo_boio = (COMBOIO*) calloc(1, sizeof(COMBOIO));
         strcpy(novo_boio->id, aux_string[0]);
@@ -145,6 +145,7 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
         novo_boio->dim = aux_int[0];
         novo_boio->origem = procura_ponto(aux_string[2], aux_string[3], *linhas);
         novo_boio->tempo_spawn = aux_int[1];
+        novo_boio->veloc = aux_int[2];
 
         *comboios = realloc(*comboios, (numero_comboios+1)*sizeof(LINHA*));
         (*comboios)[numero_comboios-1] = novo_boio;
@@ -220,8 +221,8 @@ void desenha_pontos( LINHA **linhas){
   for(i=0; linhas[i] !=NULL; i++){
     for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr[0]){
       if (ap->pt.tipo == EST){
-        filledCircleColor(pintor, ap->pt.x, ap->pt.y, 7, hexdec_cor_numero(ap->pt.cor));
-        aacircleColor(pintor, ap->pt.x, ap->pt.y, 7, hexdec_PRETO);
+        filledCircleColor(pintor, ap->pt.x, ap->pt.y, 10, hexdec_cor_numero(ap->pt.cor));
+        aacircleColor(pintor, ap->pt.x, ap->pt.y, 10, hexdec_PRETO);
       }
       else{
         filledCircleColor(pintor, ap->pt.x, ap->pt.y, 2, hexdec_cor_numero(ap->pt.cor));
@@ -307,11 +308,11 @@ void mexe_comboio(GRAF_BOIO *comboio, LINHA **linhas){
 
   m = (float) deltaY/deltaX;
 
-  x_a_somar = deltaX/abs(deltaX)  *  PIXEIS_p_TICK/sqrt(m*m+1);
+  x_a_somar = deltaX/abs(deltaX)  *  comboio->boio->veloc/sqrt(m*m+1);
   y_a_somar = m*x_a_somar;
 
-  filledCircleColor(pintor, comboio->x, comboio->y, 4, hexdec_cor_numero( comboio->boio->cor[0]));
-  aacircleColor(pintor, comboio->x, comboio->y, 4, hexdec_PRETO);
+  filledCircleColor(pintor, comboio->x, comboio->y, 6, hexdec_cor_numero( comboio->boio->cor[0]));
+  aacircleColor(pintor, comboio->x, comboio->y, 6, hexdec_PRETO);
 
   comboio->x += x_a_somar;
   comboio->y += y_a_somar;
@@ -319,7 +320,7 @@ void mexe_comboio(GRAF_BOIO *comboio, LINHA **linhas){
   deltaX = pt2->pt.x - comboio->x;
   deltaY = pt2->pt.y - comboio->y;
 
-  if( deltaY * deltaY + deltaX * deltaX < PIXEIS_p_TICK * PIXEIS_p_TICK ){
+  if( deltaY * deltaY + deltaX * deltaX < comboio->boio->veloc * comboio->boio->veloc ){
     comboio->x = pt2->pt.x;
     comboio->y = pt2->pt.y;
     comboio->ultimo_ponto = pt2;
