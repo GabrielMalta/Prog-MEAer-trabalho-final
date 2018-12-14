@@ -187,11 +187,7 @@ int inicializa_janela(int dim_X, int dim_Y){
 }
 
 void liga_pontos(char aux_string[6][10], LINHA ***linhas){
-  LISTA_PONTOS *aux_pt = NULL, *pt1 = NULL, *pt2 = NULL;
-  int i;
-
-  // printf("LIGAR: %s %s %s %s\n", aux_string[0], aux_string[1], aux_string[2], aux_string[3]);
-  // fflush(stdout);
+  LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
 
   pt1 = procura_ponto(aux_string[0], aux_string[1], *linhas);
   pt2 = procura_ponto(aux_string[2], aux_string[3], *linhas);
@@ -205,7 +201,7 @@ void liga_pontos(char aux_string[6][10], LINHA ***linhas){
   // mostra_ponto(pt1->pr[1]->pt);
 }
 
-void atualiza_render(COMBOIO **comboios, LINHA **linhas){
+void atualiza_render(LINHA **linhas){
 
   SDL_SetRenderDrawColor(pintor, 235, 235, 235, 255);
   SDL_RenderClear(pintor);
@@ -266,12 +262,11 @@ LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LINHA **linhas){
   return NULL;
 }
 
-void inicializa_boios(GRAF_BOIO ***boios_graficos, COMBOIO **comboios, LINHA **linhas){
+void inicializa_boios(LISTA_GRAF_BOIO ***boios_graficos, COMBOIO **comboios, LINHA **linhas){
   GRAF_BOIO *auxiliar;
+  LISTA_GRAF_BOIO *lista_aux = NULL, *atual = NULL;
   int numero_comboios, j;
   for (numero_comboios=0; comboios[numero_comboios] != NULL; numero_comboios++){}
-
-  *boios_graficos = (GRAF_BOIO**) calloc(numero_comboios, sizeof(GRAF_BOIO*));
 
   for (j=0; j<numero_comboios; j++){
     auxiliar = (GRAF_BOIO*) calloc(1, sizeof(GRAF_BOIO));
@@ -280,51 +275,82 @@ void inicializa_boios(GRAF_BOIO ***boios_graficos, COMBOIO **comboios, LINHA **l
     auxiliar->x = auxiliar->boio->origem->pt.x;
     auxiliar->y = auxiliar->boio->origem->pt.y;
     auxiliar->ultimo_ponto = auxiliar->boio->origem;
-    (*boios_graficos)[j] = auxiliar;
-
+    // (*boios_graficos)[ = auxiliar;
+    lista_aux = (LISTA_GRAF_BOIO*) calloc(1,sizeof(LISTA_GRAF_BOIO));
+    lista_aux->graf= auxiliar;
+    if(*boios_graficos==NULL){
+      *boios_graficos = (LISTA_GRAF_BOIO**) calloc(1, sizeof(LISTA_GRAF_BOIO*));
+      **boios_graficos=lista_aux;
+    }
+    else{
+      for(atual=**boios_graficos; atual->pr != NULL; atual=atual->pr){}
+      atual->pr=lista_aux;
+    }
   }
 }
 
-void mexe_comboio(GRAF_BOIO *comboio, LINHA **linhas){
+void mexe_comboios(LISTA_GRAF_BOIO **comboio, LINHA **linhas){
   float deltaX, deltaY;
   float m;
   float x_a_somar, y_a_somar;
   LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
+  LISTA_GRAF_BOIO *aux_boio = NULL, *ant_boio = NULL;
+  int i;
 
-  pt1 = comboio->ultimo_ponto;
-  pt2 = pt1->pr[0];
+  for( aux_boio = *comboio; aux_boio!=NULL; aux_boio=aux_boio->pr){
+    pt1 = aux_boio->graf->ultimo_ponto;
+    pt2 = pt1->pr[0];
 
+    if( pt2 == NULL){
+      pt2 = pt1->pr[1];
+    }
+    if( pt2 == NULL){
+      printf("boio chegou ao fim\n");
+      fflush(stdout);
+      if(aux_boio==*comboio){
+        *comboio=aux_boio->pr;
+        free(aux_boio);
+        aux_boio=*comboio;
+        break;
+      }
+      else{
+      ant_boio->pr = aux_boio->pr;
+      free(aux_boio);
+      aux_boio=ant_boio;
+      break;
+      }
+    }
 
-  if( pt2 == NULL){
-    pt2 = pt1->pr[1];
-  }
-  if( pt2 == NULL){
-    printf("boio chegou ao fim");
-    SDL_Quit();
-    exit(0);
-  }
+    deltaX = pt2->pt.x - pt1->pt.x;
+    deltaY = pt2->pt.y - pt1->pt.y;
 
-  deltaX = pt2->pt.x - pt1->pt.x;
-  deltaY = pt2->pt.y - pt1->pt.y;
+    if (deltaX != 0){
+      m = (float) deltaY/deltaX;
 
-  m = (float) deltaY/deltaX;
+      x_a_somar = deltaX/abs(deltaX)  *  aux_boio->graf->boio->veloc/sqrt(m*m+1);
+      y_a_somar = m*x_a_somar;
+    }
+    else{
+      x_a_somar=0;
+      y_a_somar=deltaY/abs(deltaY) * aux_boio->graf->boio->veloc;
+    }
 
-  x_a_somar = deltaX/abs(deltaX)  *  comboio->boio->veloc/sqrt(m*m+1);
-  y_a_somar = m*x_a_somar;
+    filledCircleColor(pintor, aux_boio->graf->x, aux_boio->graf->y, 6, aux_boio->graf->boio->cor[0]);
+    aacircleColor(pintor, aux_boio->graf->x, aux_boio->graf->y, 6, hexdec_PRETO);
 
-  filledCircleColor(pintor, comboio->x, comboio->y, 6, comboio->boio->cor[0]);
-  aacircleColor(pintor, comboio->x, comboio->y, 6, hexdec_PRETO);
+    aux_boio->graf->x += x_a_somar;
+    aux_boio->graf->y += y_a_somar;
 
-  comboio->x += x_a_somar;
-  comboio->y += y_a_somar;
+    deltaX = pt2->pt.x - aux_boio->graf->x; //reciclar variaveis
+    deltaY = pt2->pt.y - aux_boio->graf->y; //amigo do ambiente
 
-  deltaX = pt2->pt.x - comboio->x;
-  deltaY = pt2->pt.y - comboio->y;
+    if( deltaY * deltaY + deltaX * deltaX < aux_boio->graf->boio->veloc * aux_boio->graf->boio->veloc ){
+      aux_boio->graf->x = pt2->pt.x;
+      aux_boio->graf->y = pt2->pt.y;
+      aux_boio->graf->ultimo_ponto = pt2;
+    }
 
-  if( deltaY * deltaY + deltaX * deltaX < comboio->boio->veloc * comboio->boio->veloc ){
-    comboio->x = pt2->pt.x;
-    comboio->y = pt2->pt.y;
-    comboio->ultimo_ponto = pt2;
+    ant_boio = aux_boio;
   }
 }
 

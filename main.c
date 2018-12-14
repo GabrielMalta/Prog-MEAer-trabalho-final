@@ -5,9 +5,8 @@
 
 int main(int argc, char *argv[]){
   LINHA **linhas = NULL;
-  LISTA_PONTOS *ap;
   COMBOIO **trains = NULL;
-  GRAF_BOIO **boios_graficos = NULL;
+  LISTA_GRAF_BOIO **boios_graficos = NULL;
   int dimensaoX, dimensaoY;
   int i;
   SDL_Event event;
@@ -26,16 +25,13 @@ int main(int argc, char *argv[]){
     mostra_boio( *(trains[i]));
   }
 
-
   inicializa_boios(&boios_graficos, trains, linhas);
   if ( inicializa_janela(dimensaoX,dimensaoY) == 0 ){
     exit(0);
   }
   while (fim != 1){
-    atualiza_render(trains, linhas);
-    for (i=0; boios_graficos[i] != NULL; i++){
-      mexe_comboio(boios_graficos[i], linhas);
-    }
+    atualiza_render(linhas);
+    mexe_comboios(boios_graficos, linhas);
     render();
     SDL_PollEvent( &event );
     if ((event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) || event.type == SDL_QUIT) {

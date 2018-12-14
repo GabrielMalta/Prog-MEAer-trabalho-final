@@ -55,5 +55,7 @@ LIGAR: L1 P26 L2 P1
 LIGAR: L2 P13 L1 P6
 
 %COMBOIO: ID numero_carruagens cor_locomotiva linha_origem ponto_origem tempo_spawn velocidade(pixeis/tick)
-COMBOIO: c1 1 VERMELHO L1 P1 5 2
-COMBOIO: c2 1 CIANO L2 P1 5 2
+COMBOIO: c1 1 VERMELHO L1 P1 5 10
+COMBOIO: c2 1 CIANO L1 P2 5 5
+COMBOIO: c3 1 VERDE L2 P1 5 5
+COMBOIO: c4 1 AMARELO L2 P5 5 5
