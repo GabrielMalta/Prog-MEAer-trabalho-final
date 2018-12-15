@@ -3,6 +3,7 @@
 - Botoes para fechar janela
 - botoes para pausar a simulacao
 - escolher o caminho na ferrrovia
+- um config para um mapa mais elaborado
 - representacao grafica carruagens
 - rand()domizar a cor das carruagens à partida
 - esvaziar carga ao passar nas estacoes
