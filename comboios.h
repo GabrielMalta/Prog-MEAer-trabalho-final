@@ -11,10 +11,11 @@
 
 
 // SDL_Surface *superficie = 0;
-#define FPS 60
+#define FPS 30
 #define TICKS_p_FRAME 1000/FPS
 
-#define RAIO_COMBOIO 6
+#define RAIO_COMBOIO 7
+#define MULT_VELOC 0.7
 
 #define VIA 0
 #define EST 1

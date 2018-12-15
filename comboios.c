@@ -140,7 +140,7 @@ void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_li
         novo_boio->boio.dim = aux_int[0];
         novo_boio->boio.origem = procura_ponto(aux_string[2], aux_string[3], *topo_lista_linhas);
         novo_boio->boio.tempo_spawn = aux_int[1];
-        novo_boio->boio.veloc = aux_int[2];
+        novo_boio->boio.veloc = MULT_VELOC * aux_int[2];
 
         novo_boio->pr=*topo_lista_comboios;
         *topo_lista_comboios=novo_boio;
