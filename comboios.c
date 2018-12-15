@@ -338,6 +338,7 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
         aux_boio->graf.x[i] = pt2->pt.x;
         aux_boio->graf.y[i] = pt2->pt.y;
         aux_boio->graf.ultimo_ponto[i] = pt2;
+        if(i!=0) aux_boio->graf.cor[i] = esvazia_vagao(pt2->pt, aux_boio->graf.cor[i]);
       }
 
       if (i!=0){
@@ -374,6 +375,11 @@ void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
     fflush(stdout);
     lista_graf_boios=lista_graf_boios->pr;
   }
+}
+
+Uint32 esvazia_vagao(PONTO pt, Uint32 cor){
+  if (cor == pt.cor) return hexdec_CINZENTO;
+  return cor;
 }
 
 void render(void){

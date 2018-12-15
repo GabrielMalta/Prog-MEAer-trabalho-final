@@ -129,6 +129,8 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios);
 
 void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
 
+Uint32 esvazia_vagao(PONTO pt, Uint32 cor);
+
 void render(void);
 
 // #endif
