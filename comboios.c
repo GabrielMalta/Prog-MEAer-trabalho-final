@@ -61,32 +61,11 @@ char * cor_codigo(Uint32 no){
   exit(0);
 }
 
-// Uint32 hexdec_cor_numero(int no){
-//   // converte o numero para um string de cor correspondente
-//   switch(no){
-//     case CINZENTO: return hexdec_CINZENTO;
-//     case VERMELHO: return hexdec_VERMELHO;
-//     case ROXO:     return hexdec_ROXO;
-//     case AZUL:     return hexdec_AZUL;
-//     case CIANO:    return hexdec_CIANO;
-//     case VERDE:    return hexdec_VERDE;
-//     case AMARELO:  return hexdec_AMARELO;
-//     case CASTANHO: return hexdec_CASTANHO;
-//     case PRETO:    return hexdec_PRETO;
-//     case BRANCO:   return hexdec_BRANCO;
-//   }
-//   printf("Erro hexdec_cor_numero\n");
-//   exit(0);
-// }
-
-void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y, char *nome_ficheiro){
+void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas, int *dim_X, int *dim_Y, char *nome_ficheiro){
   FILE *config = fopen(nome_ficheiro, "r");
-  LINHA *nova_linha = NULL;
+  LISTA_LINHAS *nova_linha;
   LISTA_PONTOS *aux_pt = NULL, *atual=NULL;
-  COMBOIO *novo_boio = NULL;
-
-  int numero_linhas=0;
-  int numero_comboios=0;
+  LISTA_COMBOIOS *novo_boio = NULL;
 
   char leitura[100];
   char aux_string[6][10];
@@ -104,28 +83,26 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
         *dim_X = aux_int[0];
         *dim_Y = aux_int[1];
       }
+      //se for linha
       else if (sscanf(leitura, "LINHA: %s", aux_string[0]) == 1){
-        numero_linhas++;
-        nova_linha = (LINHA*) calloc(1, sizeof(LINHA));
-        strcpy(nova_linha->id, aux_string[0]);
-        *linhas = realloc(*linhas, (numero_linhas+1)*sizeof(LINHA*));
-        (*linhas)[numero_linhas-1] = nova_linha;
-        (*linhas)[numero_linhas-1]->l = NULL;
-        (*linhas)[numero_linhas] = NULL;
-        fflush(stdout);
+
+        nova_linha = (LISTA_LINHAS*) calloc(1, sizeof(LISTA_LINHAS));
+        strcpy(nova_linha->linha.id, aux_string[0]);
+        nova_linha->pr=*topo_lista_linhas;
+        *topo_lista_linhas=nova_linha;
       }
       //se for ponto
       else if (sscanf(leitura, "%s %d %d %s %s", aux_string[0], aux_int, aux_int+1, aux_string[1], aux_string[2]) == 5){
+
         aux_pt = (LISTA_PONTOS*) calloc(1, sizeof(LISTA_PONTOS));
-        // aux_string[0][5] = '\0';
         strcpy(aux_pt->pt.id, aux_string[0]);
         aux_pt->pt.x = aux_int[0];
         aux_pt->pt.y = aux_int[1];
         aux_pt->pt.cor = codigo_cor(aux_string[1]);
         aux_pt->pt.tipo = numero_tipo(aux_string[2]);
 
-        if ((*linhas)[numero_linhas-1]->l == NULL){
-          (*linhas)[numero_linhas-1]->l = aux_pt;
+        if (nova_linha->linha.l==NULL){
+          nova_linha->linha.l = aux_pt;
           atual = aux_pt;
         }
         else{
@@ -135,26 +112,21 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
       }
       //Ligacao de pontos
       else if (sscanf(leitura, "LIGAR: %s %s %s %s", aux_string[0], aux_string[1], aux_string[2], aux_string[3]) == 4){
-        liga_pontos(aux_string, linhas);
+        liga_pontos(aux_string, *topo_lista_linhas);
       }
       //se for comboio
       else if (sscanf(leitura, "COMBOIO: %s %d %s %s %s %d %d", aux_string[0], aux_int, aux_string[1], aux_string[2], aux_string[3], aux_int+1, aux_int+2) == 7){
-        numero_comboios++;
-        novo_boio = (COMBOIO*) calloc(1, sizeof(COMBOIO));
-        strcpy(novo_boio->id, aux_string[0]);
-        novo_boio->cor[0] = codigo_cor(aux_string[1]);
-        novo_boio->dim = aux_int[0];
-        novo_boio->origem = procura_ponto(aux_string[2], aux_string[3], *linhas);
-        novo_boio->tempo_spawn = aux_int[1];
-        novo_boio->veloc = aux_int[2];
 
-        *comboios = realloc(*comboios, (numero_comboios+1)*sizeof(LINHA*));
-        (*comboios)[numero_comboios-1] = novo_boio;
-        (*comboios)[numero_comboios] = NULL;
+        novo_boio = (LISTA_COMBOIOS*) calloc(1, sizeof(LISTA_COMBOIOS));
+        strcpy(novo_boio->boio.id, aux_string[0]);
+        novo_boio->boio.cor[0] = codigo_cor(aux_string[1]);
+        novo_boio->boio.dim = aux_int[0];
+        novo_boio->boio.origem = procura_ponto(aux_string[2], aux_string[3], *topo_lista_linhas);
+        novo_boio->boio.tempo_spawn = aux_int[1];
+        novo_boio->boio.veloc = aux_int[2];
 
-        printf("%p\n",(void*)  (*comboios)[numero_comboios-1]);
-        fflush(stdout);
-
+        novo_boio->pr=*topo_lista_comboios;
+        *topo_lista_comboios=novo_boio;
       }
     }
   }
@@ -162,14 +134,11 @@ void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y
 
 void mostra_boio(COMBOIO boio){
   printf("\n/----COMBOIO %s----/\n", boio.id);
-  fflush(stdout);
   printf("Dimensao:%d\n", boio.dim);
-  fflush(stdout);
   printf("Cor locom.:%s\n", cor_codigo(boio.cor[0]));
-  fflush(stdout);
   printf("Ponto origem:%s\n", boio.origem->pt.id);
-  fflush(stdout);
   printf("Tempo de spawn:%.2f\n", boio.tempo_spawn);
+  printf("Velocidade:%.2fpixeis/tick\n", boio.veloc);
   fflush(stdout);
 }
 
@@ -186,11 +155,11 @@ int inicializa_janela(int dim_X, int dim_Y){
   return 0;
 }
 
-void liga_pontos(char aux_string[6][10], LINHA ***linhas){
+void liga_pontos(char aux_string[6][10], LISTA_LINHAS *topo_lista_linhas){
   LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
 
-  pt1 = procura_ponto(aux_string[0], aux_string[1], *linhas);
-  pt2 = procura_ponto(aux_string[2], aux_string[3], *linhas);
+  pt1 = procura_ponto(aux_string[0], aux_string[1], topo_lista_linhas);
+  pt2 = procura_ponto(aux_string[2], aux_string[3], topo_lista_linhas);
   if (pt1 == NULL || pt2 == NULL){
     printf("ERRO de ligacao de pontos\n");
     fflush (stdout);
@@ -201,22 +170,20 @@ void liga_pontos(char aux_string[6][10], LINHA ***linhas){
   // mostra_ponto(pt1->pr[1]->pt);
 }
 
-void atualiza_render(LINHA **linhas){
+void atualiza_render(LISTA_LINHAS *topo_lista_linhas){
 
   SDL_SetRenderDrawColor(pintor, 235, 235, 235, 255);
   SDL_RenderClear(pintor);
 
-  desenha_ligacoes(linhas);
-  desenha_pontos(linhas);
-
-  // SDL_RenderPresent(pintor);
+  desenha_ligacoes(topo_lista_linhas);
+  desenha_pontos(topo_lista_linhas);
 }
 
-void desenha_pontos( LINHA **linhas){
+void desenha_pontos(LISTA_LINHAS *topo_lista_linhas){
   LISTA_PONTOS *ap;
-  int i;
-  for(i=0; linhas[i] !=NULL; i++){
-    for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr[0]){
+
+  for(; topo_lista_linhas !=NULL; topo_lista_linhas=topo_lista_linhas->pr){
+    for(ap = topo_lista_linhas->linha.l; ap!= NULL; ap=ap->pr[0]){
       if (ap->pt.tipo == EST){
         filledCircleColor(pintor, ap->pt.x, ap->pt.y, 10, ap->pt.cor);
         aacircleColor(pintor, ap->pt.x, ap->pt.y, 10, hexdec_PRETO);
@@ -229,13 +196,12 @@ void desenha_pontos( LINHA **linhas){
   }
 }
 
-void desenha_ligacoes( LINHA **linhas){
+void desenha_ligacoes(LISTA_LINHAS *topo_lista_linhas){
   LISTA_PONTOS *ap;
-  int i;
 
   SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
-  for(i=0; linhas[i] !=NULL; i++){
-    for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr[0]){
+  for(; topo_lista_linhas !=NULL; topo_lista_linhas=topo_lista_linhas->pr){
+    for(ap = topo_lista_linhas->linha.l; ap!= NULL; ap=ap->pr[0]){
       if( ap->pr[0] != NULL){
         SDL_RenderDrawLine(pintor, ap->pt.x, (ap->pt.y), ap->pr[0]->pt.x, (ap->pr[0]->pt.y));
       }
@@ -246,13 +212,13 @@ void desenha_ligacoes( LINHA **linhas){
   }
 }
 
-LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LINHA **linhas){
+LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_lista_linhas){
   LISTA_PONTOS *aux_pt;
-  int i;
+  LISTA_LINHAS *linha_atual;
 
-  for(i = 0; linhas[i] != NULL; i++){
-    if (strcmp(id_linha, linhas[i]->id) == 0){
-      for(aux_pt=linhas[i]->l; aux_pt != NULL; aux_pt=aux_pt->pr[0]){
+  for(linha_atual=topo_lista_linhas; linha_atual!=NULL; linha_atual=linha_atual->pr){
+    if (strcmp(id_linha, linha_atual->linha.id) == 0){
+      for(aux_pt=linha_atual->linha.l; aux_pt != NULL; aux_pt=aux_pt->pr[0]){
         if(strcmp(id_ponto, aux_pt->pt.id) == 0){
           return aux_pt;
         }
@@ -262,63 +228,62 @@ LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LINHA **linhas){
   return NULL;
 }
 
-void inicializa_boios(LISTA_GRAF_BOIO ***boios_graficos, COMBOIO **comboios, LINHA **linhas){
-  GRAF_BOIO *auxiliar;
-  LISTA_GRAF_BOIO *lista_aux = NULL, *atual = NULL;
-  int numero_comboios, j;
-  for (numero_comboios=0; comboios[numero_comboios] != NULL; numero_comboios++){}
-
-  for (j=0; j<numero_comboios; j++){
-    auxiliar = (GRAF_BOIO*) calloc(1, sizeof(GRAF_BOIO));
-
-    auxiliar->boio = comboios[j];
-    auxiliar->x = auxiliar->boio->origem->pt.x;
-    auxiliar->y = auxiliar->boio->origem->pt.y;
-    auxiliar->ultimo_ponto = auxiliar->boio->origem;
-    // (*boios_graficos)[ = auxiliar;
-    lista_aux = (LISTA_GRAF_BOIO*) calloc(1,sizeof(LISTA_GRAF_BOIO));
-    lista_aux->graf= auxiliar;
-    if(*boios_graficos==NULL){
-      *boios_graficos = (LISTA_GRAF_BOIO**) calloc(1, sizeof(LISTA_GRAF_BOIO*));
-      **boios_graficos=lista_aux;
-    }
-    else{
-      for(atual=**boios_graficos; atual->pr != NULL; atual=atual->pr){}
-      atual->pr=lista_aux;
-    }
+LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio){
+  LISTA_GRAF_BOIO *novo_graf_boio = calloc(1, sizeof(LISTA_GRAF_BOIO));
+  if (novo_graf_boio == NULL){
+    printf("Erro falta de memória\n");
+    fflush(stdout);
   }
+  novo_graf_boio->graf.boio=comboio;
+  novo_graf_boio->graf.x=comboio->origem->pt.x;
+  novo_graf_boio->graf.y=comboio->origem->pt.y;
+  novo_graf_boio->graf.ultimo_ponto=comboio->origem;
+  novo_graf_boio->pr=lista_graf_boios;
+  return novo_graf_boio;
 }
 
-void mexe_comboios(LISTA_GRAF_BOIO **comboio, LINHA **linhas){
+LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOIOS *topo_lista_comboios){
+  LISTA_COMBOIOS *prototipo_comboio_atual;
+
+  for(prototipo_comboio_atual=topo_lista_comboios; prototipo_comboio_atual!=NULL; prototipo_comboio_atual=prototipo_comboio_atual->pr){
+    boios_graficos=cria_grafico_do_comboio(boios_graficos, &(prototipo_comboio_atual->boio));
+  }
+
+  return boios_graficos;
+}
+
+LISTA_GRAF_BOIO * mexe_comboios(LISTA_GRAF_BOIO *lista_graf_boios){
   float deltaX, deltaY;
   float m;
   float x_a_somar, y_a_somar;
   LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
   LISTA_GRAF_BOIO *aux_boio = NULL, *ant_boio = NULL;
-  int i;
 
-  for( aux_boio = *comboio; aux_boio!=NULL; aux_boio=aux_boio->pr){
-    pt1 = aux_boio->graf->ultimo_ponto;
+  for( aux_boio = lista_graf_boios; aux_boio!=NULL; aux_boio=aux_boio->pr){
+    pt1 = aux_boio->graf.ultimo_ponto;
     pt2 = pt1->pr[0];
 
-    if( pt2 == NULL){
+    if( pt1->pr[0] != NULL){
+      pt2 = pt1->pr[0];
+    }
+    else if( pt1->pr[1] != NULL){
       pt2 = pt1->pr[1];
     }
-    if( pt2 == NULL){
-      printf("boio chegou ao fim\n");
+    else{
+      printf("----------------------boio chegou ao fim\n");
       fflush(stdout);
-      if(aux_boio==*comboio){
-        *comboio=aux_boio->pr;
+      if(aux_boio==lista_graf_boios){
+        lista_graf_boios=aux_boio->pr;
         free(aux_boio);
-        aux_boio=*comboio;
-        break;
+        aux_boio=lista_graf_boios;
       }
       else{
       ant_boio->pr = aux_boio->pr;
       free(aux_boio);
       aux_boio=ant_boio;
-      break;
       }
+      mostra_boios_ativos(lista_graf_boios);
+      break;
     }
 
     deltaX = pt2->pt.x - pt1->pt.x;
@@ -327,30 +292,43 @@ void mexe_comboios(LISTA_GRAF_BOIO **comboio, LINHA **linhas){
     if (deltaX != 0){
       m = (float) deltaY/deltaX;
 
-      x_a_somar = deltaX/abs(deltaX)  *  aux_boio->graf->boio->veloc/sqrt(m*m+1);
+      x_a_somar = deltaX/abs(deltaX)  *  aux_boio->graf.boio->veloc/sqrt(m*m+1);
       y_a_somar = m*x_a_somar;
     }
     else{
       x_a_somar=0;
-      y_a_somar=deltaY/abs(deltaY) * aux_boio->graf->boio->veloc;
+      y_a_somar=deltaY/abs(deltaY) * aux_boio->graf.boio->veloc;
     }
 
-    filledCircleColor(pintor, aux_boio->graf->x, aux_boio->graf->y, 6, aux_boio->graf->boio->cor[0]);
-    aacircleColor(pintor, aux_boio->graf->x, aux_boio->graf->y, 6, hexdec_PRETO);
+    filledCircleColor(pintor, aux_boio->graf.x, aux_boio->graf.y, 6, aux_boio->graf.boio->cor[0]);
+    aacircleColor(pintor, aux_boio->graf.x, aux_boio->graf.y, 6, hexdec_PRETO);
 
-    aux_boio->graf->x += x_a_somar;
-    aux_boio->graf->y += y_a_somar;
+    aux_boio->graf.x += x_a_somar;
+    aux_boio->graf.y += y_a_somar;
 
-    deltaX = pt2->pt.x - aux_boio->graf->x; //reciclar variaveis
-    deltaY = pt2->pt.y - aux_boio->graf->y; //amigo do ambiente
+    deltaX = pt2->pt.x - aux_boio->graf.x; //reciclar variaveis
+    deltaY = pt2->pt.y - aux_boio->graf.y; //para salvar o ambiente
 
-    if( deltaY * deltaY + deltaX * deltaX < aux_boio->graf->boio->veloc * aux_boio->graf->boio->veloc ){
-      aux_boio->graf->x = pt2->pt.x;
-      aux_boio->graf->y = pt2->pt.y;
-      aux_boio->graf->ultimo_ponto = pt2;
+    if( deltaY * deltaY + deltaX * deltaX < aux_boio->graf.boio->veloc * aux_boio->graf.boio->veloc ){
+      aux_boio->graf.x = pt2->pt.x;
+      aux_boio->graf.y = pt2->pt.y;
+      aux_boio->graf.ultimo_ponto = pt2;
     }
 
     ant_boio = aux_boio;
+  }
+  return lista_graf_boios;
+}
+
+void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
+  int i=1;
+  while(lista_graf_boios!=NULL){
+    printf("\nGRAF_BOIO #%d\n", i++);
+    printf("Prototipo:%s\n", lista_graf_boios->graf.boio->id);
+    printf("Cor locom.:%s\n", cor_codigo(lista_graf_boios->graf.boio->cor[0]));
+    printf("X=%7.2fY=%7.2f\n", lista_graf_boios->graf.x, lista_graf_boios->graf.y);
+    fflush(stdout);
+    lista_graf_boios=lista_graf_boios->pr;
   }
 }
 

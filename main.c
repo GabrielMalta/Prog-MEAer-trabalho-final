@@ -4,34 +4,34 @@
 #include "comboios.h"
 
 int main(int argc, char *argv[]){
-  LINHA **linhas = NULL;
-  COMBOIO **trains = NULL;
-  LISTA_GRAF_BOIO **boios_graficos = NULL;
+  LISTA_LINHAS *topo_lista_linhas = NULL;
+  LISTA_COMBOIOS *topo_lista_comboios = NULL;
+  LISTA_GRAF_BOIO *boios_graficos = NULL;
   int dimensaoX, dimensaoY;
-  int i;
   SDL_Event event;
   int fim = 0;
 
-  leitor_configs(&trains, &linhas, &dimensaoX, &dimensaoY, argv[1]);
+  leitor_configs(&topo_lista_comboios, &topo_lista_linhas, &dimensaoX, &dimensaoY, argv[1]);
   // for(i=0; linhas[i] !=NULL; i++){
   //   printf("/----LINHA %s----/\n", linhas[i]->id);
   //   for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr[0]){
   //     mostra_ponto(ap->pt);
   //   }
   // }
-  for(i=0; trains[i] != NULL; i++){
-    printf("%d comboio\n", i);
-    fflush(stdout);
-    mostra_boio( *(trains[i]));
-  }
+  // for(i=0; trains[i] != NULL; i++){
+  //   printf("%d comboio\n", i);
+  //   fflush(stdout);
+  //   mostra_boio( *(trains[i]));
+  // }
 
-  inicializa_boios(&boios_graficos, trains, linhas);
+  boios_graficos = inicializa_boios(boios_graficos, topo_lista_comboios);
+  mostra_boios_ativos(boios_graficos);
   if ( inicializa_janela(dimensaoX,dimensaoY) == 0 ){
     exit(0);
   }
   while (fim != 1){
-    atualiza_render(linhas);
-    mexe_comboios(boios_graficos, linhas);
+    atualiza_render(topo_lista_linhas);
+    boios_graficos = mexe_comboios(boios_graficos);
     render();
     SDL_PollEvent( &event );
     if ((event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) || event.type == SDL_QUIT) {

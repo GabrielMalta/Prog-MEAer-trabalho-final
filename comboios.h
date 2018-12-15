@@ -62,6 +62,11 @@ typedef struct {
   LISTA_PONTOS *l;
 } LINHA;
 
+typedef struct elem_lista_linhas{
+  LINHA linha;
+  struct elem_lista_linhas *pr;
+} LISTA_LINHAS;
+
 typedef struct{
   char id[3];
   int dim;
@@ -71,6 +76,11 @@ typedef struct{
   float veloc;
 } COMBOIO;
 
+typedef struct elem_lista_comboios{
+  COMBOIO boio;
+  struct elem_lista_comboios *pr;
+} LISTA_COMBOIOS;
+
 typedef struct{
   COMBOIO *boio;
   float x, y;
@@ -78,7 +88,7 @@ typedef struct{
 } GRAF_BOIO;
 
 typedef struct lista_graf_boios{
-  GRAF_BOIO *graf;
+  GRAF_BOIO graf;
   struct lista_graf_boios *pr;
 } LISTA_GRAF_BOIO;
 
@@ -92,23 +102,27 @@ int numero_tipo( char string[]);
 
 char * cor_codigo( Uint32 no);
 
-void leitor_configs( COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y, char *nome_ficheiro);
+void leitor_configs( LISTA_COMBOIOS **comboios, LISTA_LINHAS **linhas, int *dim_X, int *dim_Y, char *nome_ficheiro);
 
-void liga_pontos( char aux_string[6][10], LINHA ***linhas);
+void liga_pontos(char aux_string[6][10], LISTA_LINHAS *topo_lista_linhas);
 
 int inicializa_janela( int dim_X, int dim_Y);
 
-void atualiza_render(LINHA **linhas);
+void atualiza_render(LISTA_LINHAS *topo_lista_linhas);
 
-void desenha_pontos( LINHA **linhas);
+void desenha_pontos(LISTA_LINHAS *linha);
 
-void desenha_ligacoes( LINHA **linhas);
+void desenha_ligacoes(LISTA_LINHAS *linha);
 
-LISTA_PONTOS * procura_ponto( char *id_linha, char *id_ponto, LINHA **linhas);
+LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_lista_linhas);
 
-void mexe_comboios(LISTA_GRAF_BOIO **comboio, LINHA **linhas);
+LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio);
 
-void inicializa_boios(LISTA_GRAF_BOIO ***boios_graficos, COMBOIO **comboios, LINHA **linhas);
+LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOIOS *topo_lista_comboios);
+
+LISTA_GRAF_BOIO * mexe_comboios(LISTA_GRAF_BOIO *lista_graf_boios);
+
+void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
 
 void render(void);
 
