@@ -1,10 +1,18 @@
+#ifndef COMBOIOS_H_
+
+#define COMBOIOS_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// #include <SDL.h>
+#include <math.h>
+#include <SDL.h>
+#include <SDL2_gfxPrimitives.h>
 
-#define DIMX 900
-#define DIMY 600
+
+// SDL_Surface *superficie = 0;
+
+#define PIXEIS_p_TICK 2
 
 #define SIM 1
 #define NAO 0
@@ -25,21 +33,28 @@
 #define PRETO 8
 #define BRANCO 9
 
+#define hexdec_CINZENTO 0xff808080
+#define hexdec_VERMELHO 0xff0000ff
+#define hexdec_ROXO 0xff800080
+#define hexdec_AZUL 0xffff0000
+#define hexdec_CIANO 0xffffff00
+#define hexdec_VERDE 0xff00ff00
+#define hexdec_AMARELO 0xff00ffff
+#define hexdec_CASTANHO 0xff123159
+#define hexdec_PRETO 0xff000000
+#define hexdec_BRANCO 0xffffffff
+
 typedef struct{
   char id[5];
   int x, y;
-  int cor;
+  Uint32 cor;
   int tipo;
-  float dim;
-  int entradas;
-  int saidas;
 } PONTO;
 
 typedef struct node{
-  // char id[5];
   PONTO pt;
   // struct node *ant[3];
-  struct node *pr;
+  struct node *pr[2];
 } LISTA_PONTOS;
 
 typedef struct {
@@ -50,27 +65,51 @@ typedef struct {
 typedef struct{
   char id[3];
   int dim;
-  int r_bolas;
-  int cor[4];
-  char orig_l[5];
-  char orig_pt[5];
-  char dest_l[5];
-  char dest_pt[5];
+  Uint32 cor[4];
+  LISTA_PONTOS *origem;
+  float tempo_spawn;
+  float veloc;
 } COMBOIO;
 
-// typedef struct lista_comboios{
-//   COMBOIO train;
-//   struct lista_comboios *pr;
-// } LISTA_COMBOIOS;
+typedef struct{
+  COMBOIO *boio;
+  float x, y;
+  LISTA_PONTOS *ultimo_ponto;
+} GRAF_BOIO;
 
-void mostra_ponto(PONTO pt);
+typedef struct lista_graf_boios{
+  GRAF_BOIO *graf;
+  struct lista_graf_boios *pr;
+} LISTA_GRAF_BOIO;
 
-void mostra_boio(COMBOIO boio);
+void mostra_ponto( PONTO pt);
 
-int numero_cor(char string[]);
+void mostra_boio( COMBOIO boio);
 
-int numero_tipo(char string[]);
+Uint32 codigo_cor( char string[]);
 
-char * cor_numero(int no);
+int numero_tipo( char string[]);
 
-void leitor_configs(COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y);
+char * cor_codigo( Uint32 no);
+
+void leitor_configs( COMBOIO ***comboios, LINHA ***linhas, int *dim_X, int *dim_Y, char *nome_ficheiro);
+
+void liga_pontos( char aux_string[6][10], LINHA ***linhas);
+
+int inicializa_janela( int dim_X, int dim_Y);
+
+void atualiza_render(LINHA **linhas);
+
+void desenha_pontos( LINHA **linhas);
+
+void desenha_ligacoes( LINHA **linhas);
+
+LISTA_PONTOS * procura_ponto( char *id_linha, char *id_ponto, LINHA **linhas);
+
+void mexe_comboios(LISTA_GRAF_BOIO **comboio, LINHA **linhas);
+
+void inicializa_boios(LISTA_GRAF_BOIO ***boios_graficos, COMBOIO **comboios, LINHA **linhas);
+
+void render(void);
+
+#endif
