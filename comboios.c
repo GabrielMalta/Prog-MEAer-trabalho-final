@@ -43,6 +43,23 @@ Uint32 codigo_cor(char string[]){ //funciona
   // return NULL;
 }
 
+Uint32 random_cor(void){
+ int random = rand()%10;
+ switch(random){
+   case CINZENTO: return hexdec_CINZENTO;
+   case VERMELHO: return hexdec_VERMELHO;
+   case ROXO:     return hexdec_ROXO;
+   case AZUL:     return hexdec_AZUL;
+   case CIANO:    return hexdec_CIANO;
+   case VERDE:    return hexdec_VERDE;
+   case AMARELO:  return hexdec_AMARELO;
+   case CASTANHO: return hexdec_CASTANHO;
+   case PRETO:    return hexdec_PRETO;
+   case BRANCO:   return hexdec_BRANCO;
+ }
+ return 0;
+}
+
 char * cor_codigo(Uint32 no){
   // converte o numero para um string de cor correspondente
   switch(no){
@@ -119,7 +136,7 @@ void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_li
 
         novo_boio = (LISTA_COMBOIOS*) calloc(1, sizeof(LISTA_COMBOIOS));
         strcpy(novo_boio->boio.id, aux_string[0]);
-        novo_boio->boio.cor[0] = codigo_cor(aux_string[1]);
+        novo_boio->boio.cor = codigo_cor(aux_string[1]);
         novo_boio->boio.dim = aux_int[0];
         novo_boio->boio.origem = procura_ponto(aux_string[2], aux_string[3], *topo_lista_linhas);
         novo_boio->boio.tempo_spawn = aux_int[1];
@@ -135,7 +152,7 @@ void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_li
 void mostra_boio(COMBOIO boio){
   printf("\n/----COMBOIO %s----/\n", boio.id);
   printf("Dimensao:%d\n", boio.dim);
-  printf("Cor locom.:%s\n", cor_codigo(boio.cor[0]));
+  printf("Cor locom.:%s\n", cor_codigo(boio.cor));
   printf("Ponto origem:%s\n", boio.origem->pt.id);
   printf("Tempo de spawn:%.2f\n", boio.tempo_spawn);
   printf("Velocidade:%.2fpixeis/tick\n", boio.veloc);
@@ -229,15 +246,22 @@ LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_
 }
 
 LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio){
+  int i;
   LISTA_GRAF_BOIO *novo_graf_boio = calloc(1, sizeof(LISTA_GRAF_BOIO));
   if (novo_graf_boio == NULL){
     printf("Erro falta de memória\n");
     fflush(stdout);
   }
   novo_graf_boio->graf.boio=comboio;
-  novo_graf_boio->graf.x=comboio->origem->pt.x;
-  novo_graf_boio->graf.y=comboio->origem->pt.y;
+  novo_graf_boio->graf.x[0]=comboio->origem->pt.x;
+  novo_graf_boio->graf.y[0]=comboio->origem->pt.y;
   novo_graf_boio->graf.ultimo_ponto=comboio->origem;
+  novo_graf_boio->graf.cor[0]=comboio->cor;
+  for(i=1;i<=comboio->dim; i++){
+    novo_graf_boio->graf.cor[i]= random_cor();
+    novo_graf_boio->graf.x[i]=comboio->origem->pt.x;
+    novo_graf_boio->graf.y[i]=comboio->origem->pt.y;
+  }
   novo_graf_boio->pr=lista_graf_boios;
   return novo_graf_boio;
 }
@@ -253,9 +277,10 @@ LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOI
 }
 
 LISTA_GRAF_BOIO * mexe_comboios(LISTA_GRAF_BOIO *lista_graf_boios){
-  float deltaX, deltaY;
-  float m;
+  float deltaX, deltaY, deltaX_aux, deltaY_aux;
+  float m, m_aux;
   float x_a_somar, y_a_somar;
+  int i;
   LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
   LISTA_GRAF_BOIO *aux_boio = NULL, *ant_boio = NULL;
 
@@ -300,33 +325,126 @@ LISTA_GRAF_BOIO * mexe_comboios(LISTA_GRAF_BOIO *lista_graf_boios){
       y_a_somar=deltaY/abs(deltaY) * aux_boio->graf.boio->veloc;
     }
 
-    filledCircleColor(pintor, aux_boio->graf.x, aux_boio->graf.y, 6, aux_boio->graf.boio->cor[0]);
-    aacircleColor(pintor, aux_boio->graf.x, aux_boio->graf.y, 6, hexdec_PRETO);
+    for(i=1; i<=aux_boio->graf.boio->dim; i++){
+      deltaX_aux = aux_boio->graf.x[i-1]-aux_boio->graf.x[i];
+      deltaY_aux = aux_boio->graf.y[i-1]-aux_boio->graf.y[i];
+      m_aux=deltaY_aux/deltaX_aux;
+      while( sqrt(deltaX_aux*deltaX_aux + deltaY_aux*deltaY_aux) > 1.9*RAIO_COMBOIO){
+        if(abs(deltaX_aux) > 0.00001){
+          aux_boio->graf.x[i]+= deltaX_aux/abs(deltaX_aux)  * 0.2/sqrt(m_aux*m_aux+1);
+          aux_boio->graf.y[i]+=m_aux * deltaX_aux/abs(deltaX_aux)  * 0.2/sqrt(m_aux*m_aux+1);
+        }
+        else{
+          aux_boio->graf.y[i]+=deltaY_aux/abs(deltaY_aux);
+        }
+        deltaX_aux = aux_boio->graf.x[i-1]-aux_boio->graf.x[i];
+        deltaY_aux = aux_boio->graf.y[i-1]-aux_boio->graf.y[i];
+        if(deltaX_aux != 0.0){
+          m_aux=deltaY_aux/deltaX_aux;
+        }
+      }
+    }
 
-    aux_boio->graf.x += x_a_somar;
-    aux_boio->graf.y += y_a_somar;
+    aux_boio->graf.x[0] += x_a_somar;
+    aux_boio->graf.y[0] += y_a_somar;
 
-    deltaX = pt2->pt.x - aux_boio->graf.x; //reciclar variaveis
-    deltaY = pt2->pt.y - aux_boio->graf.y; //para salvar o ambiente
+    deltaX = pt2->pt.x - aux_boio->graf.x[0]; //reciclar variaveis
+    deltaY = pt2->pt.y - aux_boio->graf.y[0]; //para salvar o ambiente
 
     if( deltaY * deltaY + deltaX * deltaX < aux_boio->graf.boio->veloc * aux_boio->graf.boio->veloc ){
-      aux_boio->graf.x = pt2->pt.x;
-      aux_boio->graf.y = pt2->pt.y;
+      aux_boio->graf.x[0] = pt2->pt.x;
+      aux_boio->graf.y[0] = pt2->pt.y;
       aux_boio->graf.ultimo_ponto = pt2;
     }
+    for(i=aux_boio->graf.boio->dim; i>=0; i--){
+    filledCircleColor(pintor, aux_boio->graf.x[i], aux_boio->graf.y[i], RAIO_COMBOIO, aux_boio->graf.cor[i]);
+    aacircleColor(pintor, aux_boio->graf.x[i], aux_boio->graf.y[i], RAIO_COMBOIO, hexdec_PRETO);
+  }
 
     ant_boio = aux_boio;
   }
   return lista_graf_boios;
 }
 
+// LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
+//   float deltaX, deltaY;
+//   float m;
+//   float x_a_somar, y_a_somar;
+//   int i;
+//   LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
+//   LISTA_GRAF_BOIO *aux_boio = NULL, *ant_boio = NULL;
+//
+//   for( aux_boio = lista_graf_boios; aux_boio!=NULL; aux_boio=aux_boio->pr){
+//     for(i=0; i<aux_boio->graf.boio->dim; i++){
+//       pt1 = aux_boio->graf.ultimo_ponto[i];
+//       pt2 = pt1->pr[i];
+//
+//       if( pt1->pr[0] != NULL){
+//         pt2 = pt1->pr[0];
+//       }
+//       else if( pt1->pr[1] != NULL){
+//         pt2 = pt1->pr[1];
+//       }
+//       else if(i == aux_boio->graf.boio->dim - 1){
+//         printf("----------------------boio chegou ao fim\n");
+//         fflush(stdout);
+//         if(aux_boio==lista_graf_boios){
+//           lista_graf_boios=aux_boio->pr;
+//           free(aux_boio);
+//           aux_boio=lista_graf_boios;
+//         }
+//         else{
+//         ant_boio->pr = aux_boio->pr;
+//         free(aux_boio);
+//         aux_boio=ant_boio;
+//         }
+//         mostra_boios_ativos(lista_graf_boios);
+//         break;
+//       }
+//
+//       deltaX = pt2->pt.x - pt1->pt.x;
+//       deltaY = pt2->pt.y - pt1->pt.y;
+//
+//       if (deltaX != 0){
+//         m = (float) deltaY/deltaX;
+//
+//         x_a_somar = deltaX/abs(deltaX)  *  aux_boio->graf.boio->veloc/sqrt(m*m+1);
+//         y_a_somar = m*x_a_somar;
+//       }
+//       else{
+//         x_a_somar=0;
+//         y_a_somar=deltaY/abs(deltaY) * aux_boio->graf.boio->veloc;
+//       }
+//
+//       aux_boio->graf.x[0] += x_a_somar;
+//       aux_boio->graf.y[0] += y_a_somar;
+//
+//       deltaX = pt2->pt.x - aux_boio->graf.x[0]; //reciclar variaveis
+//       deltaY = pt2->pt.y - aux_boio->graf.y[0]; //para salvar o ambiente
+//
+//       if( deltaY * deltaY + deltaX * deltaX < aux_boio->graf.boio->veloc * aux_boio->graf.boio->veloc ){
+//         aux_boio->graf.x[0] = pt2->pt.x;
+//         aux_boio->graf.y[0] = pt2->pt.y;
+//         aux_boio->graf.ultimo_ponto = pt2;
+//       }
+//       for(i=aux_boio->graf.boio->dim; i>=0; i--){
+//       filledCircleColor(pintor, aux_boio->graf.x[i], aux_boio->graf.y[i], RAIO_COMBOIO, aux_boio->graf.cor[i]);
+//       aacircleColor(pintor, aux_boio->graf.x[i], aux_boio->graf.y[i], RAIO_COMBOIO, hexdec_PRETO);
+//     }
+//
+//       ant_boio = aux_boio;
+//     }
+//   }
+//   return lista_graf_boios;
+// }
+
 void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
   int i=1;
   while(lista_graf_boios!=NULL){
     printf("\nGRAF_BOIO #%d\n", i++);
     printf("Prototipo:%s\n", lista_graf_boios->graf.boio->id);
-    printf("Cor locom.:%s\n", cor_codigo(lista_graf_boios->graf.boio->cor[0]));
-    printf("X=%7.2fY=%7.2f\n", lista_graf_boios->graf.x, lista_graf_boios->graf.y);
+    printf("Cor locom.:%s\n", cor_codigo(lista_graf_boios->graf.cor[0]));
+    printf("X=%7.2fY=%7.2f\n", lista_graf_boios->graf.x[0], lista_graf_boios->graf.y[0]);
     fflush(stdout);
     lista_graf_boios=lista_graf_boios->pr;
   }
@@ -334,5 +452,5 @@ void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
 
 void render(void){
   SDL_RenderPresent(pintor);
-  SDL_Delay(33);
+  SDL_Delay(10);
 }
