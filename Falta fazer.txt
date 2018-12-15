@@ -1,4 +1,12 @@
-- Menu
-- possibilidade de eliminar comboios e linhas da memoria apos a leitura do ficheiro, que implica a nessecidade de:
-- Botoes para fechar janela e parar boios
-- carruagens
+- Menu terminal
+- possibilidade de eliminar comboios e linhas da memoria apos a leitura do ficheiro
+- Botoes para fechar janela
+- botoes para pausar a simulacao
+- escolher o caminho na ferrrovia
+- representacao grafica carruagens
+- rand()domizar a cor das carruagens à partida
+- esvaziar carga ao passar nas estacoes
+- spawnar comboios consoante o timer do prototipo correspondente
+- colisoes !?
+- evitar colisoes !!!?
+- fumo :D

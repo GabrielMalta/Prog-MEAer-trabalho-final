@@ -12,17 +12,6 @@ int main(int argc, char *argv[]){
   int fim = 0;
 
   leitor_configs(&topo_lista_comboios, &topo_lista_linhas, &dimensaoX, &dimensaoY, argv[1]);
-  // for(i=0; linhas[i] !=NULL; i++){
-  //   printf("/----LINHA %s----/\n", linhas[i]->id);
-  //   for(ap = linhas[i]->l; ap!= NULL; ap=ap->pr[0]){
-  //     mostra_ponto(ap->pt);
-  //   }
-  // }
-  // for(i=0; trains[i] != NULL; i++){
-  //   printf("%d comboio\n", i);
-  //   fflush(stdout);
-  //   mostra_boio( *(trains[i]));
-  // }
 
   boios_graficos = inicializa_boios(boios_graficos, topo_lista_comboios);
   mostra_boios_ativos(boios_graficos);
