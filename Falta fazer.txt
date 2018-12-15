@@ -1,0 +1,5 @@
+- Menu
+- possibilidade de eliminar comboios e linhas da memoria apos a leitura do ficheiro, que implica a nessecidade de:
+- guardar os prototipos de comboio e linhas como listas em vez de vetores dinamicos
+- Botoes para fechar janela e parar boios
+- carruagens
