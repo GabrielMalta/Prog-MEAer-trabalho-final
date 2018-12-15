@@ -77,6 +77,11 @@ typedef struct{
   LISTA_PONTOS *ultimo_ponto;
 } GRAF_BOIO;
 
+typedef struct lista_graf_boios{
+  GRAF_BOIO *graf;
+  struct lista_graf_boios *pr;
+} LISTA_GRAF_BOIO;
+
 void mostra_ponto( PONTO pt);
 
 void mostra_boio( COMBOIO boio);
@@ -93,7 +98,7 @@ void liga_pontos( char aux_string[6][10], LINHA ***linhas);
 
 int inicializa_janela( int dim_X, int dim_Y);
 
-void atualiza_render( COMBOIO **comboios, LINHA **linhas);
+void atualiza_render(LINHA **linhas);
 
 void desenha_pontos( LINHA **linhas);
 
@@ -101,9 +106,9 @@ void desenha_ligacoes( LINHA **linhas);
 
 LISTA_PONTOS * procura_ponto( char *id_linha, char *id_ponto, LINHA **linhas);
 
-void mexe_comboio( GRAF_BOIO *comboio, LINHA **linhas);
+void mexe_comboios(LISTA_GRAF_BOIO **comboio, LINHA **linhas);
 
-void inicializa_boios(GRAF_BOIO ***boios_graficos, COMBOIO **comboios, LINHA **linhas);
+void inicializa_boios(LISTA_GRAF_BOIO ***boios_graficos, COMBOIO **comboios, LINHA **linhas);
 
 void render(void);
 
