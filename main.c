@@ -9,6 +9,7 @@ int main(int argc, char *argv[]){
   LISTA_GRAF_BOIO *boios_graficos = NULL;
   int dimensaoX, dimensaoY;
   SDL_Event event;
+  Uint32 temporizador;
   int fim = 0;
 
   srand((unsigned long) &fim);
@@ -20,14 +21,20 @@ int main(int argc, char *argv[]){
   if ( inicializa_janela(dimensaoX,dimensaoY) == 0 ){
     exit(0);
   }
+
   while (fim != 1){
+    temporizador = SDL_GetTicks();
+    boios_graficos = mexe_comboios2(boios_graficos);
     atualiza_render(topo_lista_linhas);
-    boios_graficos = mexe_comboios(boios_graficos);
-    render();
+    desenha_comboios(boios_graficos);
     SDL_PollEvent( &event );
     if ((event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) || event.type == SDL_QUIT) {
       fim = 1;
     }
+    printf("\rA esperar%d ms", TICKS_p_FRAME - SDL_GetTicks() + temporizador);
+    fflush(stdout);
+    SDL_Delay(TICKS_p_FRAME - SDL_TICKS_PASSED(SDL_GetTicks(), temporizador));
+    render();
 	}
   SDL_Quit();
 

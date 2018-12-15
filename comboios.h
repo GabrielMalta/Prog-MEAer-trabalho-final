@@ -1,6 +1,6 @@
-#ifndef COMBOIOS_H_
-
-#define COMBOIOS_H_
+// #ifndef COMBOIOS_H_
+//
+// #define COMBOIOS_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,16 +11,13 @@
 
 
 // SDL_Surface *superficie = 0;
+#define FPS 60
+#define TICKS_p_FRAME 1000/FPS
 
 #define RAIO_COMBOIO 6
 
-#define SIM 1
-#define NAO 0
-
 #define VIA 0
 #define EST 1
-#define ENT 2
-#define SAI 3
 
 #define CINZENTO 0
 #define VERMELHO 1
@@ -85,7 +82,7 @@ typedef struct grafico_comboio{
   COMBOIO *boio;
   float x[4], y[4];
   Uint32 cor[4];
-  LISTA_PONTOS *ultimo_ponto;
+  LISTA_PONTOS *ultimo_ponto[4];
 } GRAF_BOIO;
 
 
@@ -118,18 +115,20 @@ void desenha_pontos(LISTA_LINHAS *linha);
 
 void desenha_ligacoes(LISTA_LINHAS *linha);
 
+void desenha_comboios(LISTA_GRAF_BOIO *lista_graf_boios);
+
 LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_lista_linhas);
 
 LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio);
 
-LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOIOS *topo_lista_comboios);
+LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOIOS *lista_comboios);
 
-LISTA_GRAF_BOIO * mexe_comboios(LISTA_GRAF_BOIO *lista_graf_boios);
+// LISTA_GRAF_BOIO * mexe_comboios(LISTA_GRAF_BOIO *lista_graf_boios);
 
-// LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios);
+LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios);
 
 void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
 
 void render(void);
 
-#endif
+// #endif
