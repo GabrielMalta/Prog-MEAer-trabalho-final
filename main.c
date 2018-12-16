@@ -11,6 +11,8 @@ int main(int argc, char *argv[]){
   SDL_Event event;
   int fim = 0;
 
+  srand((unsigned long) &fim);
+
   leitor_configs(&topo_lista_comboios, &topo_lista_linhas, &dimensaoX, &dimensaoY, argv[1]);
 
   boios_graficos = inicializa_boios(boios_graficos, topo_lista_comboios);

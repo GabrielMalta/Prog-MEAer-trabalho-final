@@ -12,7 +12,7 @@
 
 // SDL_Surface *superficie = 0;
 
-#define PIXEIS_p_TICK 2
+#define RAIO_COMBOIO 6
 
 #define SIM 1
 #define NAO 0
@@ -70,7 +70,7 @@ typedef struct elem_lista_linhas{
 typedef struct{
   char id[3];
   int dim;
-  Uint32 cor[4];
+  Uint32 cor;
   LISTA_PONTOS *origem;
   float tempo_spawn;
   float veloc;
@@ -81,11 +81,13 @@ typedef struct elem_lista_comboios{
   struct elem_lista_comboios *pr;
 } LISTA_COMBOIOS;
 
-typedef struct{
+typedef struct grafico_comboio{
   COMBOIO *boio;
-  float x, y;
+  float x[4], y[4];
+  Uint32 cor[4];
   LISTA_PONTOS *ultimo_ponto;
 } GRAF_BOIO;
+
 
 typedef struct lista_graf_boios{
   GRAF_BOIO graf;
@@ -99,6 +101,8 @@ void mostra_boio( COMBOIO boio);
 Uint32 codigo_cor( char string[]);
 
 int numero_tipo( char string[]);
+
+Uint32 random_cor(void);
 
 char * cor_codigo( Uint32 no);
 
@@ -121,6 +125,8 @@ LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMB
 LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOIOS *topo_lista_comboios);
 
 LISTA_GRAF_BOIO * mexe_comboios(LISTA_GRAF_BOIO *lista_graf_boios);
+
+// LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios);
 
 void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
 
