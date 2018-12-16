@@ -1,10 +1,16 @@
+JACOB:
 - Menu terminal
+- integrar mencionando menu com as funcoes já existentes
 - possibilidade de eliminar comboios e linhas da memoria apos a leitura do ficheiro
-- Botoes para fechar janela
-- botoes para pausar a simulacao
-- escolher o caminho na ferrrovia (clicando no ponto)
-- um config para um mapa mais elaborado
+- Desenhar e escrever:
+- Botao grafico para fechar janela
+- Botao grafico para pausar a simulacao
+- Fazer com que os botoes funfem
+- funcao para mudar o caminho que os boios vao tomar na ferrovia(carregando nos pontos) (usando o int alavanca dentro do typedef do PONTO, ver funcao mexe_comboio2)
+
+GABRIEL
 - spawnar comboios consoante o timer do prototipo correspondente
 - colisoes !?
 - evitar colisoes !!!?
+- um config para um mapa mais elaborado
 - fumo :D
