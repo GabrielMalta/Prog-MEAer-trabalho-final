@@ -140,7 +140,7 @@ void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_li
         novo_boio->boio.dim = aux_int[0];
         novo_boio->boio.origem = procura_ponto(aux_string[2], aux_string[3], *topo_lista_linhas);
         novo_boio->boio.tempo_spawn = aux_int[1];
-        novo_boio->boio.veloc = aux_int[2];
+        novo_boio->boio.veloc = MULT_VELOC * aux_int[2];
 
         novo_boio->pr=*topo_lista_comboios;
         *topo_lista_comboios=novo_boio;
@@ -253,190 +253,117 @@ LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMB
     fflush(stdout);
   }
   novo_graf_boio->graf.boio=comboio;
-  novo_graf_boio->graf.x[0]=comboio->origem->pt.x;
-  novo_graf_boio->graf.y[0]=comboio->origem->pt.y;
-  novo_graf_boio->graf.ultimo_ponto=comboio->origem;
-  novo_graf_boio->graf.cor[0]=comboio->cor;
-  for(i=1;i<=comboio->dim; i++){
+  for(i=0;i<comboio->dim; i++){
     novo_graf_boio->graf.cor[i]= random_cor();
     novo_graf_boio->graf.x[i]=comboio->origem->pt.x;
     novo_graf_boio->graf.y[i]=comboio->origem->pt.y;
+    novo_graf_boio->graf.ultimo_ponto[i]=comboio->origem;
   }
+  novo_graf_boio->graf.cor[0]=comboio->cor;
   novo_graf_boio->pr=lista_graf_boios;
   return novo_graf_boio;
 }
 
-LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOIOS *topo_lista_comboios){
-  LISTA_COMBOIOS *prototipo_comboio_atual;
+LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOIOS *lista_comboios){
 
-  for(prototipo_comboio_atual=topo_lista_comboios; prototipo_comboio_atual!=NULL; prototipo_comboio_atual=prototipo_comboio_atual->pr){
-    boios_graficos=cria_grafico_do_comboio(boios_graficos, &(prototipo_comboio_atual->boio));
+  for(; lista_comboios!=NULL; lista_comboios=lista_comboios->pr){
+    boios_graficos=cria_grafico_do_comboio(boios_graficos, &(lista_comboios->boio));
   }
 
   return boios_graficos;
 }
 
-LISTA_GRAF_BOIO * mexe_comboios(LISTA_GRAF_BOIO *lista_graf_boios){
-  float deltaX, deltaY, deltaX_aux, deltaY_aux;
-  float m, m_aux;
+LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
+  float deltaX, deltaY;
+  float m;
   float x_a_somar, y_a_somar;
   int i;
   LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
   LISTA_GRAF_BOIO *aux_boio = NULL, *ant_boio = NULL;
-
   for( aux_boio = lista_graf_boios; aux_boio!=NULL; aux_boio=aux_boio->pr){
-    pt1 = aux_boio->graf.ultimo_ponto;
-    pt2 = pt1->pr[0];
+    for(i=0; i<aux_boio->graf.boio->dim; i++){
+      pt1 = aux_boio->graf.ultimo_ponto[i];
 
-    if( pt1->pr[0] != NULL){
-      pt2 = pt1->pr[0];
-    }
-    else if( pt1->pr[1] != NULL){
-      pt2 = pt1->pr[1];
-    }
-    else{
-      printf("----------------------boio chegou ao fim\n");
-      fflush(stdout);
-      if(aux_boio==lista_graf_boios){
-        lista_graf_boios=aux_boio->pr;
-        free(aux_boio);
-        aux_boio=lista_graf_boios;
-      }
+      if( (pt2 = pt1->pr[0]) != NULL){}
+      else if( (pt2 = pt1->pr[1]) != NULL){}
       else{
-      ant_boio->pr = aux_boio->pr;
-      free(aux_boio);
-      aux_boio=ant_boio;
-      }
-      mostra_boios_ativos(lista_graf_boios);
-      break;
-    }
-
-    deltaX = pt2->pt.x - pt1->pt.x;
-    deltaY = pt2->pt.y - pt1->pt.y;
-
-    if (deltaX != 0){
-      m = (float) deltaY/deltaX;
-
-      x_a_somar = deltaX/abs(deltaX)  *  aux_boio->graf.boio->veloc/sqrt(m*m+1);
-      y_a_somar = m*x_a_somar;
-    }
-    else{
-      x_a_somar=0;
-      y_a_somar=deltaY/abs(deltaY) * aux_boio->graf.boio->veloc;
-    }
-
-    for(i=1; i<=aux_boio->graf.boio->dim; i++){
-      deltaX_aux = aux_boio->graf.x[i-1]-aux_boio->graf.x[i];
-      deltaY_aux = aux_boio->graf.y[i-1]-aux_boio->graf.y[i];
-      m_aux=deltaY_aux/deltaX_aux;
-      while( sqrt(deltaX_aux*deltaX_aux + deltaY_aux*deltaY_aux) > 1.9*RAIO_COMBOIO){
-        if(abs(deltaX_aux) > 0.00001){
-          aux_boio->graf.x[i]+= deltaX_aux/abs(deltaX_aux)  * 0.2/sqrt(m_aux*m_aux+1);
-          aux_boio->graf.y[i]+=m_aux * deltaX_aux/abs(deltaX_aux)  * 0.2/sqrt(m_aux*m_aux+1);
+        if(aux_boio==lista_graf_boios){
+          lista_graf_boios=aux_boio->pr;
+          free(aux_boio);
+          if( (aux_boio=lista_graf_boios) == NULL){
+            return NULL;
+          }
         }
         else{
-          aux_boio->graf.y[i]+=deltaY_aux/abs(deltaY_aux);
+        ant_boio->pr = aux_boio->pr;
+        free(aux_boio);
+        aux_boio=ant_boio;
         }
-        deltaX_aux = aux_boio->graf.x[i-1]-aux_boio->graf.x[i];
-        deltaY_aux = aux_boio->graf.y[i-1]-aux_boio->graf.y[i];
-        if(deltaX_aux != 0.0){
-          m_aux=deltaY_aux/deltaX_aux;
+        printf("----------------------boio chegou ao fim\n");
+        fflush(stdout);
+        mostra_boios_ativos(lista_graf_boios);
+        break;
+      }
+      // else continue;
+
+      if (i!=0){ //se estivermos a mexer uma carruagem
+        deltaX = aux_boio->graf.x[i] - aux_boio->graf.x[i-1];
+        deltaY = aux_boio->graf.y[i] - aux_boio->graf.y[i-1];
+
+        // e ela estiver demasiado perto da anterior, nao a mexer
+        if (sqrt(deltaX*deltaX + deltaY*deltaY) < 2.1*RAIO_COMBOIO) continue;
+      }
+
+      deltaX = pt2->pt.x - pt1->pt.x;
+      deltaY = pt2->pt.y - pt1->pt.y;
+
+      if (deltaX != 0){
+        m = (float) deltaY/deltaX;
+
+        x_a_somar = deltaX/abs(deltaX)  *  aux_boio->graf.boio->veloc/sqrt(m*m+1);
+        y_a_somar = m*x_a_somar;
+      }
+      else{
+        x_a_somar=0;
+        y_a_somar=deltaY/abs(deltaY) * aux_boio->graf.boio->veloc;
+      }
+
+      aux_boio->graf.x[i] += x_a_somar;
+      aux_boio->graf.y[i] += y_a_somar;
+
+      deltaX = pt2->pt.x - aux_boio->graf.x[i]; //reciclar variaveis
+      deltaY = pt2->pt.y - aux_boio->graf.y[i]; //para salvar o ambiente
+
+      if( sqrt(deltaY*deltaY + deltaX*deltaX) < aux_boio->graf.boio->veloc){
+        aux_boio->graf.x[i] = pt2->pt.x;
+        aux_boio->graf.y[i] = pt2->pt.y;
+        aux_boio->graf.ultimo_ponto[i] = pt2;
+        if(i!=0) aux_boio->graf.cor[i] = esvazia_vagao(pt2->pt, aux_boio->graf.cor[i]);
+      }
+
+      if (i!=0){
+        deltaX = aux_boio->graf.x[i] - aux_boio->graf.x[i-1];
+        deltaY = aux_boio->graf.y[i] - aux_boio->graf.y[i-1];
+        if(sqrt(deltaX*deltaX + deltaY*deltaY) > 2.2*RAIO_COMBOIO){
+          //se a carruagem que acabamos de mexer ainda estiver demasiado longe, vamos mexê-la outra vez
+          i--;
         }
       }
     }
-
-    aux_boio->graf.x[0] += x_a_somar;
-    aux_boio->graf.y[0] += y_a_somar;
-
-    deltaX = pt2->pt.x - aux_boio->graf.x[0]; //reciclar variaveis
-    deltaY = pt2->pt.y - aux_boio->graf.y[0]; //para salvar o ambiente
-
-    if( deltaY * deltaY + deltaX * deltaX < aux_boio->graf.boio->veloc * aux_boio->graf.boio->veloc ){
-      aux_boio->graf.x[0] = pt2->pt.x;
-      aux_boio->graf.y[0] = pt2->pt.y;
-      aux_boio->graf.ultimo_ponto = pt2;
-    }
-    for(i=aux_boio->graf.boio->dim; i>=0; i--){
-    filledCircleColor(pintor, aux_boio->graf.x[i], aux_boio->graf.y[i], RAIO_COMBOIO, aux_boio->graf.cor[i]);
-    aacircleColor(pintor, aux_boio->graf.x[i], aux_boio->graf.y[i], RAIO_COMBOIO, hexdec_PRETO);
-  }
-
     ant_boio = aux_boio;
   }
   return lista_graf_boios;
 }
 
-// LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
-//   float deltaX, deltaY;
-//   float m;
-//   float x_a_somar, y_a_somar;
-//   int i;
-//   LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
-//   LISTA_GRAF_BOIO *aux_boio = NULL, *ant_boio = NULL;
-//
-//   for( aux_boio = lista_graf_boios; aux_boio!=NULL; aux_boio=aux_boio->pr){
-//     for(i=0; i<aux_boio->graf.boio->dim; i++){
-//       pt1 = aux_boio->graf.ultimo_ponto[i];
-//       pt2 = pt1->pr[i];
-//
-//       if( pt1->pr[0] != NULL){
-//         pt2 = pt1->pr[0];
-//       }
-//       else if( pt1->pr[1] != NULL){
-//         pt2 = pt1->pr[1];
-//       }
-//       else if(i == aux_boio->graf.boio->dim - 1){
-//         printf("----------------------boio chegou ao fim\n");
-//         fflush(stdout);
-//         if(aux_boio==lista_graf_boios){
-//           lista_graf_boios=aux_boio->pr;
-//           free(aux_boio);
-//           aux_boio=lista_graf_boios;
-//         }
-//         else{
-//         ant_boio->pr = aux_boio->pr;
-//         free(aux_boio);
-//         aux_boio=ant_boio;
-//         }
-//         mostra_boios_ativos(lista_graf_boios);
-//         break;
-//       }
-//
-//       deltaX = pt2->pt.x - pt1->pt.x;
-//       deltaY = pt2->pt.y - pt1->pt.y;
-//
-//       if (deltaX != 0){
-//         m = (float) deltaY/deltaX;
-//
-//         x_a_somar = deltaX/abs(deltaX)  *  aux_boio->graf.boio->veloc/sqrt(m*m+1);
-//         y_a_somar = m*x_a_somar;
-//       }
-//       else{
-//         x_a_somar=0;
-//         y_a_somar=deltaY/abs(deltaY) * aux_boio->graf.boio->veloc;
-//       }
-//
-//       aux_boio->graf.x[0] += x_a_somar;
-//       aux_boio->graf.y[0] += y_a_somar;
-//
-//       deltaX = pt2->pt.x - aux_boio->graf.x[0]; //reciclar variaveis
-//       deltaY = pt2->pt.y - aux_boio->graf.y[0]; //para salvar o ambiente
-//
-//       if( deltaY * deltaY + deltaX * deltaX < aux_boio->graf.boio->veloc * aux_boio->graf.boio->veloc ){
-//         aux_boio->graf.x[0] = pt2->pt.x;
-//         aux_boio->graf.y[0] = pt2->pt.y;
-//         aux_boio->graf.ultimo_ponto = pt2;
-//       }
-//       for(i=aux_boio->graf.boio->dim; i>=0; i--){
-//       filledCircleColor(pintor, aux_boio->graf.x[i], aux_boio->graf.y[i], RAIO_COMBOIO, aux_boio->graf.cor[i]);
-//       aacircleColor(pintor, aux_boio->graf.x[i], aux_boio->graf.y[i], RAIO_COMBOIO, hexdec_PRETO);
-//     }
-//
-//       ant_boio = aux_boio;
-//     }
-//   }
-//   return lista_graf_boios;
-// }
+void desenha_comboios(LISTA_GRAF_BOIO *lista_graf_boios){
+  int i;
+  for( ; lista_graf_boios!=NULL; lista_graf_boios=lista_graf_boios->pr){
+    for(i=0; i<lista_graf_boios->graf.boio->dim; i++){
+      filledCircleColor(pintor, lista_graf_boios->graf.x[i], lista_graf_boios->graf.y[i], RAIO_COMBOIO, lista_graf_boios->graf.cor[i]);
+      aacircleColor(pintor, lista_graf_boios->graf.x[i], lista_graf_boios->graf.y[i], RAIO_COMBOIO, hexdec_PRETO);
+    }
+  }
+}
 
 void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
   int i=1;
@@ -450,7 +377,11 @@ void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
   }
 }
 
+Uint32 esvazia_vagao(PONTO pt, Uint32 cor){
+  if (cor == pt.cor) return hexdec_CINZENTO;
+  return cor;
+}
+
 void render(void){
   SDL_RenderPresent(pintor);
-  SDL_Delay(10);
 }
