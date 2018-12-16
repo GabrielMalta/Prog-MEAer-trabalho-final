@@ -284,8 +284,8 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
     for(i=0; i<aux_boio->graf.boio->dim; i++){
       pt1 = aux_boio->graf.ultimo_ponto[i];
 
-      if( (pt2 = pt1->pr[0]) != NULL){}
-      else if( (pt2 = pt1->pr[1]) != NULL){}
+      if( (pt2 = pt1->pr[pt1->pt.alavanca]) != NULL){}
+      else if( (pt2 = pt1->pr[1-pt1->pt.alavanca]) != NULL){}
       else{
         if(aux_boio==lista_graf_boios){
           lista_graf_boios=aux_boio->pr;

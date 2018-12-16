@@ -47,6 +47,7 @@ typedef struct{
   int x, y;
   Uint32 cor;
   int tipo;
+  int alavanca;
 } PONTO;
 
 typedef struct node{
@@ -123,8 +124,6 @@ LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_
 LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio);
 
 LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOIOS *lista_comboios);
-
-// LISTA_GRAF_BOIO * mexe_comboios(LISTA_GRAF_BOIO *lista_graf_boios);
 
 LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios);
 
