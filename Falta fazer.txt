@@ -2,11 +2,8 @@
 - possibilidade de eliminar comboios e linhas da memoria apos a leitura do ficheiro
 - Botoes para fechar janela
 - botoes para pausar a simulacao
-- escolher o caminho na ferrrovia
+- escolher o caminho na ferrrovia (clicando no ponto)
 - um config para um mapa mais elaborado
-- representacao grafica carruagens
-- rand()domizar a cor das carruagens à partida
-- esvaziar carga ao passar nas estacoes
 - spawnar comboios consoante o timer do prototipo correspondente
 - colisoes !?
 - evitar colisoes !!!?
