@@ -28,13 +28,11 @@ int main(int argc, char *argv[]){
     atualiza_render(topo_lista_linhas);
     desenha_comboios(boios_graficos);
     SDL_PollEvent( &event );
-    if ((event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) || event.type == SDL_QUIT) {
-      fim = 1;
-    }
+    fim = eventos_sdl(event, topo_lista_linhas, boios_graficos);
     printf("\rA esperar%d ms", TICKS_p_FRAME - SDL_GetTicks() + temporizador);
     fflush(stdout);
     SDL_Delay(TICKS_p_FRAME - SDL_TICKS_PASSED(SDL_GetTicks(), temporizador));
-    render();
+    SDL_RenderPresent(pintor);
 	}
   SDL_Quit();
 

@@ -1,8 +1,5 @@
 #include "comboios.h"
 
-SDL_Window* janela = 0;
-SDL_Renderer* pintor = 0;
-
 void mostra_ponto(PONTO pt){
   char tipo[8];
   switch(pt.tipo){
@@ -209,22 +206,62 @@ void desenha_pontos(LISTA_LINHAS *topo_lista_linhas){
         filledCircleColor(pintor, ap->pt.x, ap->pt.y, 2, ap->pt.cor);
         aacircleColor(pintor, ap->pt.x, ap->pt.y, 2, hexdec_PRETO);
       }
+
     }
   }
 }
 
+void desenha_triangulo(float x[3], float y[3]){
+  SDL_SetRenderDrawColor(pintor, 0, 0, 255, 255);
+
+  SDL_RenderDrawLine(pintor, x[0], y[0], x[1], y[1]);
+  SDL_RenderDrawLine(pintor, x[1], y[1], x[2], y[2]);
+  SDL_RenderDrawLine(pintor, x[2], y[2], x[0], y[0]);
+}
+
 void desenha_ligacoes(LISTA_LINHAS *topo_lista_linhas){
   LISTA_PONTOS *ap;
+  int deltaX, deltaY;
+  float m;
+  float d=8, h=10, l=8;
+  float base_flechaX, base_flechaY;
+  float cantos_trianguloX[3], cantos_trianguloY[3];
 
   SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
   for(; topo_lista_linhas !=NULL; topo_lista_linhas=topo_lista_linhas->pr){
     for(ap = topo_lista_linhas->linha.l; ap!= NULL; ap=ap->pr[0]){
+
       if( ap->pr[0] != NULL){
         SDL_RenderDrawLine(pintor, ap->pt.x, (ap->pt.y), ap->pr[0]->pt.x, (ap->pr[0]->pt.y));
       }
       if( ap->pr[1] != NULL){
         SDL_RenderDrawLine(pintor, ap->pt.x, (ap->pt.y), ap->pr[1]->pt.x, (ap->pr[1]->pt.y));
       }
+
+      if(ap->pr[0] == NULL || ap->pr[1] == NULL) continue;
+
+      deltaX = ap->pt.x - ap->pr[ap->pt.alavanca]->pt.x;
+      deltaY = ap->pt.y - ap->pr[ap->pt.alavanca]->pt.y;
+      m= (float) deltaY/deltaX;
+      if (abs(deltaX) > 0){
+        base_flechaX = ap->pt.x-deltaX/abs(deltaX)*d/sqrt(m*m+1);
+        base_flechaY = ap->pt.y-m*(base_flechaX - ap->pt.x);
+      }
+      else{
+        base_flechaX = ap->pt.x;
+        base_flechaY = deltaY/abs(deltaY)*d;
+      }
+      cantos_trianguloX[0]=ap->pt.x-deltaX/abs(deltaX)*(d+h)/sqrt(m*m+1);
+      cantos_trianguloY[0]=ap->pt.y-m*(cantos_trianguloX[0]-ap->pt.x);
+
+      cantos_trianguloX[1]=base_flechaX-sqrt(m*m*l*l/(4*(m*m+1)));
+      cantos_trianguloY[1]=base_flechaY+1/m*sqrt(m*m*l*l/(4*(m*m+1)));
+
+      cantos_trianguloX[2]=base_flechaX+sqrt(m*m*l*l/(4*(m*m+1)));
+      cantos_trianguloY[2]=base_flechaY-1/m*sqrt(m*m*l*l/(4*(m*m+1)));
+
+
+      desenha_triangulo(cantos_trianguloX, cantos_trianguloY);
     }
   }
 }
@@ -382,6 +419,43 @@ Uint32 esvazia_vagao(PONTO pt, Uint32 cor){
   return cor;
 }
 
-void render(void){
-  SDL_RenderPresent(pintor);
+LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y){
+  LISTA_PONTOS *aux=NULL;
+  int deltaX, deltaY;
+
+  for(; topo_lista_linhas!=NULL; topo_lista_linhas=topo_lista_linhas->pr){
+
+    for(aux=topo_lista_linhas->linha.l; aux!=NULL; aux=aux->pr[0]){
+      deltaX = aux->pt.x - x;
+      deltaY = aux->pt.y - y;
+      if(sqrt(deltaX*deltaX + deltaY*deltaY) < RAIO_ESTACAO){
+        return aux;
+      }
+    }
+  }
+  return NULL;
+}
+
+int eventos_sdl(SDL_Event event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios){
+  LISTA_PONTOS *aux_pt;
+  int x=0, y=0;
+
+  switch(event.type){
+    case SDL_MOUSEBUTTONDOWN:
+      SDL_GetMouseState( &x, &y);
+      printf("%d,%d\n", x,y);
+      fflush(stdout);
+      aux_pt = procura_ponto_por_coords(topo_lista_linhas, x, y);
+      if (aux_pt !=NULL){
+        aux_pt->pt.alavanca = 1 - aux_pt->pt.alavanca;
+      }
+      return 0;
+    case SDL_KEYDOWN:
+      switch(event.key.keysym.sym){
+        case SDLK_ESCAPE: return 1;
+        // case SDLK_SPACE: pausar a simulacao
+      }
+    case SDL_QUIT: return 1;
+  }
+  return 0;
 }
