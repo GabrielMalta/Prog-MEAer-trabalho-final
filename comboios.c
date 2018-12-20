@@ -211,26 +211,18 @@ void desenha_pontos(LISTA_LINHAS *topo_lista_linhas){
   }
 }
 
-void desenha_triangulo(float x[3], float y[3]){
-  SDL_SetRenderDrawColor(pintor, 0, 0, 255, 255);
-
-  SDL_RenderDrawLine(pintor, x[0], y[0], x[1], y[1]);
-  SDL_RenderDrawLine(pintor, x[1], y[1], x[2], y[2]);
-  SDL_RenderDrawLine(pintor, x[2], y[2], x[0], y[0]);
-}
-
 void desenha_ligacoes(LISTA_LINHAS *topo_lista_linhas){
   LISTA_PONTOS *ap;
   int deltaX, deltaY;
   float m;
-  float d=8, h=10, l=8;
+  float d=8, h=12, l=10; //distancia, comprimento e largura da flecha
   float base_flechaX, base_flechaY;
-  float cantos_trianguloX[3], cantos_trianguloY[3];
+  Sint16 cantos_trianguloX[3], cantos_trianguloY[3];
 
-  SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
   for(; topo_lista_linhas !=NULL; topo_lista_linhas=topo_lista_linhas->pr){
     for(ap = topo_lista_linhas->linha.l; ap!= NULL; ap=ap->pr[0]){
 
+      SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
       if( ap->pr[0] != NULL){
         SDL_RenderDrawLine(pintor, ap->pt.x, (ap->pt.y), ap->pr[0]->pt.x, (ap->pr[0]->pt.y));
       }
@@ -240,8 +232,8 @@ void desenha_ligacoes(LISTA_LINHAS *topo_lista_linhas){
 
       if(ap->pr[0] == NULL || ap->pr[1] == NULL) continue;
 
-      deltaX = ap->pt.x - ap->pr[ap->pt.alavanca]->pt.x;
-      deltaY = ap->pt.y - ap->pr[ap->pt.alavanca]->pt.y;
+      deltaX = ap->pt.x - ap->pr[1-ap->pt.alavanca]->pt.x;
+      deltaY = ap->pt.y - ap->pr[1-ap->pt.alavanca]->pt.y;
       m= (float) deltaY/deltaX;
       if (abs(deltaX) > 0){
         base_flechaX = ap->pt.x-deltaX/abs(deltaX)*d/sqrt(m*m+1);
@@ -255,13 +247,14 @@ void desenha_ligacoes(LISTA_LINHAS *topo_lista_linhas){
       cantos_trianguloY[0]=ap->pt.y-m*(cantos_trianguloX[0]-ap->pt.x);
 
       cantos_trianguloX[1]=base_flechaX-sqrt(m*m*l*l/(4*(m*m+1)));
-      cantos_trianguloY[1]=base_flechaY+1/m*sqrt(m*m*l*l/(4*(m*m+1)));
+      cantos_trianguloY[1]=base_flechaY-1/m*sqrt(m*m*l*l/(4*(m*m+1)));
 
       cantos_trianguloX[2]=base_flechaX+sqrt(m*m*l*l/(4*(m*m+1)));
-      cantos_trianguloY[2]=base_flechaY-1/m*sqrt(m*m*l*l/(4*(m*m+1)));
+      cantos_trianguloY[2]=base_flechaY+1/m*sqrt(m*m*l*l/(4*(m*m+1)));
 
-
-      desenha_triangulo(cantos_trianguloX, cantos_trianguloY);
+      SDL_SetRenderDrawColor(pintor, 0, 0, 255, 255);
+      SDL_RenderDrawLine(pintor, base_flechaX, base_flechaY, ap->pt.x, ap->pt.y);
+      filledPolygonColor(pintor,cantos_trianguloX, cantos_trianguloY, 3, hexdec_AZUL);
     }
   }
 }
@@ -310,6 +303,23 @@ LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOI
   return boios_graficos;
 }
 
+LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar){
+  LISTA_GRAF_BOIO *aux_boio, *ant_boio=NULL;
+
+  for( aux_boio = lista_graf_boios; aux_boio!=eliminar && aux_boio!=NULL; aux_boio=aux_boio->pr) {ant_boio=aux_boio;}
+
+  if(aux_boio == NULL) return lista_graf_boios;
+
+  if(ant_boio == NULL) lista_graf_boios=aux_boio->pr;
+  else ant_boio->pr = aux_boio->pr;
+
+  free(aux_boio);
+  printf("----------------------boio removido\n");
+  fflush(stdout);
+  mostra_boios_ativos(lista_graf_boios);
+  return lista_graf_boios;
+}
+
 LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
   float deltaX, deltaY;
   float m;
@@ -321,24 +331,10 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
     for(i=0; i<aux_boio->graf.boio->dim; i++){
       pt1 = aux_boio->graf.ultimo_ponto[i];
 
-      if( (pt2 = pt1->pr[pt1->pt.alavanca]) != NULL){}
-      else if( (pt2 = pt1->pr[1-pt1->pt.alavanca]) != NULL){}
+      if( (pt2 = pt1->pr[aux_boio->graf.alavanca[i]]) != NULL){}
+      else if( (pt2 = pt1->pr[1-aux_boio->graf.alavanca[i]]) != NULL){}
       else{
-        if(aux_boio==lista_graf_boios){
-          lista_graf_boios=aux_boio->pr;
-          free(aux_boio);
-          if( (aux_boio=lista_graf_boios) == NULL){
-            return NULL;
-          }
-        }
-        else{
-        ant_boio->pr = aux_boio->pr;
-        free(aux_boio);
-        aux_boio=ant_boio;
-        }
-        printf("----------------------boio chegou ao fim\n");
-        fflush(stdout);
-        mostra_boios_ativos(lista_graf_boios);
+        lista_graf_boios = remove_graf_boio(lista_graf_boios, aux_boio);
         break;
       }
       // else continue;
@@ -375,7 +371,10 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
         aux_boio->graf.x[i] = pt2->pt.x;
         aux_boio->graf.y[i] = pt2->pt.y;
         aux_boio->graf.ultimo_ponto[i] = pt2;
-        if(i!=0) aux_boio->graf.cor[i] = esvazia_vagao(pt2->pt, aux_boio->graf.cor[i]);
+        if(i==0) aux_boio->graf.alavanca[i] = pt2->pt.alavanca;
+        if(i!=0) {
+        aux_boio->graf.cor[i] = esvazia_vagao(pt2->pt, aux_boio->graf.cor[i]);
+        aux_boio->graf.alavanca[i] = aux_boio->graf.alavanca[i-1];}
       }
 
       if (i!=0){
@@ -428,7 +427,7 @@ LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, 
     for(aux=topo_lista_linhas->linha.l; aux!=NULL; aux=aux->pr[0]){
       deltaX = aux->pt.x - x;
       deltaY = aux->pt.y - y;
-      if(sqrt(deltaX*deltaX + deltaY*deltaY) < RAIO_ESTACAO){
+      if(deltaX*deltaX + deltaY*deltaY < RAIO_ESTACAO*RAIO_ESTACAO){
         return aux;
       }
     }
@@ -436,26 +435,28 @@ LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, 
   return NULL;
 }
 
-int eventos_sdl(SDL_Event event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios){
+int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios){
   LISTA_PONTOS *aux_pt;
   int x=0, y=0;
 
-  switch(event.type){
+  switch(event->type){
+    case SDL_MOUSEMOTION:
+    return 0;
     case SDL_MOUSEBUTTONDOWN:
       SDL_GetMouseState( &x, &y);
-      printf("%d,%d\n", x,y);
-      fflush(stdout);
       aux_pt = procura_ponto_por_coords(topo_lista_linhas, x, y);
       if (aux_pt !=NULL){
         aux_pt->pt.alavanca = 1 - aux_pt->pt.alavanca;
       }
       return 0;
     case SDL_KEYDOWN:
-      switch(event.key.keysym.sym){
+      switch(event->key.keysym.sym){
         case SDLK_ESCAPE: return 1;
+        default: return 0;
         // case SDLK_SPACE: pausar a simulacao
       }
     case SDL_QUIT: return 1;
+    default: return 0;
   }
   return 0;
 }

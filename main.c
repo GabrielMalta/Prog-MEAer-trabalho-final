@@ -10,7 +10,7 @@ int main(int argc, char *argv[]){
   int dimensaoX, dimensaoY;
   SDL_Event event;
   Uint32 temporizador;
-  int fim = 0;
+  int fim = 0, i;
 
   srand((unsigned long) &fim);
 
@@ -27,12 +27,11 @@ int main(int argc, char *argv[]){
     boios_graficos = mexe_comboios2(boios_graficos);
     atualiza_render(topo_lista_linhas);
     desenha_comboios(boios_graficos);
-    SDL_PollEvent( &event );
-    fim = eventos_sdl(event, topo_lista_linhas, boios_graficos);
     printf("\rA esperar%d ms", TICKS_p_FRAME - SDL_GetTicks() + temporizador);
     fflush(stdout);
     SDL_Delay(TICKS_p_FRAME - SDL_TICKS_PASSED(SDL_GetTicks(), temporizador));
     SDL_RenderPresent(pintor);
+    while (SDL_PollEvent(&event)) fim = eventos_sdl(&event, topo_lista_linhas, boios_graficos);
 	}
   SDL_Quit();
 

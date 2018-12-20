@@ -87,6 +87,7 @@ typedef struct grafico_comboio{
   float x[4], y[4];
   Uint32 cor[4];
   LISTA_PONTOS *ultimo_ponto[4];
+  int alavanca[4];
 } GRAF_BOIO;
 
 
@@ -133,8 +134,10 @@ void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
 
 Uint32 esvazia_vagao(PONTO pt, Uint32 cor);
 
+LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar);
+
 LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y);
 
-int eventos_sdl(SDL_Event event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios);
+int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios);
 
 // #endif
