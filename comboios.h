@@ -9,11 +9,13 @@
 #include <SDL.h>
 #include <SDL2_gfxPrimitives.h>
 
+SDL_Window* janela;
+SDL_Renderer* pintor;
 
-// SDL_Surface *superficie = 0;
 #define FPS 30
 #define TICKS_p_FRAME 1000/FPS
 
+#define RAIO_ESTACAO 10
 #define RAIO_COMBOIO 7
 #define MULT_VELOC 0.7
 
@@ -85,6 +87,7 @@ typedef struct grafico_comboio{
   float x[4], y[4];
   Uint32 cor[4];
   LISTA_PONTOS *ultimo_ponto[4];
+  int alavanca[4];
 } GRAF_BOIO;
 
 
@@ -131,6 +134,10 @@ void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
 
 Uint32 esvazia_vagao(PONTO pt, Uint32 cor);
 
-void render(void);
+LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar);
+
+LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y);
+
+int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios);
 
 // #endif
