@@ -373,7 +373,7 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
         aux_boio->graf.ultimo_ponto[i] = pt2;
         if(i==0) aux_boio->graf.alavanca[i] = pt2->pt.alavanca;
         if(i!=0) {
-        aux_boio->graf.cor[i] = esvazia_vagao(pt2->pt, aux_boio->graf.cor[i]);
+        if (aux_boio->graf.cor[i] == pt2->pt.cor) aux_boio->graf.cor[i] == hexdec_CINZENTO;
         aux_boio->graf.alavanca[i] = aux_boio->graf.alavanca[i-1];}
       }
 
@@ -411,11 +411,6 @@ void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
     fflush(stdout);
     lista_graf_boios=lista_graf_boios->pr;
   }
-}
-
-Uint32 esvazia_vagao(PONTO pt, Uint32 cor){
-  if (cor == pt.cor) return hexdec_CINZENTO;
-  return cor;
 }
 
 LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y){
@@ -459,4 +454,229 @@ int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BO
     default: return 0;
   }
   return 0;
+}
+
+void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios){
+  char comboio[100];
+  int i=0;
+  char leitura[100];
+  LISTA_COMBOIOS *aux=topo_lista_comboios;
+    while(1){
+      system("clear");
+      i=0;
+      aux=topo_lista_comboios;
+      printf("\nLista de comboios:\n");
+      for(;aux!=NULL;aux=aux->pr)
+        printf("COMBOIO %s\n", aux->boio.id);
+      printf("\nQual o comboio a mostrar?(Fim para sair)\n");
+      scanf("%s", comboio);
+      if (strcmp(comboio, "Fim")==0)
+        break;
+      if (strlen(comboio)>2){
+        printf("Erro, ID invalido\n");
+        i=1;
+      }
+      aux=topo_lista_comboios;
+      for(;aux!=NULL;aux=aux->pr){
+        if(strcmp(comboio, aux->boio.id)==0){
+          mostra_boio(aux->boio);
+          i=1;
+          }
+      }
+      if(i==0)
+        printf("Erro, comboio inexistente\n");
+      getchar();
+      while(getchar()!='\n');
+    }
+}
+
+LISTA_COMBOIOS * opcao_elimina_comboio(LISTA_COMBOIOS *topo_lista_comboios){
+  char comboio[100];
+  int i=0;
+  LISTA_COMBOIOS *aux=topo_lista_comboios, *anterior=NULL;
+    while(1){
+      system("clear");
+      i=0;
+      aux=topo_lista_comboios;
+      printf("\nLista de comboios:\n");
+      for(;aux!=NULL;aux=aux->pr)
+        printf("COMBOIO %s\n", aux->boio.id);
+      printf("\nQual o comboio a eliminar?(Fim para sair)\n");
+      scanf("%s", comboio);
+      if (strcmp(comboio, "Fim")==0)
+        break;
+      if (strlen(comboio)>2){
+        printf("Erro, ID invalido\n");
+        i=1;
+      }
+      aux=topo_lista_comboios;
+      for(;aux!=NULL;aux=aux->pr){
+        if(strcmp(comboio, aux->boio.id)==0){
+          i=1;
+          if (anterior == NULL){
+            topo_lista_comboios = aux->pr;
+            free(aux);
+          }
+          else{
+            anterior->pr=aux->pr;
+            free(aux);
+          }
+        }
+        anterior = aux;
+      }
+      if(i==0)
+        printf("Erro, comboio inexistente\n");
+      getchar();
+      while(getchar()!='\n');
+    }
+    return topo_lista_comboios;
+}
+
+void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas){
+  char linha[100];
+  int i=0;
+  LISTA_LINHAS *aux = topo_lista_linhas;
+  LISTA_PONTOS *auxiliar=NULL;
+  while (1){
+    system("clear");
+    i=0;
+    aux = topo_lista_linhas;
+    printf("\nLista de linhas:\n");
+      for(;aux!=NULL;aux=aux->pr){
+        printf("LINHA %s\n", aux->linha.id);
+      }
+      printf("\nQual a linha a mostrar?(Fim para sair)\n");
+      scanf("%s", linha);
+      if (strcmp(linha, "Fim")==0)
+        break;
+      if (strlen(linha)>4){
+        printf("Erro, ID invalido\n");
+        i=1;
+      }
+      aux = topo_lista_linhas;
+      for(;aux!=NULL;aux=aux->pr){
+        if(strcmp(linha, aux->linha.id)==0){
+          i=1;
+          for(auxiliar=aux->linha.l; auxiliar!=NULL; auxiliar = auxiliar->pr[0]){
+            mostra_ponto(auxiliar->pt);
+          }
+        }
+      }
+      if (i==0)
+        printf("Erro, linha inexistente\n");
+      getchar();
+      while(getchar()!='\n');
+  }
+}
+
+LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas){
+  char linha[100];
+  int i=0;
+  LISTA_LINHAS *aux = topo_lista_linhas, *anterior = NULL;
+  LISTA_PONTOS *elimina_lista_pontos;
+  while (1){
+    system("clear");
+    i=0;
+    aux = topo_lista_linhas;
+    printf("\nLista de linhas:\n");
+      for(;aux!=NULL;aux=aux->pr){
+        printf("LINHA %s\n", aux->linha.id);
+      }
+
+      printf("\nQual a linha a eliminar?(Fim para sair)\n");
+      scanf("%s", linha);
+
+      if (strcmp(linha, "Fim")==0)
+        break;
+
+      if (strlen(linha)>4){
+        printf("Erro, ID invalido\n");
+        i=1;
+      }
+
+      aux = topo_lista_linhas;
+
+      for(;aux!=NULL;aux=aux->pr){
+        if(strcmp(linha, aux->linha.id)==0){
+          i=1;
+          for(; aux->linha.l!=NULL; aux->linha.l = aux->linha.l->pr[0]){
+            elimina_lista_pontos = aux->linha.l;
+            free(elimina_lista_pontos);
+          }
+          if (anterior == NULL){
+             topo_lista_linhas=aux->pr;
+             free(aux);
+          }
+          else{
+            anterior->pr=aux->pr;
+            free(aux);
+          }
+        }
+        anterior = aux;
+      }
+      if (i==0)
+        printf("Erro, linha inexistente\n");
+      getchar();
+      while(getchar()!='\n');
+  }
+  return topo_lista_linhas;
+}
+
+void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas, int dimensaoX, int dimensaoY){
+  LISTA_GRAF_BOIO *boios_graficos = NULL;
+  SDL_Event event;
+  Uint32 temporizador;
+  int fim=0;
+  boios_graficos = inicializa_boios(boios_graficos, topo_lista_comboios);
+
+  mostra_boios_ativos(boios_graficos);
+  if ( inicializa_janela(dimensaoX,dimensaoY) == 0 ){
+    exit(0);
+  }
+
+  while (fim != 1){
+    temporizador = SDL_GetTicks();
+    boios_graficos = mexe_comboios2(boios_graficos);
+    atualiza_render(topo_lista_linhas);
+    desenha_comboios(boios_graficos);
+    printf("\rA esperar%d ms", TICKS_p_FRAME - SDL_GetTicks() + temporizador);
+    fflush(stdout);
+    SDL_Delay(TICKS_p_FRAME - SDL_TICKS_PASSED(SDL_GetTicks(), temporizador));
+    SDL_RenderPresent(pintor);
+    while (SDL_PollEvent(&event)) fim = eventos_sdl(&event, topo_lista_linhas, boios_graficos);
+	}
+  SDL_Quit();
+}
+
+LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS * topo_lista_linhas){
+  LISTA_COMBOIOS *novo_boio = NULL;
+  char string_id[3], string_cor[100], string_linha[5], string_ponto[5];
+  int dim, tempo_spawn, velocidade;
+
+  printf("Qual o id do comboio?(max 2 carateres)");
+  scanf("%s", string_id);
+  printf("Qual a cor do comboio?");
+  scanf("%s", string_cor);
+  printf("Quantas carruagens?(max 3)");
+  scanf("%d", &dim);
+  printf("Velocidade?");
+  scanf("%d", &velocidade);
+  printf("Tempo de spawn?");
+  scanf("%d", &tempo_spawn);
+  printf("Qual a linha e ponto de origem?");
+  scanf("%s %s", string_linha, string_ponto);
+
+
+  novo_boio = (LISTA_COMBOIOS*) calloc(1, sizeof(LISTA_COMBOIOS));
+  strcpy(novo_boio->boio.id, string_id);
+  novo_boio->boio.cor = codigo_cor(string_cor);
+  novo_boio->boio.dim =dim+1;
+  novo_boio->boio.origem = procura_ponto(string_linha, string_ponto, topo_lista_linhas);
+  novo_boio->boio.tempo_spawn = tempo_spawn;
+  novo_boio->boio.veloc = MULT_VELOC * velocidade;
+
+  novo_boio->pr=topo_lista_comboios;
+  topo_lista_comboios=novo_boio;
+
+  return topo_lista_comboios;
 }
