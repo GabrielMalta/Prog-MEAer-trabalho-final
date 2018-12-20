@@ -132,8 +132,6 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios);
 
 void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
 
-Uint32 esvazia_vagao(PONTO pt, Uint32 cor);
-
 void render(void);
 
 void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios);
@@ -144,6 +142,6 @@ void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas);
 
 LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas);
 
-void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas, int dimensaoX, int dimensaoY, int fim);
+void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas, int dimensaoX, int dimensaoY);
 
 LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS * topo_lista_linhas);

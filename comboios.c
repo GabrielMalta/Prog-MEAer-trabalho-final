@@ -314,7 +314,7 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
         aux_boio->graf.x[i] = pt2->pt.x;
         aux_boio->graf.y[i] = pt2->pt.y;
         aux_boio->graf.ultimo_ponto[i] = pt2;
-        if(i!=0) aux_boio->graf.cor[i] = esvazia_vagao(pt2->pt, aux_boio->graf.cor[i]);
+        if(i!=0 && aux_boio->graf.cor[i] == pt2->pt.cor) aux_boio->graf.cor[i] = hexdec_CINZENTO;
       }
 
       if (i!=0){
@@ -351,15 +351,6 @@ void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
     fflush(stdout);
     lista_graf_boios=lista_graf_boios->pr;
   }
-}
-
-Uint32 esvazia_vagao(PONTO pt, Uint32 cor){
-  if (cor == pt.cor) return hexdec_CINZENTO;
-  return cor;
-}
-
-void render(void){
-  SDL_RenderPresent(pintor);
 }
 
 void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios){
@@ -552,11 +543,13 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas){
   return topo_lista_linhas;
 }
 
-void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas, int dimensaoX, int dimensaoY, int fim){
+void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas, int dimensaoX, int dimensaoY){
   LISTA_GRAF_BOIO *boios_graficos = NULL;
   SDL_Event event;
   Uint32 temporizador;
+  int fim=0;
   boios_graficos = inicializa_boios(boios_graficos, topo_lista_comboios);
+
   mostra_boios_ativos(boios_graficos);
   if ( inicializa_janela(dimensaoX,dimensaoY) == 0 ){
     exit(0);
@@ -574,7 +567,7 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
     printf("\rA esperar%d ms", TICKS_p_FRAME - SDL_GetTicks() + temporizador);
     fflush(stdout);
     SDL_Delay(TICKS_p_FRAME - SDL_TICKS_PASSED(SDL_GetTicks(), temporizador));
-    render();
+    SDL_RenderPresent(pintor);
 	}
   SDL_Quit();
 }
