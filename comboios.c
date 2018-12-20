@@ -1,17 +1,77 @@
 #include "comboios.h"
 
-void mostra_ponto(PONTO pt){
-  char tipo[8];
-  switch(pt.tipo){
-    case 0: strcpy(tipo, "Erro");      break;
-    case 1: strcpy(tipo, "Estacao");  break;
-    case 2: strcpy(tipo, "Entrada");  break;
-    case 3: strcpy(tipo, "Saida");    break;
-    case 4: strcpy(tipo, "Via");    break;
-    default: printf("Erro traducao de tipo\n"); break;
+// SDL_Window* janela = 0;
+// SDL_Renderer* pintor = 0;
+
+void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas, int *dim_X, int *dim_Y, char *nome_ficheiro){
+  FILE *config = fopen(nome_ficheiro, "r");
+  LISTA_LINHAS *nova_linha;
+  LISTA_PONTOS *aux_pt = NULL, *atual=NULL;
+  LISTA_COMBOIOS *novo_boio = NULL;
+
+  char leitura[100];
+  char aux_string[6][10];
+  int aux_int[5];
+
+  if(config==NULL){
+    printf("Erro de abertura de config;\n\"%s\" nao encontrado\n", nome_ficheiro);
+    printf("Utilizacao: ./comboios <ficheiro.txt>\n");
+    exit(0);
   }
-  printf("\nPonto: %s\nTipo: %s\nCor: %s\n", pt.id, tipo, cor_codigo(pt.cor));
-  fflush (stdout);
+
+  while( fgets(leitura, 100, config) != NULL){
+    if ( (leitura[0] >= '0' && leitura[0] <='9') || (leitura[0] >= 'A' && leitura[0] <='Z') ){
+      if (sscanf(leitura, "%d %d", aux_int, aux_int+1) == 2){
+        *dim_X = aux_int[0];
+        *dim_Y = aux_int[1];
+      }
+      //se for linha
+      else if (sscanf(leitura, "LINHA: %s", aux_string[0]) == 1){
+
+        nova_linha = (LISTA_LINHAS*) calloc(1, sizeof(LISTA_LINHAS));
+        strcpy(nova_linha->linha.id, aux_string[0]);
+        nova_linha->pr=*topo_lista_linhas;
+        *topo_lista_linhas=nova_linha;
+      }
+      //se for ponto
+      else if (sscanf(leitura, "%s %d %d %s %s", aux_string[0], aux_int, aux_int+1, aux_string[1], aux_string[2]) == 5){
+
+        aux_pt = (LISTA_PONTOS*) calloc(1, sizeof(LISTA_PONTOS));
+        strcpy(aux_pt->pt.id, aux_string[0]);
+        aux_pt->pt.x = aux_int[0];
+        aux_pt->pt.y = aux_int[1];
+        aux_pt->pt.cor = codigo_cor(aux_string[1]);
+        aux_pt->pt.tipo = numero_tipo(aux_string[2]);
+
+        if (nova_linha->linha.l==NULL){
+          nova_linha->linha.l = aux_pt;
+          atual = aux_pt;
+        }
+        else{
+          atual->pr[0] = aux_pt;
+          atual = aux_pt;
+        }
+      }
+      //Ligacao de pontos
+      else if (sscanf(leitura, "LIGAR: %s %s %s %s", aux_string[0], aux_string[1], aux_string[2], aux_string[3]) == 4){
+        liga_pontos(aux_string, *topo_lista_linhas);
+      }
+      //se for comboio
+      else if (sscanf(leitura, "COMBOIO: %s %d %s %s %s %d %d", aux_string[0], aux_int, aux_string[1], aux_string[2], aux_string[3], aux_int+1, aux_int+2) == 7){
+
+        novo_boio = (LISTA_COMBOIOS*) calloc(1, sizeof(LISTA_COMBOIOS));
+        strncpy(novo_boio->boio.id, aux_string[0], 3);
+        novo_boio->boio.cor = codigo_cor(aux_string[1]);
+        novo_boio->boio.dim = aux_int[0];
+        novo_boio->boio.origem = procura_ponto(aux_string[2], aux_string[3], *topo_lista_linhas);
+        novo_boio->boio.tempo_spawn = aux_int[1];
+        novo_boio->boio.veloc = MULT_VELOC * aux_int[2];
+
+        novo_boio->pr=*topo_lista_comboios;
+        *topo_lista_comboios=novo_boio;
+      }
+    }
+  }
 }
 
 int numero_tipo(char string[]){ //funciona
@@ -75,87 +135,6 @@ char * cor_codigo(Uint32 no){
   exit(0);
 }
 
-void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas, int *dim_X, int *dim_Y, char *nome_ficheiro){
-  FILE *config = fopen(nome_ficheiro, "r");
-  LISTA_LINHAS *nova_linha;
-  LISTA_PONTOS *aux_pt = NULL, *atual=NULL;
-  LISTA_COMBOIOS *novo_boio = NULL;
-
-  char leitura[100];
-  char aux_string[6][10];
-  int aux_int[5];
-
-  if(config==NULL){
-    printf("Erro de abertura de config;\n\"%s\" nao encontrado\n", nome_ficheiro);
-    printf("Utilizacao: ./comboios <ficheiro.txt>\n");
-    exit(0);
-  }
-
-  while( fgets(leitura, 100, config) != NULL){
-    if ( (leitura[0] >= '0' && leitura[0] <='9') || (leitura[0] >= 'A' && leitura[0] <='Z') ){
-      if (sscanf(leitura, "%d %d", aux_int, aux_int+1) == 2){
-        *dim_X = aux_int[0];
-        *dim_Y = aux_int[1];
-      }
-      //se for linha
-      else if (sscanf(leitura, "LINHA: %s", aux_string[0]) == 1){
-
-        nova_linha = (LISTA_LINHAS*) calloc(1, sizeof(LISTA_LINHAS));
-        strcpy(nova_linha->linha.id, aux_string[0]);
-        nova_linha->pr=*topo_lista_linhas;
-        *topo_lista_linhas=nova_linha;
-      }
-      //se for ponto
-      else if (sscanf(leitura, "%s %d %d %s %s", aux_string[0], aux_int, aux_int+1, aux_string[1], aux_string[2]) == 5){
-
-        aux_pt = (LISTA_PONTOS*) calloc(1, sizeof(LISTA_PONTOS));
-        strcpy(aux_pt->pt.id, aux_string[0]);
-        aux_pt->pt.x = aux_int[0];
-        aux_pt->pt.y = aux_int[1];
-        aux_pt->pt.cor = codigo_cor(aux_string[1]);
-        aux_pt->pt.tipo = numero_tipo(aux_string[2]);
-
-        if (nova_linha->linha.l==NULL){
-          nova_linha->linha.l = aux_pt;
-          atual = aux_pt;
-        }
-        else{
-          atual->pr[0] = aux_pt;
-          atual = aux_pt;
-        }
-      }
-      //Ligacao de pontos
-      else if (sscanf(leitura, "LIGAR: %s %s %s %s", aux_string[0], aux_string[1], aux_string[2], aux_string[3]) == 4){
-        liga_pontos(aux_string, *topo_lista_linhas);
-      }
-      //se for comboio
-      else if (sscanf(leitura, "COMBOIO: %s %d %s %s %s %d %d", aux_string[0], aux_int, aux_string[1], aux_string[2], aux_string[3], aux_int+1, aux_int+2) == 7){
-
-        novo_boio = (LISTA_COMBOIOS*) calloc(1, sizeof(LISTA_COMBOIOS));
-        strcpy(novo_boio->boio.id, aux_string[0]);
-        novo_boio->boio.cor = codigo_cor(aux_string[1]);
-        novo_boio->boio.dim = aux_int[0];
-        novo_boio->boio.origem = procura_ponto(aux_string[2], aux_string[3], *topo_lista_linhas);
-        novo_boio->boio.tempo_spawn = aux_int[1];
-        novo_boio->boio.veloc = MULT_VELOC * aux_int[2];
-
-        novo_boio->pr=*topo_lista_comboios;
-        *topo_lista_comboios=novo_boio;
-      }
-    }
-  }
-}
-
-void mostra_boio(COMBOIO boio){
-  printf("\n/----COMBOIO %s----/\n", boio.id);
-  printf("Dimensao:%d\n", boio.dim);
-  printf("Cor locom.:%s\n", cor_codigo(boio.cor));
-  printf("Ponto origem:%s\n", boio.origem->pt.id);
-  printf("Tempo de spawn:%.2f\n", boio.tempo_spawn);
-  printf("Velocidade:%.2fpixeis/tick\n", boio.veloc);
-  fflush(stdout);
-}
-
 int inicializa_janela(int dim_X, int dim_Y){
   if(SDL_Init(SDL_INIT_EVERYTHING) >= 0){
     janela = SDL_CreateWindow("I like trains",
@@ -206,55 +185,22 @@ void desenha_pontos(LISTA_LINHAS *topo_lista_linhas){
         filledCircleColor(pintor, ap->pt.x, ap->pt.y, 2, ap->pt.cor);
         aacircleColor(pintor, ap->pt.x, ap->pt.y, 2, hexdec_PRETO);
       }
-
     }
   }
 }
 
 void desenha_ligacoes(LISTA_LINHAS *topo_lista_linhas){
   LISTA_PONTOS *ap;
-  int deltaX, deltaY;
-  float m;
-  float d=8, h=12, l=10; //distancia, comprimento e largura da flecha
-  float base_flechaX, base_flechaY;
-  Sint16 cantos_trianguloX[3], cantos_trianguloY[3];
 
+  SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
   for(; topo_lista_linhas !=NULL; topo_lista_linhas=topo_lista_linhas->pr){
     for(ap = topo_lista_linhas->linha.l; ap!= NULL; ap=ap->pr[0]){
-
-      SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
       if( ap->pr[0] != NULL){
         SDL_RenderDrawLine(pintor, ap->pt.x, (ap->pt.y), ap->pr[0]->pt.x, (ap->pr[0]->pt.y));
       }
       if( ap->pr[1] != NULL){
         SDL_RenderDrawLine(pintor, ap->pt.x, (ap->pt.y), ap->pr[1]->pt.x, (ap->pr[1]->pt.y));
       }
-
-      if(ap->pr[0] == NULL || ap->pr[1] == NULL) continue;
-
-      deltaX = ap->pt.x - ap->pr[1-ap->pt.alavanca]->pt.x;
-      deltaY = ap->pt.y - ap->pr[1-ap->pt.alavanca]->pt.y;
-      m= (float) deltaY/deltaX;
-      if (abs(deltaX) > 0){
-        base_flechaX = ap->pt.x-deltaX/abs(deltaX)*d/sqrt(m*m+1);
-        base_flechaY = ap->pt.y-m*(base_flechaX - ap->pt.x);
-      }
-      else{
-        base_flechaX = ap->pt.x;
-        base_flechaY = deltaY/abs(deltaY)*d;
-      }
-      cantos_trianguloX[0]=ap->pt.x-deltaX/abs(deltaX)*(d+h)/sqrt(m*m+1);
-      cantos_trianguloY[0]=ap->pt.y-m*(cantos_trianguloX[0]-ap->pt.x);
-
-      cantos_trianguloX[1]=base_flechaX-sqrt(m*m*l*l/(4*(m*m+1)));
-      cantos_trianguloY[1]=base_flechaY-1/m*sqrt(m*m*l*l/(4*(m*m+1)));
-
-      cantos_trianguloX[2]=base_flechaX+sqrt(m*m*l*l/(4*(m*m+1)));
-      cantos_trianguloY[2]=base_flechaY+1/m*sqrt(m*m*l*l/(4*(m*m+1)));
-
-      SDL_SetRenderDrawColor(pintor, 0, 0, 255, 255);
-      SDL_RenderDrawLine(pintor, base_flechaX, base_flechaY, ap->pt.x, ap->pt.y);
-      filledPolygonColor(pintor,cantos_trianguloX, cantos_trianguloY, 3, hexdec_AZUL);
     }
   }
 }
@@ -303,23 +249,6 @@ LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOI
   return boios_graficos;
 }
 
-LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar){
-  LISTA_GRAF_BOIO *aux_boio, *ant_boio=NULL;
-
-  for( aux_boio = lista_graf_boios; aux_boio!=eliminar && aux_boio!=NULL; aux_boio=aux_boio->pr) {ant_boio=aux_boio;}
-
-  if(aux_boio == NULL) return lista_graf_boios;
-
-  if(ant_boio == NULL) lista_graf_boios=aux_boio->pr;
-  else ant_boio->pr = aux_boio->pr;
-
-  free(aux_boio);
-  printf("----------------------boio removido\n");
-  fflush(stdout);
-  mostra_boios_ativos(lista_graf_boios);
-  return lista_graf_boios;
-}
-
 LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
   float deltaX, deltaY;
   float m;
@@ -331,10 +260,24 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
     for(i=0; i<aux_boio->graf.boio->dim; i++){
       pt1 = aux_boio->graf.ultimo_ponto[i];
 
-      if( (pt2 = pt1->pr[aux_boio->graf.alavanca[i]]) != NULL){}
-      else if( (pt2 = pt1->pr[1-aux_boio->graf.alavanca[i]]) != NULL){}
+      if( (pt2 = pt1->pr[pt1->pt.alavanca]) != NULL){}
+      else if( (pt2 = pt1->pr[1-pt1->pt.alavanca]) != NULL){}
       else{
-        lista_graf_boios = remove_graf_boio(lista_graf_boios, aux_boio);
+        if(aux_boio==lista_graf_boios){
+          lista_graf_boios=aux_boio->pr;
+          free(aux_boio);
+          if( (aux_boio=lista_graf_boios) == NULL){
+            return NULL;
+          }
+        }
+        else{
+        ant_boio->pr = aux_boio->pr;
+        free(aux_boio);
+        aux_boio=ant_boio;
+        }
+        printf("----------------------boio chegou ao fim\n");
+        fflush(stdout);
+        mostra_boios_ativos(lista_graf_boios);
         break;
       }
       // else continue;
@@ -371,10 +314,7 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
         aux_boio->graf.x[i] = pt2->pt.x;
         aux_boio->graf.y[i] = pt2->pt.y;
         aux_boio->graf.ultimo_ponto[i] = pt2;
-        if(i==0) aux_boio->graf.alavanca[i] = pt2->pt.alavanca;
-        if(i!=0) {
-        aux_boio->graf.cor[i] = esvazia_vagao(pt2->pt, aux_boio->graf.cor[i]);
-        aux_boio->graf.alavanca[i] = aux_boio->graf.alavanca[i-1];}
+        if(i!=0) aux_boio->graf.cor[i] = esvazia_vagao(pt2->pt, aux_boio->graf.cor[i]);
       }
 
       if (i!=0){
@@ -418,45 +358,256 @@ Uint32 esvazia_vagao(PONTO pt, Uint32 cor){
   return cor;
 }
 
-LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y){
-  LISTA_PONTOS *aux=NULL;
-  int deltaX, deltaY;
-
-  for(; topo_lista_linhas!=NULL; topo_lista_linhas=topo_lista_linhas->pr){
-
-    for(aux=topo_lista_linhas->linha.l; aux!=NULL; aux=aux->pr[0]){
-      deltaX = aux->pt.x - x;
-      deltaY = aux->pt.y - y;
-      if(deltaX*deltaX + deltaY*deltaY < RAIO_ESTACAO*RAIO_ESTACAO){
-        return aux;
-      }
-    }
-  }
-  return NULL;
+void render(void){
+  SDL_RenderPresent(pintor);
 }
 
-int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios){
-  LISTA_PONTOS *aux_pt;
-  int x=0, y=0;
+void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios){
+  char comboio[100];
+  int i=0;
+  char leitura[100];
+  LISTA_COMBOIOS *aux=topo_lista_comboios;
+    while(1){
+      system("clear");
+      i=0;
+      aux=topo_lista_comboios;
+      printf("\nLista de comboios:\n");
+      for(;aux!=NULL;aux=aux->pr)
+        printf("COMBOIO %s\n", aux->boio.id);
+      printf("\nQual o comboio a mostrar?(Fim para sair)\n");
+      scanf("%s", comboio);
+      if (strcmp(comboio, "Fim")==0)
+        break;
+      if (strlen(comboio)>2){
+        printf("Erro, ID invalido\n");
+        i=1;
+      }
+      aux=topo_lista_comboios;
+      for(;aux!=NULL;aux=aux->pr){
+        if(strcmp(comboio, aux->boio.id)==0){
+          mostra_boio(aux->boio);
+          i=1;
+          }
+      }
+      if(i==0)
+        printf("Erro, comboio inexistente\n");
+      getchar();
+      while(getchar()!='\n');
+    }
+}
 
-  switch(event->type){
-    case SDL_MOUSEMOTION:
-    return 0;
-    case SDL_MOUSEBUTTONDOWN:
-      SDL_GetMouseState( &x, &y);
-      aux_pt = procura_ponto_por_coords(topo_lista_linhas, x, y);
-      if (aux_pt !=NULL){
-        aux_pt->pt.alavanca = 1 - aux_pt->pt.alavanca;
+void mostra_boio(COMBOIO boio){
+  printf("\n/----COMBOIO %s----/\n", boio.id);
+  printf("Dimensao:%d\n", boio.dim);
+  printf("Cor locom.:%s\n", cor_codigo(boio.cor));
+  printf("Ponto origem:%s\n", boio.origem->pt.id);
+  printf("Tempo de spawn:%.2f\n", boio.tempo_spawn);
+  printf("Velocidade:%.2fpixeis/tick\n", boio.veloc);
+  fflush(stdout);
+}
+
+LISTA_COMBOIOS * opcao_elimina_comboio(LISTA_COMBOIOS *topo_lista_comboios){
+  char comboio[100];
+  int i=0;
+  LISTA_COMBOIOS *aux=topo_lista_comboios, *anterior=NULL;
+    while(1){
+      system("clear");
+      i=0;
+      aux=topo_lista_comboios;
+      printf("\nLista de comboios:\n");
+      for(;aux!=NULL;aux=aux->pr)
+        printf("COMBOIO %s\n", aux->boio.id);
+      printf("\nQual o comboio a eliminar?(Fim para sair)\n");
+      scanf("%s", comboio);
+      if (strcmp(comboio, "Fim")==0)
+        break;
+      if (strlen(comboio)>2){
+        printf("Erro, ID invalido\n");
+        i=1;
       }
-      return 0;
-    case SDL_KEYDOWN:
-      switch(event->key.keysym.sym){
-        case SDLK_ESCAPE: return 1;
-        default: return 0;
-        // case SDLK_SPACE: pausar a simulacao
+      aux=topo_lista_comboios;
+      for(;aux!=NULL;aux=aux->pr){
+        if(strcmp(comboio, aux->boio.id)==0){
+          i=1;
+          if (anterior == NULL){
+            topo_lista_comboios = aux->pr;
+            free(aux);
+          }
+          else{
+            anterior->pr=aux->pr;
+            free(aux);
+          }
+        }
+        anterior = aux;
       }
-    case SDL_QUIT: return 1;
-    default: return 0;
+      if(i==0)
+        printf("Erro, comboio inexistente\n");
+      getchar();
+      while(getchar()!='\n');
+    }
+    return topo_lista_comboios;
+}
+
+void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas){
+  char linha[100];
+  int i=0;
+  LISTA_LINHAS *aux = topo_lista_linhas;
+  LISTA_PONTOS *auxiliar=NULL;
+  while (1){
+    system("clear");
+    i=0;
+    aux = topo_lista_linhas;
+    printf("\nLista de linhas:\n");
+      for(;aux!=NULL;aux=aux->pr){
+        printf("LINHA %s\n", aux->linha.id);
+      }
+      printf("\nQual a linha a mostrar?(Fim para sair)\n");
+      scanf("%s", linha);
+      if (strcmp(linha, "Fim")==0)
+        break;
+      if (strlen(linha)>4){
+        printf("Erro, ID invalido\n");
+        i=1;
+      }
+      aux = topo_lista_linhas;
+      for(;aux!=NULL;aux=aux->pr){
+        if(strcmp(linha, aux->linha.id)==0){
+          i=1;
+          for(auxiliar=aux->linha.l; auxiliar!=NULL; auxiliar = auxiliar->pr[0]){
+            mostra_ponto(auxiliar->pt);
+          }
+        }
+      }
+      if (i==0)
+        printf("Erro, linha inexistente\n");
+      getchar();
+      while(getchar()!='\n');
   }
-  return 0;
+}
+
+void mostra_ponto(PONTO pt){
+  char tipo[8];
+  switch(pt.tipo){
+    case 0: strcpy(tipo, "Erro");      break;
+    case 1: strcpy(tipo, "Estacao");  break;
+    case 2: strcpy(tipo, "Entrada");  break;
+    case 3: strcpy(tipo, "Saida");    break;
+    case 4: strcpy(tipo, "Via");    break;
+    default: printf("Erro traducao de tipo\n"); break;
+  }
+  printf("\nPonto: %s\nTipo: %s\nCor: %s\n", pt.id, tipo, cor_codigo(pt.cor));
+  fflush (stdout);
+}
+
+LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas){
+  char linha[100];
+  int i=0;
+  LISTA_LINHAS *aux = topo_lista_linhas, *anterior = NULL;
+  LISTA_PONTOS *elimina_lista_pontos;
+  while (1){
+    system("clear");
+    i=0;
+    aux = topo_lista_linhas;
+    printf("\nLista de linhas:\n");
+      for(;aux!=NULL;aux=aux->pr){
+        printf("LINHA %s\n", aux->linha.id);
+      }
+
+      printf("\nQual a linha a eliminar?(Fim para sair)\n");
+      scanf("%s", linha);
+
+      if (strcmp(linha, "Fim")==0)
+        break;
+
+      if (strlen(linha)>4){
+        printf("Erro, ID invalido\n");
+        i=1;
+      }
+
+      aux = topo_lista_linhas;
+
+      for(;aux!=NULL;aux=aux->pr){
+        if(strcmp(linha, aux->linha.id)==0){
+          i=1;
+          for(; aux->linha.l!=NULL; aux->linha.l = aux->linha.l->pr[0]){
+            elimina_lista_pontos = aux->linha.l;
+            free(elimina_lista_pontos);
+          }
+          if (anterior == NULL){
+             topo_lista_linhas=aux->pr;
+             free(aux);
+          }
+          else{
+            anterior->pr=aux->pr;
+            free(aux);
+          }
+        }
+        anterior = aux;
+      }
+      if (i==0)
+        printf("Erro, linha inexistente\n");
+      getchar();
+      while(getchar()!='\n');
+  }
+  return topo_lista_linhas;
+}
+
+void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas, int dimensaoX, int dimensaoY, int fim){
+  LISTA_GRAF_BOIO *boios_graficos = NULL;
+  SDL_Event event;
+  Uint32 temporizador;
+  boios_graficos = inicializa_boios(boios_graficos, topo_lista_comboios);
+  mostra_boios_ativos(boios_graficos);
+  if ( inicializa_janela(dimensaoX,dimensaoY) == 0 ){
+    exit(0);
+  }
+
+  while (fim != 1){
+    temporizador = SDL_GetTicks();
+    boios_graficos = mexe_comboios2(boios_graficos);
+    atualiza_render(topo_lista_linhas);
+    desenha_comboios(boios_graficos);
+    SDL_PollEvent( &event );
+    if ((event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) || event.type == SDL_QUIT) {
+      fim = 1;
+    }
+    printf("\rA esperar%d ms", TICKS_p_FRAME - SDL_GetTicks() + temporizador);
+    fflush(stdout);
+    SDL_Delay(TICKS_p_FRAME - SDL_TICKS_PASSED(SDL_GetTicks(), temporizador));
+    render();
+	}
+  SDL_Quit();
+}
+
+LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS * topo_lista_linhas){
+  LISTA_COMBOIOS *novo_boio = NULL;
+  char string_id[3], string_cor[100], string_linha[5], string_ponto[5];
+  int dim, tempo_spawn, velocidade;
+
+  printf("Qual o id do comboio?(max 2 carateres)");
+  scanf("%s", string_id);
+  printf("Qual a cor do comboio?");
+  scanf("%s", string_cor);
+  printf("Quantas carruagens?(max 3)");
+  scanf("%d", &dim);
+  printf("Velocidade?");
+  scanf("%d", &velocidade);
+  printf("Tempo de spawn?");
+  scanf("%d", &tempo_spawn);
+  printf("Qual a linha e ponto de origem?");
+  scanf("%s %s", string_linha, string_ponto);
+
+
+  novo_boio = (LISTA_COMBOIOS*) calloc(1, sizeof(LISTA_COMBOIOS));
+  strcpy(novo_boio->boio.id, string_id);
+  novo_boio->boio.cor = codigo_cor(string_cor);
+  novo_boio->boio.dim =dim+1;
+  novo_boio->boio.origem = procura_ponto(string_linha, string_ponto, topo_lista_linhas);
+  novo_boio->boio.tempo_spawn = tempo_spawn;
+  novo_boio->boio.veloc = MULT_VELOC * velocidade;
+
+  novo_boio->pr=topo_lista_comboios;
+  topo_lista_comboios=novo_boio;
+
+  return topo_lista_comboios;
 }
