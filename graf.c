@@ -177,7 +177,7 @@ void desenha_comboios(LISTA_GRAF_BOIO *lista_graf_boios){
   }
 }
 
-void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_graficos){
+void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_graficos, int dimX, int dimY){
 
   SDL_SetRenderDrawColor(pintor, 235, 235, 235, 255);
   SDL_RenderClear(pintor);
@@ -185,6 +185,7 @@ void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_gra
   desenha_ligacoes(topo_lista_linhas);
   desenha_pontos(topo_lista_linhas);
   desenha_comboios(boios_graficos);
+  desenha_butoes(dimX,dimY);
 }
 
 int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios){
@@ -228,7 +229,7 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
   while (fim != 1){
     temporizador = SDL_GetTicks();
     boios_graficos = mexe_comboios2(boios_graficos);
-    atualiza_render(topo_lista_linhas, boios_graficos);
+    atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY);
     printf("\rA esperar%d ms", TICKS_p_FRAME - SDL_GetTicks() + temporizador);
     fflush(stdout);
     SDL_Delay(TICKS_p_FRAME - SDL_TICKS_PASSED(SDL_GetTicks(), temporizador));
@@ -236,4 +237,25 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
     while (SDL_PollEvent(&event)) fim = eventos_sdl(&event, topo_lista_linhas, boios_graficos);
 	}
   SDL_Quit();
+}
+
+void desenha_butoes(int dimX, int dimY){
+  SDL_Rect botao_sair, botao_pausa;
+
+  botao_sair.w = 120;
+  botao_sair.h = 40;
+  botao_sair.x = dimX - 10 - botao_sair.w;
+  botao_sair.y = 10;
+  botao_pausa.w = 120;
+  botao_pausa.h = 40;
+  botao_pausa.x = dimX - 2*10 - 2*botao_pausa.w;
+  botao_pausa.y = 10;
+
+  SDL_SetRenderDrawColor(pintor, 253, 233, 170, 255);
+  SDL_RenderFillRect(pintor, &botao_sair);
+  SDL_RenderFillRect(pintor, &botao_pausa);
+  SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
+  SDL_RenderDrawRect(pintor, &botao_sair);
+  SDL_RenderDrawRect(pintor, &botao_pausa);
+
 }

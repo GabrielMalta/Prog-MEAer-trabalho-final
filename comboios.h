@@ -113,7 +113,7 @@ void liga_pontos(char aux_string[6][10], LISTA_LINHAS *topo_lista_linhas);
 
 int inicializa_janela( int dim_X, int dim_Y);
 
-void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_graficos);
+void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_graficos, int dimX, int dimY);
 
 void desenha_pontos(LISTA_LINHAS *linha);
 
@@ -148,3 +148,5 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas);
 void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas, int dimensaoX, int dimensaoY);
 
 LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS * topo_lista_linhas);
+
+void desenha_butoes(int dimX, int dimY);
