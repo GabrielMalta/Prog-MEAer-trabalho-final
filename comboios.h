@@ -17,7 +17,6 @@ SDL_Renderer* pintor;
 
 #define RAIO_ESTACAO 10
 #define RAIO_COMBOIO 7
-#define MULT_VELOC 0.7
 
 #define VIA 0
 #define EST 1
@@ -114,7 +113,7 @@ void liga_pontos(char aux_string[6][10], LISTA_LINHAS *topo_lista_linhas);
 
 int inicializa_janela( int dim_X, int dim_Y);
 
-void atualiza_render(LISTA_LINHAS *topo_lista_linhas);
+void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_graficos);
 
 void desenha_pontos(LISTA_LINHAS *linha);
 
