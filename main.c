@@ -27,6 +27,7 @@ int main(int argc, char *argv[]){
       case 4: topo_lista_comboios = opcao_elimina_comboio(topo_lista_comboios); break;
       case 5: topo_lista_comboios = opcao_novo_comboio(topo_lista_comboios, topo_lista_linhas); break;
       case 6: simular(topo_lista_comboios, topo_lista_linhas, dimensaoX, dimensaoY); break;
+      default: break;
     }
   }
 
