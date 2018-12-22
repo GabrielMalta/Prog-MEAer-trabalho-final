@@ -130,12 +130,6 @@ int sinal(int numero){
 
 void desenha_ligacoes(LISTA_LINHAS *topo_lista_linhas){
   LISTA_PONTOS *ap;
-  // int deltaX, deltaY;
-  // float m;
-  // float d=40, h=48, l=40; //distancia, comprimento e largura da flecha
-  // int i;
-  // float base_flechaX, base_flechaY;
-  // Sint16 cantos_trianguloX[3], cantos_trianguloY[3];
 
   for(; topo_lista_linhas !=NULL; topo_lista_linhas=topo_lista_linhas->pr){
     for(ap = topo_lista_linhas->linha.l; ap!= NULL; ap=ap->pr[0]){
@@ -160,37 +154,6 @@ void desenha_ligacoes(LISTA_LINHAS *topo_lista_linhas){
       SDL_RenderDrawLine(pintor, ap->pt.x, ap->pt.y, ap->pr[ap->pt.alavanca]->pt.x, ap->pr[ap->pt.alavanca]->pt.y);
       SDL_SetRenderDrawColor(pintor, 185, 185, 185, 255);
       SDL_RenderDrawLine(pintor, ap->pt.x, ap->pt.y, ap->pr[1-ap->pt.alavanca]->pt.x, ap->pr[1-ap->pt.alavanca]->pt.y);
-
-      // if(ap->pr[0] == NULL || ap->pr[1] == NULL) continue;
-
-      // deltaX = ap->pr[ap->pt.alavanca]->pt.x - ap->pt.x;
-      // deltaY = ap->pr[ap->pt.alavanca]->pt.y - ap->pt.y;
-      // m= (float) deltaY/deltaX;
-      // if (abs(deltaX) > 0){
-      //   base_flechaX = ap->pt.x+sinal(deltaX)*d/sqrt(m*m+1);
-      //   base_flechaY = ap->pt.y+m*(base_flechaX - ap->pt.x);
-      // }
-      // else{
-      //   base_flechaX = ap->pt.x;
-      //   base_flechaY = sinal(deltaY)*d;
-      // }
-      // cantos_trianguloX[0]=ap->pt.x+sinal(deltaX)*(d+h)/sqrt(m*m+1);
-      // cantos_trianguloY[0]=ap->pt.y+m*(cantos_trianguloX[0]-ap->pt.x);
-      //
-      //
-      // cantos_trianguloX[1]=base_flechaX+sinal(deltaX)*sinal(deltaY)*m*l*sqrt(1.0/(4*(m*m+1)));
-      // cantos_trianguloY[1]=base_flechaY+l*sqrt(1/(4*(m*m+1)));
-      //
-      // cantos_trianguloX[2]=base_flechaX-sinal(deltaX)*sinal(deltaY)*m*l*sqrt(1.0/(4*(m*m+1)));
-      // cantos_trianguloY[2]=base_flechaY-l*sqrt(1.0/(4*(m*m+1)));
-      // filledCircleColor(pintor, base_flechaX, base_flechaY, 5, hexdec_PRETO);
-      // for (i=0; i<3; i++){
-      //   filledCircleColor(pintor, cantos_trianguloX[i], cantos_trianguloY[i], 5, hexdec_PRETO);
-      // }
-      //
-      // SDL_SetRenderDrawColor(pintor, 0, 0, 255, 255);
-      // SDL_RenderDrawLine(pintor, base_flechaX, base_flechaY, ap->pt.x, ap->pt.y);
-      // // filledPolygonColor(pintor,cantos_trianguloX, cantos_trianguloY, 3, hexdec_AZUL);
     }
   }
 }
