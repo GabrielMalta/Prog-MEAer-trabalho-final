@@ -16,7 +16,7 @@ SDL_Renderer* pintor;
 #define TICKS_p_FRAME 1000/FPS
 
 #define RAIO_ESTACAO 10
-#define RAIO_COMBOIO 7
+#define RAIO_COMBOIO 6
 
 #define VIA 0
 #define EST 1
@@ -91,6 +91,7 @@ typedef struct grafico_comboio{
   Uint32 cor[4];
   LISTA_PONTOS *ultimo_ponto[4];
   int alavanca[4];
+  float veloc;
 } GRAF_BOIO;
 
 
@@ -131,8 +132,6 @@ LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_
 
 LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio);
 
-LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOIOS *lista_comboios);
-
 LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios, int ticks_simulacao);
 
 LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios);
@@ -142,6 +141,8 @@ void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
 LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar);
 
 LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y);
+
+LISTA_GRAF_BOIO * procura_locomotiva_por_coords(LISTA_GRAF_BOIO *graf_boios, int x, int y);
 
 int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios, int dimX, int dimY);
 
@@ -160,3 +161,5 @@ LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_L
 void desenha_botoes(int dimX, int dimY, int pausa);
 
 int carregou_botao(int dimX, int dimY, int x, int y);
+
+void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar);

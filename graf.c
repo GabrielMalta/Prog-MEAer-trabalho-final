@@ -81,6 +81,7 @@ LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMB
     novo_graf_boio->graf.ultimo_ponto[i]=comboio->origem;
   }
   novo_graf_boio->graf.cor[0]=comboio->cor;
+  novo_graf_boio->graf.veloc=comboio->veloc;
   novo_graf_boio->pr=lista_graf_boios;
   return novo_graf_boio;
 }
@@ -191,6 +192,7 @@ void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_gra
 
 int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios, int dimX, int dimY){
   LISTA_PONTOS *aux_pt;
+  LISTA_GRAF_BOIO *comboio_a_parar;
   int x=0, y=0;
 
   switch(event->type){
@@ -199,7 +201,9 @@ int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BO
     case SDL_MOUSEBUTTONDOWN:
       SDL_GetMouseState( &x, &y);
       aux_pt = procura_ponto_por_coords(topo_lista_linhas, x, y);
-      if (aux_pt !=NULL && aux_pt->pr[0] != NULL && aux_pt->pr[1] != NULL){
+      comboio_a_parar = procura_locomotiva_por_coords(topo_lista_graf_boios, x, y);
+      if(comboio_a_parar!=NULL) toggle_andamento_comboio(comboio_a_parar);
+      else if (aux_pt !=NULL && aux_pt->pr[0] != NULL && aux_pt->pr[1] != NULL){
         aux_pt->pt.alavanca = 1 - aux_pt->pt.alavanca;
       }
       else return carregou_botao(dimX, dimY, x, y);
@@ -221,7 +225,7 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
   Uint32 temporizador;
   int fim=0, pausa=0;
   int ticks_simulacao=0;
-  // boios_graficos = inicializa_boios(boios_graficos, topo_lista_comboios);
+  char cronometro[10];
 
   mostra_boios_ativos(boios_graficos);
   if ( inicializa_janela(dimensaoX,dimensaoY) == 0 ){
@@ -239,9 +243,11 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
     else {
       atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY, pausa);
     }
+    sprintf(cronometro, "%2d:%2d:%2d", ticks_simulacao/(30*60),(ticks_simulacao/30)%60, ((ticks_simulacao*TICKS_p_FRAME)%1000)/10);
+    stringRGBA(pintor, 10, 10, cronometro, 0, 0, 0, 255);
     SDL_Delay(TICKS_p_FRAME - SDL_TICKS_PASSED(SDL_GetTicks(), temporizador));
-    SDL_RenderPresent(pintor);
     temporizador = SDL_GetTicks();
+    SDL_RenderPresent(pintor);
 
     while (SDL_PollEvent(&event)) switch(eventos_sdl(&event, topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY)){
       case 2:
