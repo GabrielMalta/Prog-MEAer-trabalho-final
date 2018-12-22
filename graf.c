@@ -179,7 +179,7 @@ void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_gra
   desenha_butoes(dimX,dimY);
 }
 
-int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios){
+int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios, int dimX, int dimY){
   LISTA_PONTOS *aux_pt;
   int x=0, y=0;
 
@@ -191,6 +191,11 @@ int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BO
       aux_pt = procura_ponto_por_coords(topo_lista_linhas, x, y);
       if (aux_pt !=NULL && aux_pt->pr[0] != NULL && aux_pt->pr[1] != NULL){
         aux_pt->pt.alavanca = 1 - aux_pt->pt.alavanca;
+      }
+      else switch(carregou_botao(dimX, dimY, x, y)){
+        case 0: return 0;
+        case 1: return 1;
+        case 2: /* WIP */ break;
       }
       return 0;
     case SDL_KEYDOWN:
@@ -225,7 +230,7 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
     fflush(stdout);
     SDL_Delay(TICKS_p_FRAME - SDL_TICKS_PASSED(SDL_GetTicks(), temporizador));
     SDL_RenderPresent(pintor);
-    while (SDL_PollEvent(&event)) fim = eventos_sdl(&event, topo_lista_linhas, boios_graficos);
+    while (SDL_PollEvent(&event)) fim = eventos_sdl(&event, topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY);
 	}
   SDL_Quit();
 }
@@ -233,14 +238,14 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
 void desenha_butoes(int dimX, int dimY){
   SDL_Rect botao_sair, botao_pausa;
 
-  botao_sair.w = 120;
-  botao_sair.h = 40;
-  botao_sair.x = dimX - 10 - botao_sair.w;
-  botao_sair.y = 10;
-  botao_pausa.w = 120;
-  botao_pausa.h = 40;
-  botao_pausa.x = dimX - 2*10 - 2*botao_pausa.w;
-  botao_pausa.y = 10;
+  botao_sair.w = LARGURA_BOTAO;
+  botao_sair.h = ALTURA_BOTAO;
+  botao_sair.x = dimX - ESPACAMENTO - LARGURA_BOTAO;
+  botao_sair.y = ESPACAMENTO;
+  botao_pausa.w = LARGURA_BOTAO;
+  botao_pausa.h = ALTURA_BOTAO;
+  botao_pausa.x = dimX - 2*ESPACAMENTO - 2*LARGURA_BOTAO;
+  botao_pausa.y = ESPACAMENTO;
 
   SDL_SetRenderDrawColor(pintor, 253, 233, 170, 255);
   SDL_RenderFillRect(pintor, &botao_sair);
@@ -248,5 +253,20 @@ void desenha_butoes(int dimX, int dimY){
   SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
   SDL_RenderDrawRect(pintor, &botao_sair);
   SDL_RenderDrawRect(pintor, &botao_pausa);
+  stringRGBA(pintor, botao_sair.x+0.4*botao_sair.w, botao_sair.y+0.4*botao_sair.h, "SAIR", 0, 0, 0, 255);
+  stringRGBA(pintor, botao_pausa.x+botao_pausa.w*2.0/5, botao_pausa.y+0.4*botao_pausa.h, "PAUSA", 0, 0, 0, 255);
+}
 
+int carregou_botao(int dimX, int dimY, int x, int y){
+  if ( y > ESPACAMENTO && y < ESPACAMENTO+ALTURA_BOTAO){
+    if( x > dimX - ESPACAMENTO - LARGURA_BOTAO && x < dimX - ESPACAMENTO){
+      // botao de sair
+      return 1;
+    }
+    else if( x > dimX - 2*ESPACAMENTO - 2*LARGURA_BOTAO && x <dimX - 2*ESPACAMENTO - LARGURA_BOTAO){
+      //botao de pausa
+      return 2;
+    }
+  }
+  return 0;
 }

@@ -43,6 +43,10 @@ SDL_Renderer* pintor;
 #define hexdec_PRETO 0xff000000
 #define hexdec_BRANCO 0xffffffff
 
+#define LARGURA_BOTAO 120
+#define ALTURA_BOTAO 40
+#define ESPACAMENTO 10
+
 typedef struct{
   char id[5];
   int x, y;
@@ -137,7 +141,7 @@ LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF
 
 LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y);
 
-int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios);
+int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios, int dimX, int dimY);
 
 void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios);
 
@@ -152,3 +156,5 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
 LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS * topo_lista_linhas);
 
 void desenha_butoes(int dimX, int dimY);
+
+int carregou_botao(int dimX, int dimY, int x, int y);
