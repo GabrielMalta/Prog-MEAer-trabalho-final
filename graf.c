@@ -85,6 +85,15 @@ LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMB
   return novo_graf_boio;
 }
 
+LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios, int ticks_simulacao){
+  for(; comboios!=NULL; comboios=comboios->pr){
+    if(ticks_simulacao% ((int) comboios->boio.tempo_spawn*FPS) == 0){
+      lista_graf_boios = cria_grafico_do_comboio(lista_graf_boios, &(comboios->boio));
+    }
+  }
+  return lista_graf_boios;
+}
+
 LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar){
   LISTA_GRAF_BOIO *aux_boio, *ant_boio=NULL;
 
@@ -177,7 +186,7 @@ void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_gra
   desenha_ligacoes(topo_lista_linhas);
   desenha_pontos(topo_lista_linhas);
   desenha_comboios(boios_graficos);
-  desenha_butoes(dimX,dimY, pausa);
+  desenha_botoes(dimX,dimY, pausa);
 }
 
 int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios, int dimX, int dimY){
@@ -210,19 +219,22 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
   LISTA_GRAF_BOIO *boios_graficos = NULL;
   SDL_Event event;
   Uint32 temporizador;
-  int fim=0, pausa;
-  boios_graficos = inicializa_boios(boios_graficos, topo_lista_comboios);
+  int fim=0, pausa=0;
+  int ticks_simulacao=0;
+  // boios_graficos = inicializa_boios(boios_graficos, topo_lista_comboios);
 
   mostra_boios_ativos(boios_graficos);
   if ( inicializa_janela(dimensaoX,dimensaoY) == 0 ){
     exit(0);
   }
-  
+
   temporizador = SDL_GetTicks();
   while (fim != 1){
     if (pausa!=1){
+      boios_graficos = gera_novos_graf_boios(boios_graficos, topo_lista_comboios, ticks_simulacao);
       boios_graficos = mexe_comboios2(boios_graficos);
       atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY, pausa);
+      ticks_simulacao++;
     }
     else {
       atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY, pausa);
@@ -242,7 +254,7 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
   SDL_Quit();
 }
 
-void desenha_butoes(int dimX, int dimY, int pausa){
+void desenha_botoes(int dimX, int dimY, int pausa){
   SDL_Rect botao_sair, botao_pausa;
 
   botao_sair.w = LARGURA_BOTAO;

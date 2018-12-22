@@ -133,6 +133,8 @@ LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMB
 
 LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOIOS *lista_comboios);
 
+LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios, int ticks_simulacao);
+
 LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios);
 
 void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
@@ -155,6 +157,6 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
 
 LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS * topo_lista_linhas);
 
-void desenha_butoes(int dimX, int dimY, int pausa);
+void desenha_botoes(int dimX, int dimY, int pausa);
 
 int carregou_botao(int dimX, int dimY, int x, int y);
