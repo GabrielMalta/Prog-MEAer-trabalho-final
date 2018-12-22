@@ -64,8 +64,8 @@ LIGAR: L2 P5a FARO F1
 LIGAR: L2 P9 B2 V1
 
 %prototipos de comboios
-%COMBOIO: ID #carruagens cor_locomotiva linha_origem ponto_origem tempo_spawn velocidade(pixeis/segundo)
-COMBOIO: C1 4 AMARELO L1 P1 8 100
+%COMBOIO: ID #carruagens cor_locomotiva linha_origem ponto_origem tempo_spawn(segundos) velocidade(pixeis/segundo)
+COMBOIO: C1 4 AMARELO  L1 P1  8  100
 COMBOIO: C2 4 VERMELHO L1 P16 10 100
-COMBOIO: C3 4 AZUL L2 P1 12 100
-COMBOIO: C4 4 BRANCO L2 P5 10 100
+COMBOIO: C3 4 AZUL     L2 P1  12 100
+COMBOIO: C4 4 BRANCO   L2 P5  10 100
