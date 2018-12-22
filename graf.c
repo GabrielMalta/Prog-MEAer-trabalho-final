@@ -62,6 +62,7 @@ int inicializa_janela(int dim_X, int dim_Y){
     }
   }
   printf("Erro: na abertura do SDL2\n");
+  fflush(stdout);
   return 0;
 }
 
@@ -168,7 +169,7 @@ void desenha_comboios(LISTA_GRAF_BOIO *lista_graf_boios){
   }
 }
 
-void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_graficos, int dimX, int dimY){
+void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_graficos, int dimX, int dimY, int pausa){
 
   SDL_SetRenderDrawColor(pintor, 235, 235, 235, 255);
   SDL_RenderClear(pintor);
@@ -176,7 +177,7 @@ void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_gra
   desenha_ligacoes(topo_lista_linhas);
   desenha_pontos(topo_lista_linhas);
   desenha_comboios(boios_graficos);
-  desenha_butoes(dimX,dimY);
+  desenha_butoes(dimX,dimY, pausa);
 }
 
 int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios, int dimX, int dimY){
@@ -192,12 +193,7 @@ int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BO
       if (aux_pt !=NULL && aux_pt->pr[0] != NULL && aux_pt->pr[1] != NULL){
         aux_pt->pt.alavanca = 1 - aux_pt->pt.alavanca;
       }
-      else switch(carregou_botao(dimX, dimY, x, y)){
-        case 0: return 0;
-        case 1: return 1;
-        case 2: /* WIP */ break;
-      }
-      return 0;
+      else return carregou_botao(dimX, dimY, x, y);
     case SDL_KEYDOWN:
       switch(event->key.keysym.sym){
         case SDLK_ESCAPE: return 1;
@@ -214,28 +210,39 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
   LISTA_GRAF_BOIO *boios_graficos = NULL;
   SDL_Event event;
   Uint32 temporizador;
-  int fim=0;
+  int fim=0, pausa;
   boios_graficos = inicializa_boios(boios_graficos, topo_lista_comboios);
 
   mostra_boios_ativos(boios_graficos);
   if ( inicializa_janela(dimensaoX,dimensaoY) == 0 ){
     exit(0);
   }
-
+  
+  temporizador = SDL_GetTicks();
   while (fim != 1){
-    temporizador = SDL_GetTicks();
-    boios_graficos = mexe_comboios2(boios_graficos);
-    atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY);
-    printf("\rA esperar%d ms", TICKS_p_FRAME - SDL_GetTicks() + temporizador);
-    fflush(stdout);
+    if (pausa!=1){
+      boios_graficos = mexe_comboios2(boios_graficos);
+      atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY, pausa);
+    }
+    else {
+      atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY, pausa);
+    }
     SDL_Delay(TICKS_p_FRAME - SDL_TICKS_PASSED(SDL_GetTicks(), temporizador));
     SDL_RenderPresent(pintor);
-    while (SDL_PollEvent(&event)) fim = eventos_sdl(&event, topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY);
+    temporizador = SDL_GetTicks();
+
+    while (SDL_PollEvent(&event)) switch(eventos_sdl(&event, topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY)){
+      case 2:
+        pausa = 1 - pausa;
+        break;
+      case 1: fim = 1;
+      default: break;
+    }
 	}
   SDL_Quit();
 }
 
-void desenha_butoes(int dimX, int dimY){
+void desenha_butoes(int dimX, int dimY, int pausa){
   SDL_Rect botao_sair, botao_pausa;
 
   botao_sair.w = LARGURA_BOTAO;
@@ -253,8 +260,9 @@ void desenha_butoes(int dimX, int dimY){
   SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
   SDL_RenderDrawRect(pintor, &botao_sair);
   SDL_RenderDrawRect(pintor, &botao_pausa);
-  stringRGBA(pintor, botao_sair.x+0.4*botao_sair.w, botao_sair.y+0.4*botao_sair.h, "SAIR", 0, 0, 0, 255);
-  stringRGBA(pintor, botao_pausa.x+botao_pausa.w*2.0/5, botao_pausa.y+0.4*botao_pausa.h, "PAUSA", 0, 0, 0, 255);
+  stringRGBA(pintor, botao_sair.x+0.35*botao_sair.w, botao_sair.y+0.4*botao_sair.h, "SAIR", 0, 0, 0, 255);
+  if(pausa == 0) stringRGBA(pintor, botao_pausa.x+botao_pausa.w*0.35, botao_pausa.y+0.4*botao_pausa.h, "PAUSA", 0, 0, 0, 255);
+  else stringRGBA(pintor, botao_pausa.x+botao_pausa.w*0.29, botao_pausa.y+0.4*botao_pausa.h, "RETOMAR", 0, 0, 0, 255);
 }
 
 int carregou_botao(int dimX, int dimY, int x, int y){
