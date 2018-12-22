@@ -110,59 +110,87 @@ void desenha_pontos(LISTA_LINHAS *topo_lista_linhas){
         filledCircleColor(pintor, ap->pt.x, ap->pt.y, 10, ap->pt.cor);
         aacircleColor(pintor, ap->pt.x, ap->pt.y, 10, hexdec_PRETO);
       }
-      else{
+      else if (ap->pr[0] != NULL && ap->pr[1] != NULL){
+        filledCircleColor(pintor, ap->pt.x, ap->pt.y, 4, ap->pt.cor);
+        aacircleColor(pintor, ap->pt.x, ap->pt.y, 4, hexdec_PRETO);
+      }
+      else {
         filledCircleColor(pintor, ap->pt.x, ap->pt.y, 2, ap->pt.cor);
         aacircleColor(pintor, ap->pt.x, ap->pt.y, 2, hexdec_PRETO);
       }
-
     }
   }
 }
 
+int sinal(int numero){
+  if (numero>0) return 1;
+  if (numero<0) return -1;
+  return 0;
+}
+
 void desenha_ligacoes(LISTA_LINHAS *topo_lista_linhas){
   LISTA_PONTOS *ap;
-  int deltaX, deltaY;
-  float m;
-  float d=8, h=12, l=10; //distancia, comprimento e largura da flecha
-  float base_flechaX, base_flechaY;
-  Sint16 cantos_trianguloX[3], cantos_trianguloY[3];
+  // int deltaX, deltaY;
+  // float m;
+  // float d=40, h=48, l=40; //distancia, comprimento e largura da flecha
+  // int i;
+  // float base_flechaX, base_flechaY;
+  // Sint16 cantos_trianguloX[3], cantos_trianguloY[3];
 
   for(; topo_lista_linhas !=NULL; topo_lista_linhas=topo_lista_linhas->pr){
     for(ap = topo_lista_linhas->linha.l; ap!= NULL; ap=ap->pr[0]){
 
       SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
-      if( ap->pr[0] != NULL){
-        SDL_RenderDrawLine(pintor, ap->pt.x, (ap->pt.y), ap->pr[0]->pt.x, (ap->pr[0]->pt.y));
+      if(ap->pr[0] == NULL && ap->pr[1] == NULL) {
+        //fim de linha
+        continue;
       }
-      if( ap->pr[1] != NULL){
-        SDL_RenderDrawLine(pintor, ap->pt.x, (ap->pt.y), ap->pr[1]->pt.x, (ap->pr[1]->pt.y));
+      if(ap->pr[0] == NULL && ap->pr[1] != NULL){
+        //meio da linha
+        SDL_RenderDrawLine(pintor,ap->pt.x, ap->pt.y, ap->pr[1]->pt.x, ap->pr[1]->pt.y);
+        continue;
+      }
+      else if(ap->pr[1] == NULL && ap->pr[0] != NULL){
+        //linha acaba noutra
+        SDL_RenderDrawLine(pintor,ap->pt.x, ap->pt.y, ap->pr[0]->pt.x, ap->pr[0]->pt.y);
+        continue;
       }
 
-      if(ap->pr[0] == NULL || ap->pr[1] == NULL) continue;
+      //troca de linha
+      SDL_RenderDrawLine(pintor, ap->pt.x, ap->pt.y, ap->pr[ap->pt.alavanca]->pt.x, ap->pr[ap->pt.alavanca]->pt.y);
+      SDL_SetRenderDrawColor(pintor, 185, 185, 185, 255);
+      SDL_RenderDrawLine(pintor, ap->pt.x, ap->pt.y, ap->pr[1-ap->pt.alavanca]->pt.x, ap->pr[1-ap->pt.alavanca]->pt.y);
 
-      deltaX = ap->pt.x - ap->pr[1-ap->pt.alavanca]->pt.x;
-      deltaY = ap->pt.y - ap->pr[1-ap->pt.alavanca]->pt.y;
-      m= (float) deltaY/deltaX;
-      if (abs(deltaX) > 0){
-        base_flechaX = ap->pt.x-deltaX/abs(deltaX)*d/sqrt(m*m+1);
-        base_flechaY = ap->pt.y-m*(base_flechaX - ap->pt.x);
-      }
-      else{
-        base_flechaX = ap->pt.x;
-        base_flechaY = deltaY/abs(deltaY)*d;
-      }
-      cantos_trianguloX[0]=ap->pt.x-deltaX/abs(deltaX)*(d+h)/sqrt(m*m+1);
-      cantos_trianguloY[0]=ap->pt.y-m*(cantos_trianguloX[0]-ap->pt.x);
+      // if(ap->pr[0] == NULL || ap->pr[1] == NULL) continue;
 
-      cantos_trianguloX[1]=base_flechaX-sqrt(m*m*l*l/(4*(m*m+1)));
-      cantos_trianguloY[1]=base_flechaY-1/m*sqrt(m*m*l*l/(4*(m*m+1)));
-
-      cantos_trianguloX[2]=base_flechaX+sqrt(m*m*l*l/(4*(m*m+1)));
-      cantos_trianguloY[2]=base_flechaY+1/m*sqrt(m*m*l*l/(4*(m*m+1)));
-
-      SDL_SetRenderDrawColor(pintor, 0, 0, 255, 255);
-      SDL_RenderDrawLine(pintor, base_flechaX, base_flechaY, ap->pt.x, ap->pt.y);
-      filledPolygonColor(pintor,cantos_trianguloX, cantos_trianguloY, 3, hexdec_AZUL);
+      // deltaX = ap->pr[ap->pt.alavanca]->pt.x - ap->pt.x;
+      // deltaY = ap->pr[ap->pt.alavanca]->pt.y - ap->pt.y;
+      // m= (float) deltaY/deltaX;
+      // if (abs(deltaX) > 0){
+      //   base_flechaX = ap->pt.x+sinal(deltaX)*d/sqrt(m*m+1);
+      //   base_flechaY = ap->pt.y+m*(base_flechaX - ap->pt.x);
+      // }
+      // else{
+      //   base_flechaX = ap->pt.x;
+      //   base_flechaY = sinal(deltaY)*d;
+      // }
+      // cantos_trianguloX[0]=ap->pt.x+sinal(deltaX)*(d+h)/sqrt(m*m+1);
+      // cantos_trianguloY[0]=ap->pt.y+m*(cantos_trianguloX[0]-ap->pt.x);
+      //
+      //
+      // cantos_trianguloX[1]=base_flechaX+sinal(deltaX)*sinal(deltaY)*m*l*sqrt(1.0/(4*(m*m+1)));
+      // cantos_trianguloY[1]=base_flechaY+l*sqrt(1/(4*(m*m+1)));
+      //
+      // cantos_trianguloX[2]=base_flechaX-sinal(deltaX)*sinal(deltaY)*m*l*sqrt(1.0/(4*(m*m+1)));
+      // cantos_trianguloY[2]=base_flechaY-l*sqrt(1.0/(4*(m*m+1)));
+      // filledCircleColor(pintor, base_flechaX, base_flechaY, 5, hexdec_PRETO);
+      // for (i=0; i<3; i++){
+      //   filledCircleColor(pintor, cantos_trianguloX[i], cantos_trianguloY[i], 5, hexdec_PRETO);
+      // }
+      //
+      // SDL_SetRenderDrawColor(pintor, 0, 0, 255, 255);
+      // SDL_RenderDrawLine(pintor, base_flechaX, base_flechaY, ap->pt.x, ap->pt.y);
+      // // filledPolygonColor(pintor,cantos_trianguloX, cantos_trianguloY, 3, hexdec_AZUL);
     }
   }
 }
@@ -198,7 +226,7 @@ int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BO
     case SDL_MOUSEBUTTONDOWN:
       SDL_GetMouseState( &x, &y);
       aux_pt = procura_ponto_por_coords(topo_lista_linhas, x, y);
-      if (aux_pt !=NULL){
+      if (aux_pt !=NULL && aux_pt->pr[0] != NULL && aux_pt->pr[1] != NULL){
         aux_pt->pt.alavanca = 1 - aux_pt->pt.alavanca;
       }
       return 0;

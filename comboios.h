@@ -117,6 +117,8 @@ void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_gra
 
 void desenha_pontos(LISTA_LINHAS *linha);
 
+int sinal(int numero);
+
 void desenha_ligacoes(LISTA_LINHAS *linha);
 
 void desenha_comboios(LISTA_GRAF_BOIO *lista_graf_boios);
