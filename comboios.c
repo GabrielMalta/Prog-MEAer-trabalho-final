@@ -411,34 +411,25 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas){
 }
 
 LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS * topo_lista_linhas){
-  LISTA_COMBOIOS *novo_boio = NULL;
-  char string_id[3], string_cor[100], string_linha[5], string_ponto[5];
-  int dim, tempo_spawn, velocidade;
+  char string_aux[4][10];
+  int int_aux[4];
 
   printf("Qual o id do comboio?(max 2 carateres)");
-  scanf("%s", string_id);
-  printf("Qual a cor do comboio?");
-  scanf("%s", string_cor);
+  scanf("%s", string_aux[0]);
+  printf("Qual a cor da locomotiva?");
+  scanf("%s", string_aux[1]);
   printf("Quantas carruagens?(max 3)");
-  scanf("%d", &dim);
+  scanf("%d", &int_aux[0]);
   printf("Velocidade?");
-  scanf("%d", &velocidade);
+  scanf("%d", &int_aux[2]);
   printf("Tempo de spawn?");
-  scanf("%d", &tempo_spawn);
+  scanf("%d", &int_aux[1]);
   printf("Qual a linha e ponto de origem?");
-  scanf("%s %s", string_linha, string_ponto);
+  scanf("%s %s", string_aux[2], string_aux[3]);
 
+  topo_lista_comboios = preenche_comboio(string_aux[0], int_aux, topo_lista_comboios, topo_lista_linhas);
 
-  novo_boio = (LISTA_COMBOIOS*) calloc(1, sizeof(LISTA_COMBOIOS));
-  strcpy(novo_boio->boio.id, string_id);
-  novo_boio->boio.cor = codigo_cor(string_cor);
-  novo_boio->boio.dim =dim+1;
-  novo_boio->boio.origem = procura_ponto(string_linha, string_ponto, topo_lista_linhas);
-  novo_boio->boio.tempo_spawn = tempo_spawn;
-  novo_boio->boio.veloc = velocidade/FPS;
-
-  novo_boio->pr=topo_lista_comboios;
-  topo_lista_comboios=novo_boio;
+  while(getchar()!='\n');
 
   return topo_lista_comboios;
 }
