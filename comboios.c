@@ -450,3 +450,25 @@ void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar){
   }
   boio_a_parar->graf.veloc=boio_a_parar->graf.boio->veloc;
 }
+
+LISTA_GRAF_BOIO * colisoes(LISTA_GRAF_BOIO *lista_graf_boios){
+  LISTA_GRAF_BOIO *atual, *comparar;
+  int i,j,c;
+
+  for (atual=lista_graf_boios; atual->pr!=NULL; atual=atual->pr){
+    for(comparar=atual->pr; comparar!=NULL; comparar=comparar->pr){
+      for(i=0; i<atual->graf.boio->dim; i++){
+        for(j=0; j<comparar->graf.boio->dim; j++){
+          if(pow(atual->graf.x[i]-comparar->graf.x[j],2)+pow(atual->graf.y[i]-comparar->graf.y[j],2) < pow(2*RAIO_COMBOIO,2)){
+            printf("\nColisão entre %s e %s\n", atual->graf.boio->id, comparar->graf.boio->id);
+            fflush(stdout);
+            lista_graf_boios = remove_graf_boio(lista_graf_boios, comparar);
+            lista_graf_boios = remove_graf_boio(lista_graf_boios, atual);
+            return lista_graf_boios;
+          }
+        }
+      }
+    }
+  }
+  return lista_graf_boios;
+}

@@ -106,9 +106,6 @@ LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF
   else ant_boio->pr = aux_boio->pr;
 
   free(aux_boio);
-  printf("Boio chegou ao fim de linha\n");
-  fflush(stdout);
-  // mostra_boios_ativos(lista_graf_boios);
   return lista_graf_boios;
 }
 
@@ -237,6 +234,7 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
     if (pausa!=1){
       boios_graficos = gera_novos_graf_boios(boios_graficos, topo_lista_comboios, ticks_simulacao);
       boios_graficos = mexe_comboios2(boios_graficos);
+      boios_graficos = colisoes(boios_graficos);
       atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY, pausa);
       ticks_simulacao++;
     }
