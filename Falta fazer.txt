@@ -1,5 +1,4 @@
 JACOB:
-- explorar a possibilidade de usar menos typedefs
 
 GABRIEL
 - colisoes !?

@@ -189,9 +189,9 @@ void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas){
       }
     aux = topo_lista_linhas;
     for(;aux!=NULL;aux=aux->pr){
-      if(strcmp(linha, aux->linha.id)==0){
+      if(strcmp(linha, aux->id)==0){
         i=1;
-        for(auxiliar=aux->linha.l; auxiliar!=NULL; auxiliar = auxiliar->pr[0]){
+        for(auxiliar=aux->linha; auxiliar!=NULL; auxiliar = auxiliar->pr[0]){
           mostra_ponto(auxiliar->pt);
         }
       }
@@ -227,10 +227,10 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas){
     anterior = NULL;
 
     for(;aux!=NULL;aux=aux->pr){
-      if(strcmp(linha, aux->linha.id)==0){
+      if(strcmp(linha, aux->id)==0){
         i=1;
-        for(; aux->linha.l!=NULL; aux->linha.l = aux->linha.l->pr[0]){
-          elimina_lista_pontos = aux->linha.l;
+        for(; aux->linha!=NULL; aux->linha = aux->linha->pr[0]){
+          elimina_lista_pontos = aux->linha;
           free(elimina_lista_pontos);
         }
         if (anterior == NULL){
@@ -332,7 +332,7 @@ void get_coords_origem(char * linha, char *ponto, LISTA_LINHAS * topo_lista_linh
     aux=topo_lista_linhas;
     mostra_linha(topo_lista_linhas, "Qual a lista de origem?", linha);
     for(;aux!=NULL;aux=aux->pr){
-      if(strcmp(linha, aux->linha.id)==0){
+      if(strcmp(linha, aux->id)==0){
         i=1;
         break;
         }
@@ -351,14 +351,14 @@ void get_coords_origem(char * linha, char *ponto, LISTA_LINHAS * topo_lista_linh
     i=0;
     system("clear");
     printf("Pontos pertencentes a linha %s:\n", linha);
-    for(auxiliar=aux->linha.l; auxiliar!=NULL; auxiliar = auxiliar->pr[0]){
+    for(auxiliar=aux->linha; auxiliar!=NULL; auxiliar = auxiliar->pr[0]){
       printf("\nPonto: %s", auxiliar->pt.id);
     }
     printf("\nQual o ponto de origem?");
     fgets(leitura, 10, stdin);
     sscanf(leitura, "%s", ponto);
 
-    for(auxiliar=aux->linha.l; auxiliar!=NULL; auxiliar = auxiliar->pr[0]){
+    for(auxiliar=aux->linha; auxiliar!=NULL; auxiliar = auxiliar->pr[0]){
       if (strcmp(ponto, auxiliar->pt.id)==0){
         i=1;
         break;
@@ -383,7 +383,7 @@ void mostra_linha(LISTA_LINHAS* topo_lista_linhas, char * texto, char*linha){
   }
   printf("\nLista de linhas:\n");
   for(;topo_lista_linhas!=NULL;topo_lista_linhas=topo_lista_linhas->pr){
-    printf("LINHA %s\n", topo_lista_linhas->linha.id);
+    printf("LINHA %s\n", topo_lista_linhas->id);
   }
   printf("\n%s\n", texto);
   fgets(leitura, 100, stdin);
@@ -405,7 +405,7 @@ LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, 
 
   for(; topo_lista_linhas!=NULL; topo_lista_linhas=topo_lista_linhas->pr){
 
-    for(aux=topo_lista_linhas->linha.l; aux!=NULL; aux=aux->pr[0]){
+    for(aux=topo_lista_linhas->linha; aux!=NULL; aux=aux->pr[0]){
       deltaX = aux->pt.x - x;
       deltaY = aux->pt.y - y;
       if(deltaX*deltaX + deltaY*deltaY < RAIO_ESTACAO*RAIO_ESTACAO){
@@ -469,28 +469,13 @@ void mostra_boio(COMBOIO boio){
   fflush(stdout);
 }
 
-void liga_pontos(char aux_string[6][10], LISTA_LINHAS *topo_lista_linhas){
-  LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
-
-  pt1 = procura_ponto(aux_string[0], aux_string[1], topo_lista_linhas);
-  pt2 = procura_ponto(aux_string[2], aux_string[3], topo_lista_linhas);
-  if (pt1 == NULL || pt2 == NULL){
-    printf("ERRO de ligacao de pontos\n");
-    fflush (stdout);
-    exit(0);
-  }
-  pt1->pr[1]=pt2;
-  // mostra_ponto(pt1->pt);
-  // mostra_ponto(pt1->pr[1]->pt);
-}
-
 LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_lista_linhas){
   LISTA_PONTOS *aux_pt;
   LISTA_LINHAS *linha_atual;
 
   for(linha_atual=topo_lista_linhas; linha_atual!=NULL; linha_atual=linha_atual->pr){
-    if (strcmp(id_linha, linha_atual->linha.id) == 0){
-      for(aux_pt=linha_atual->linha.l; aux_pt != NULL; aux_pt=aux_pt->pr[0]){
+    if (strcmp(id_linha, linha_atual->id) == 0){
+      for(aux_pt=linha_atual->linha; aux_pt != NULL; aux_pt=aux_pt->pr[0]){
         if(strcmp(id_ponto, aux_pt->pt.id) == 0){
           return aux_pt;
         }

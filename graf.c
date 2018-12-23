@@ -132,7 +132,7 @@ void desenha_pontos(LISTA_LINHAS *topo_lista_linhas){
   LISTA_PONTOS *ap;
 
   for(; topo_lista_linhas !=NULL; topo_lista_linhas=topo_lista_linhas->pr){
-    for(ap = topo_lista_linhas->linha.l; ap!= NULL; ap=ap->pr[0]){
+    for(ap = topo_lista_linhas->linha; ap!= NULL; ap=ap->pr[0]){
       if (ap->pt.tipo == EST){
         filledCircleColor(pintor, ap->pt.x, ap->pt.y, 10, ap->pt.cor);
         aacircleColor(pintor, ap->pt.x, ap->pt.y, 10, hexdec_PRETO);
@@ -159,7 +159,7 @@ void desenha_ligacoes(LISTA_LINHAS *topo_lista_linhas){
   LISTA_PONTOS *ap;
 
   for(; topo_lista_linhas !=NULL; topo_lista_linhas=topo_lista_linhas->pr){
-    for(ap = topo_lista_linhas->linha.l; ap!= NULL; ap=ap->pr[0]){
+    for(ap = topo_lista_linhas->linha; ap!= NULL; ap=ap->pr[0]){
 
       SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
       if(ap->pr[0] == NULL && ap->pr[1] == NULL) {

@@ -25,7 +25,7 @@ void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_li
       else if (sscanf(leitura, "LINHA: %s", aux_string[0]) == 1){
 
         nova_linha = (LISTA_LINHAS*) calloc(1, sizeof(LISTA_LINHAS));
-        strcpy(nova_linha->linha.id, aux_string[0]);
+        strcpy(nova_linha->id, aux_string[0]);
         nova_linha->pr=*topo_lista_linhas;
         *topo_lista_linhas=nova_linha;
       }
@@ -72,14 +72,28 @@ void preenche_linha(char *aux_string, int *aux_int, LISTA_LINHAS * nova_linha, L
   aux_pt->pt.y = aux_int[1];
   aux_pt->pt.cor = codigo_cor(aux_string+10);
   aux_pt->pt.tipo = numero_tipo(aux_string+20);
-  printf("endereco: %p\n", (void*)nova_linha->linha.l);
-  fflush(stdout);
-  if (nova_linha->linha.l==NULL){
-    nova_linha->linha.l = aux_pt;
+
+  if (nova_linha->linha==NULL){
+    nova_linha->linha = aux_pt;
     *atual = aux_pt;
   }
   else{
     (*atual)->pr[0] = aux_pt;
     *atual = aux_pt;
   }
+}
+
+void liga_pontos(char aux_string[6][10], LISTA_LINHAS *topo_lista_linhas){
+  LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
+
+  pt1 = procura_ponto(aux_string[0], aux_string[1], topo_lista_linhas);
+  pt2 = procura_ponto(aux_string[2], aux_string[3], topo_lista_linhas);
+  if (pt1 == NULL || pt2 == NULL){
+    printf("ERRO de ligacao de pontos\n");
+    fflush (stdout);
+    exit(0);
+  }
+  pt1->pr[1]=pt2;
+  // mostra_ponto(pt1->pt);
+  // mostra_ponto(pt1->pr[1]->pt);
 }

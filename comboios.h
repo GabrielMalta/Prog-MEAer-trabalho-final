@@ -57,17 +57,12 @@ typedef struct{
 
 typedef struct node{
   PONTO pt;
-  // struct node *ant[3];
   struct node *pr[2];
 } LISTA_PONTOS;
 
-typedef struct {
-  char id[5];
-  LISTA_PONTOS *l;
-} LINHA;
-
 typedef struct elem_lista_linhas{
-  LINHA linha;
+  char id[5];
+  LISTA_PONTOS *linha;
   struct elem_lista_linhas *pr;
 } LISTA_LINHAS;
 
