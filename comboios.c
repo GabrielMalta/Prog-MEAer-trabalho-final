@@ -135,15 +135,6 @@ LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_
   return NULL;
 }
 
-LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOIOS *lista_comboios){
-
-  for(; lista_comboios!=NULL; lista_comboios=lista_comboios->pr){
-    boios_graficos=cria_grafico_do_comboio(boios_graficos, &(lista_comboios->boio));
-  }
-
-  return boios_graficos;
-}
-
 LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
   float deltaX, deltaY;
   float m;
@@ -152,6 +143,7 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
   LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
   LISTA_GRAF_BOIO *aux_boio = NULL;
   for( aux_boio = lista_graf_boios; aux_boio!=NULL; aux_boio=aux_boio->pr){
+    if (aux_boio->graf.veloc == 0) continue;
     for(i=0; i<aux_boio->graf.boio->dim; i++){
       pt1 = aux_boio->graf.ultimo_ponto[i];
 
@@ -177,12 +169,12 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
       if (deltaX != 0){
         m = (float) deltaY/deltaX;
 
-        x_a_somar = deltaX/abs(deltaX)  *  aux_boio->graf.boio->veloc/sqrt(m*m+1);
+        x_a_somar = deltaX/abs(deltaX)  *  aux_boio->graf.veloc/sqrt(m*m+1);
         y_a_somar = m*x_a_somar;
       }
       else{
         x_a_somar=0;
-        y_a_somar=deltaY/abs(deltaY) * aux_boio->graf.boio->veloc;
+        y_a_somar=deltaY/abs(deltaY) * aux_boio->graf.veloc;
       }
 
       aux_boio->graf.x[i] += x_a_somar;
@@ -191,7 +183,7 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
       deltaX = pt2->pt.x - aux_boio->graf.x[i]; //reciclar variaveis
       deltaY = pt2->pt.y - aux_boio->graf.y[i]; //para salvar o ambiente
 
-      if( sqrt(deltaY*deltaY + deltaX*deltaX) < aux_boio->graf.boio->veloc){
+      if( sqrt(deltaY*deltaY + deltaX*deltaX) < aux_boio->graf.veloc){
         aux_boio->graf.x[i] = pt2->pt.x;
         aux_boio->graf.y[i] = pt2->pt.y;
         aux_boio->graf.ultimo_ponto[i] = pt2;
@@ -238,6 +230,15 @@ LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, 
       if(deltaX*deltaX + deltaY*deltaY < RAIO_ESTACAO*RAIO_ESTACAO){
         return aux;
       }
+    }
+  }
+  return NULL;
+}
+
+LISTA_GRAF_BOIO * procura_locomotiva_por_coords(LISTA_GRAF_BOIO *graf_boios, int x, int y){
+  for(; graf_boios!=NULL; graf_boios=graf_boios->pr){
+    if (pow(x - graf_boios->graf.x[0],2) + pow(y- graf_boios->graf.y[0],2) < pow(RAIO_ESTACAO,2)){
+      return graf_boios;
     }
   }
   return NULL;
@@ -440,4 +441,12 @@ LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_L
   topo_lista_comboios=novo_boio;
 
   return topo_lista_comboios;
+}
+
+void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar){
+  if (boio_a_parar->graf.veloc != 0){
+    boio_a_parar->graf.veloc =0;
+    return;
+  }
+  boio_a_parar->graf.veloc=boio_a_parar->graf.boio->veloc;
 }

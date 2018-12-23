@@ -16,7 +16,7 @@ SDL_Renderer* pintor;
 #define TICKS_p_FRAME 1000/FPS
 
 #define RAIO_ESTACAO 10
-#define RAIO_COMBOIO 7
+#define RAIO_COMBOIO 6
 
 #define VIA 0
 #define EST 1
@@ -42,6 +42,10 @@ SDL_Renderer* pintor;
 #define hexdec_CASTANHO 0xff123159
 #define hexdec_PRETO 0xff000000
 #define hexdec_BRANCO 0xffffffff
+
+#define LARGURA_BOTAO 120
+#define ALTURA_BOTAO 40
+#define ESPACAMENTO 10
 
 typedef struct{
   char id[5];
@@ -87,6 +91,7 @@ typedef struct grafico_comboio{
   Uint32 cor[4];
   LISTA_PONTOS *ultimo_ponto[4];
   int alavanca[4];
+  float veloc;
 } GRAF_BOIO;
 
 
@@ -113,9 +118,11 @@ void liga_pontos(char aux_string[6][10], LISTA_LINHAS *topo_lista_linhas);
 
 int inicializa_janela( int dim_X, int dim_Y);
 
-void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_graficos, int dimX, int dimY);
+void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_graficos, int dimX, int dimY, int pausa);
 
 void desenha_pontos(LISTA_LINHAS *linha);
+
+int sinal(int numero);
 
 void desenha_ligacoes(LISTA_LINHAS *linha);
 
@@ -125,7 +132,7 @@ LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_
 
 LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio);
 
-LISTA_GRAF_BOIO * inicializa_boios(LISTA_GRAF_BOIO *boios_graficos, LISTA_COMBOIOS *lista_comboios);
+LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios, int ticks_simulacao);
 
 LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios);
 
@@ -135,7 +142,9 @@ LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF
 
 LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y);
 
-int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios);
+LISTA_GRAF_BOIO * procura_locomotiva_por_coords(LISTA_GRAF_BOIO *graf_boios, int x, int y);
+
+int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios, int dimX, int dimY);
 
 void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios);
 
@@ -149,4 +158,8 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
 
 LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS * topo_lista_linhas);
 
-void desenha_butoes(int dimX, int dimY);
+void desenha_botoes(int dimX, int dimY, int pausa);
+
+int carregou_botao(int dimX, int dimY, int x, int y);
+
+void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar);
