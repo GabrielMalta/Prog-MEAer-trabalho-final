@@ -171,68 +171,48 @@ LISTA_COMBOIOS * opcao_elimina_comboio(LISTA_COMBOIOS *topo_lista_comboios){
 }
 
 void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas){
-  char linha[100], leitura[100];
+  char linha[100];
   int i=0;
   LISTA_LINHAS *aux = topo_lista_linhas;
   LISTA_PONTOS *auxiliar=NULL;
   while (1){
     system("clear");
     i=0;
-    aux = topo_lista_linhas;
-    if(topo_lista_linhas== NULL){
-      printf("\nNeste momento nao ha linhas\nPode adicionar linhas editando o ficheiro .txt e reiniciando o programa de seguida\n");
-      getchar();
+    mostra_linha(topo_lista_linhas, "Qual a lista a mostrar?(Fim para sair)", linha);
+    if (strlen(linha)==0)
       break;
-    }
-    printf("\nLista de linhas:\n");
-    for(;aux!=NULL;aux=aux->pr){
-      printf("LINHA %s\n", aux->linha.id);
-    }
-    printf("\nQual a linha a mostrar?(Fim para sair)\n");
-    fgets(leitura, 100, stdin);
-    sscanf(leitura, "%s", linha);
-      if (strcmp(linha, "Fim")==0)
+    if (strcmp(linha, "Fim")==0)
         break;
-      if (strlen(linha)>4){
-        printf("Erro, ID invalido\n");
-        i=1;
+    if (strlen(linha)>4){
+      printf("Erro, ID invalido\n");
+      i=1;
       }
-      aux = topo_lista_linhas;
-      for(;aux!=NULL;aux=aux->pr){
-        if(strcmp(linha, aux->linha.id)==0){
-          i=1;
-          for(auxiliar=aux->linha.l; auxiliar!=NULL; auxiliar = auxiliar->pr[0]){
-            mostra_ponto(auxiliar->pt);
-          }
+    aux = topo_lista_linhas;
+    for(;aux!=NULL;aux=aux->pr){
+      if(strcmp(linha, aux->linha.id)==0){
+        i=1;
+        for(auxiliar=aux->linha.l; auxiliar!=NULL; auxiliar = auxiliar->pr[0]){
+          mostra_ponto(auxiliar->pt);
         }
       }
-      if (i==0)
-        printf("Erro, linha inexistente\n");
-      while(getchar()!='\n');
+    }
+    if (i==0)
+      printf("Erro, linha inexistente\n");
+    while(getchar()!='\n');
   }
 }
 
 LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas){
-  char linha[100], leitura[100];
+  char linha[100];
   int i=0;
   LISTA_LINHAS *aux = topo_lista_linhas, *anterior = NULL;
   LISTA_PONTOS *elimina_lista_pontos;
   while (1){
     system("clear");
     i=0;
-    aux = topo_lista_linhas;
-    printf("\nLista de linhas:\n");
-      for(;aux!=NULL;aux=aux->pr){
-        printf("LINHA %s\n", aux->linha.id);
-      }
-    if(topo_lista_linhas== NULL){
-      printf("\nNeste momento nao ha linhas\nPode adicionar linhas editando o ficheiro .txt e reiniciando o programa de seguida\n");
-      getchar();
+    mostra_linha(topo_lista_linhas, "Qual a lista a mostrar?(Fim para sair)", linha);
+    if (strlen(linha)==0)
       break;
-    }
-    printf("\nQual a linha a eliminar?(Fim para sair)\n");
-    fgets(leitura, 100, stdin);
-    sscanf(leitura, "%s", linha);
 
     if (strcmp(linha, "Fim")==0)
       break;
@@ -274,34 +254,22 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas){
 }
 
 LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS * topo_lista_linhas){
-  char string_aux[4][10], leitura[10];
+  char string_aux[4][10];
   int int_aux[4];
 
   int_aux[0]=verifica(0, 3, "Quantas carruagens?");
-  int_aux[2]=verifica(1, 10, "Qual a velocidade?");
+  int_aux[2]=verifica(10, 100, "Qual a velocidade?");
   int_aux[1]=verifica(5, 60, "Qual o tempo de spawn?");
   int_aux[3]=verifica(0, 9, "Qual a cor da locomotiva?\n0-Cinzento\n1-Vermelho\n2-Roxo\n3-Azul\n4-Ciano\n5-Verde\n6-Amarelo\n7-Castanho\n8-Preto\n9-Branco");
   strcpy(string_aux[1], cor_para_string(int_aux[3]));
-  while(1){
-    system("clear");
-    printf("Qual o id do comboio?(max 2 carateres)");
-    fgets(leitura, 10, stdin);
-    if (sscanf(leitura, "%s", string_aux[0])==1){
-      if (strlen(string_aux[0])==0 || 3<=strlen(string_aux[0])){
-        printf("Erro, insira um numero de carateres valido\n");
-        getchar();
-      }
-      else
-        break;
-      }
-    }
-
-  printf("Qual a linha e ponto de origem?");
-  scanf("%s %s", string_aux[2], string_aux[3]);
+  get_id_comboio(string_aux[0]);
+  get_coords_origem(string_aux[2], string_aux[3], topo_lista_linhas);
 
   topo_lista_comboios = preenche_comboio(string_aux[0], int_aux, topo_lista_comboios, topo_lista_linhas);
 
-  while(getchar()!='\n');
+  system("clear");
+  printf("Comboio criado com sucesso!\n");
+  getchar();
 
   return topo_lista_comboios;
 }
@@ -314,22 +282,112 @@ int verifica(int n_min, int n_max, char *texto){
     printf("%s\nInsira um numero inteiro entre %d e %d:", texto, n_min, n_max);
     fgets(leitura, 10, stdin);
     if (sscanf(leitura, "%f", &valor)==1){
-    if (n_min<=valor && valor<=n_max && valor-(int)valor==0)
+    if (n_min<=valor && valor<=n_max && valor-(int)valor==0){
       return valor;
+      while(getchar()!='\n');
+    }
     else if(valor-(int)valor!=0){
       printf("Erro, insira um numero inteiro\n");
-      getchar();
+
+      while(getchar()!='\n');
     }
     else{
       printf("Erro, insira um valor valido");
-      getchar();
+
+      while(getchar()!='\n');
     }
     }
     else{
       printf("Erro, insira um valor valido");
-      getchar();
+
+      while(getchar()!='\n');
     }
   }
+}
+
+void get_id_comboio(char *id_comboio){
+  char leitura[10];
+  while(1){
+    system("clear");
+    printf("Qual o id do comboio?\nMax 2 carateres:");
+    fgets(leitura, 10, stdin);
+    if (sscanf(leitura, "%s",id_comboio)==1){
+      if (strlen(id_comboio)==0 || 3<=strlen(id_comboio)){
+        printf("Erro, insira um numero de carateres valido\n");
+        getchar();
+      }
+      else
+        break;
+      }
+    }
+}
+
+void get_coords_origem(char * linha, char *ponto, LISTA_LINHAS * topo_lista_linhas){
+  LISTA_LINHAS * aux=NULL;
+  LISTA_PONTOS *auxiliar=NULL;
+  int i=0;
+  char leitura[100];
+  while(1){
+    system("clear");
+    aux=topo_lista_linhas;
+    mostra_linha(topo_lista_linhas, "Qual a lista de origem?", linha);
+    for(;aux!=NULL;aux=aux->pr){
+      if(strcmp(linha, aux->linha.id)==0){
+        i=1;
+        break;
+        }
+      }
+
+      if (i==0){
+        printf("Erro, linha inexistente\n");
+        while(getchar()!='\n');
+      }
+      else
+        break;
+  }
+
+
+  while(1){
+    i=0;
+    system("clear");
+    printf("Pontos pertencentes a linha %s:\n", linha);
+    for(auxiliar=aux->linha.l; auxiliar!=NULL; auxiliar = auxiliar->pr[0]){
+      printf("\nPonto: %s", auxiliar->pt.id);
+    }
+    printf("\nQual o ponto de origem?");
+    fgets(leitura, 10, stdin);
+    sscanf(leitura, "%s", ponto);
+
+    for(auxiliar=aux->linha.l; auxiliar!=NULL; auxiliar = auxiliar->pr[0]){
+      if (strcmp(ponto, auxiliar->pt.id)==0){
+        i=1;
+        break;
+      }
+    }
+    if (i==0){
+      printf("Erro, ponto inexistente\n");
+      while(getchar()!='\n');
+    }
+    else
+      break;
+  }
+}
+
+void mostra_linha(LISTA_LINHAS* topo_lista_linhas, char * texto, char*linha){
+  char leitura[100];
+  if(topo_lista_linhas== NULL){
+    printf("\nNeste momento nao ha linhas\nPode adicionar linhas editando o ficheiro .txt e reiniciando o programa de seguida\n");
+    getchar();
+    linha[0] = '\0';
+    return;
+  }
+  printf("\nLista de linhas:\n");
+  for(;topo_lista_linhas!=NULL;topo_lista_linhas=topo_lista_linhas->pr){
+    printf("LINHA %s\n", topo_lista_linhas->linha.id);
+  }
+  printf("\n%s\n", texto);
+  fgets(leitura, 100, stdin);
+  sscanf(leitura, "%s", linha);
 }
 
 LISTA_GRAF_BOIO * procura_locomotiva_por_coords(LISTA_GRAF_BOIO *graf_boios, int x, int y){
