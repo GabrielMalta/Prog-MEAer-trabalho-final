@@ -108,7 +108,7 @@ Uint32 codigo_cor( char string[]);
 
 int numero_tipo( char string[]);
 
-Uint32 random_cor(void);
+Uint32 cor_converte(int cor);
 
 char * cor_codigo( Uint32 no);
 
@@ -167,3 +167,7 @@ void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar);
 LISTA_COMBOIOS * preenche_comboio(char *aux_string, int *aux_int, LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas);
 
 void preenche_linha(char *aux_string, int *aux_int, LISTA_LINHAS * nova_linha, LISTA_PONTOS **atual);
+
+int verifica(int n_min, int n_max, char *texto);
+
+char * cor_para_string(int cor);

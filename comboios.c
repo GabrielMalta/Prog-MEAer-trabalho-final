@@ -274,19 +274,28 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas){
 }
 
 LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS * topo_lista_linhas){
-  char string_aux[4][10];
+  char string_aux[4][10], leitura[10];
   int int_aux[4];
 
-  printf("Qual o id do comboio?(max 2 carateres)");
-  scanf("%s", string_aux[0]);
-  printf("Qual a cor da locomotiva?");
-  scanf("%s", string_aux[1]);
-  printf("Quantas carruagens?(max 3)");
-  scanf("%d", &int_aux[0]);
-  printf("Velocidade?");
-  scanf("%d", &int_aux[2]);
-  printf("Tempo de spawn?");
-  scanf("%d", &int_aux[1]);
+  int_aux[0]=verifica(0, 3, "Quantas carruagens?");
+  int_aux[2]=verifica(1, 10, "Qual a velocidade?");
+  int_aux[1]=verifica(5, 60, "Qual o tempo de spawn?");
+  int_aux[3]=verifica(0, 9, "Qual a cor da locomotiva?\n0-Cinzento\n1-Vermelho\n2-Roxo\n3-Azul\n4-Ciano\n5-Verde\n6-Amarelo\n7-Castanho\n8-Preto\n9-Branco");
+  strcpy(string_aux[1], cor_para_string(int_aux[3]));
+  while(1){
+    system("clear");
+    printf("Qual o id do comboio?(max 2 carateres)");
+    fgets(leitura, 10, stdin);
+    if (sscanf(leitura, "%s", string_aux[0])==1){
+      if (strlen(string_aux[0])==0 || 3<=strlen(string_aux[0])){
+        printf("Erro, insira um numero de carateres valido\n");
+        getchar();
+      }
+      else
+        break;
+      }
+    }
+
   printf("Qual a linha e ponto de origem?");
   scanf("%s %s", string_aux[2], string_aux[3]);
 
@@ -295,6 +304,32 @@ LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_L
   while(getchar()!='\n');
 
   return topo_lista_comboios;
+}
+
+int verifica(int n_min, int n_max, char *texto){
+  char  leitura[10];
+  float valor=0;
+  while(1){
+    system("clear");
+    printf("%s\nInsira um numero inteiro entre %d e %d:", texto, n_min, n_max);
+    fgets(leitura, 10, stdin);
+    if (sscanf(leitura, "%f", &valor)==1){
+    if (n_min<=valor && valor<=n_max && valor-(int)valor==0)
+      return valor;
+    else if(valor-(int)valor!=0){
+      printf("Erro, insira um numero inteiro\n");
+      getchar();
+    }
+    else{
+      printf("Erro, insira um valor valido");
+      getchar();
+    }
+    }
+    else{
+      printf("Erro, insira um valor valido");
+      getchar();
+    }
+  }
 }
 
 LISTA_GRAF_BOIO * procura_locomotiva_por_coords(LISTA_GRAF_BOIO *graf_boios, int x, int y){

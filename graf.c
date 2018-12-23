@@ -17,9 +17,24 @@ Uint32 codigo_cor(char string[]){ //funciona
   // return NULL;
 }
 
-Uint32 random_cor(void){
- int random = rand()%10;
- switch(random){
+char * cor_para_string(int cor){
+ switch(cor){
+   case CINZENTO: return "CINZENTO";
+   case VERMELHO: return "VERMELHO";
+   case ROXO:     return "ROXO";
+   case AZUL:     return "AZUL";
+   case CIANO:    return "CIANO";
+   case VERDE:    return "VERDE";
+   case AMARELO:  return "AMARELO";
+   case CASTANHO: return "CASTANHO";
+   case PRETO:    return "PRETO";
+   case BRANCO:   return "BRANCO";
+ }
+ return 0;
+}
+
+Uint32 cor_converte(int cor){
+ switch(cor){
    case CINZENTO: return hexdec_CINZENTO;
    case VERMELHO: return hexdec_VERMELHO;
    case ROXO:     return hexdec_ROXO;
@@ -68,6 +83,7 @@ int inicializa_janela(int dim_X, int dim_Y){
 
 LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio){
   int i;
+  int random = rand()%10;
   LISTA_GRAF_BOIO *novo_graf_boio = calloc(1, sizeof(LISTA_GRAF_BOIO));
   if (novo_graf_boio == NULL){
     printf("Erro falta de memória\n");
@@ -75,7 +91,7 @@ LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMB
   }
   novo_graf_boio->graf.boio=comboio;
   for(i=0;i<comboio->dim; i++){
-    novo_graf_boio->graf.cor[i]= random_cor();
+    novo_graf_boio->graf.cor[i]= cor_converte(random);
     novo_graf_boio->graf.x[i]=comboio->origem->pt.x;
     novo_graf_boio->graf.y[i]=comboio->origem->pt.y;
     novo_graf_boio->graf.ultimo_ponto[i]=comboio->origem;
