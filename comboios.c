@@ -225,43 +225,50 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas){
       for(;aux!=NULL;aux=aux->pr){
         printf("LINHA %s\n", aux->linha.id);
       }
+    if(topo_lista_linhas== NULL){
+      printf("\nNeste momento nao ha linhas\nPode adicionar linhas editando o ficheiro .txt e reiniciando o programa de seguida\n");
+      getchar();
+      break;
+    }
+    printf("\nQual a linha a eliminar?(Fim para sair)\n");
+    fgets(leitura, 100, stdin);
+    sscanf(leitura, "%s", linha);
 
-      fgets(leitura, 100, stdin);
-      sscanf(leitura, "%s", linha);
+    if (strcmp(linha, "Fim")==0)
+      break;
 
-      if (strcmp(linha, "Fim")==0)
-        break;
-
-      if (strlen(linha)>4){
-        printf("Erro, ID invalido\n");
-        i=1;
-      }
-
-      aux = topo_lista_linhas;
-      anterior = NULL;
-
-      for(;aux!=NULL;aux=aux->pr){
-        if(strcmp(linha, aux->linha.id)==0){
-          i=1;
-          for(; aux->linha.l!=NULL; aux->linha.l = aux->linha.l->pr[0]){
-            elimina_lista_pontos = aux->linha.l;
-            free(elimina_lista_pontos);
-          }
-          if (anterior == NULL){
-             topo_lista_linhas=aux->pr;
-             free(aux);
-          }
-          else{
-            anterior->pr=aux->pr;
-            free(aux);
-          }
-        }
-        else
-        anterior = aux;
-      }
-      if (i==0)
-        printf("Erro, linha inexistente\n");
+    if (strlen(linha)>4){
+      printf("Erro, ID invalido\n");
       while(getchar()!='\n');
+      i=1;
+    }
+
+    aux = topo_lista_linhas;
+    anterior = NULL;
+
+    for(;aux!=NULL;aux=aux->pr){
+      if(strcmp(linha, aux->linha.id)==0){
+        i=1;
+        for(; aux->linha.l!=NULL; aux->linha.l = aux->linha.l->pr[0]){
+          elimina_lista_pontos = aux->linha.l;
+          free(elimina_lista_pontos);
+        }
+        if (anterior == NULL){
+           topo_lista_linhas=aux->pr;
+           free(aux);
+        }
+        else{
+          anterior->pr=aux->pr;
+          free(aux);
+        }
+      }
+      else
+      anterior = aux;
+    }
+    if (i==0){
+      printf("Erro, linha inexistente\n");
+    while(getchar()!='\n');
+    }
   }
   return topo_lista_linhas;
 }
