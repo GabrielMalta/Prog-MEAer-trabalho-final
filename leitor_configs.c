@@ -3,7 +3,7 @@
 void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas, int *dim_X, int *dim_Y, char *nome_ficheiro){
   FILE *config = fopen(nome_ficheiro, "r");
   LISTA_LINHAS *nova_linha;
-  LISTA_PONTOS *aux_pt = NULL, *atual=NULL;
+  LISTA_PONTOS *atual=NULL;
 
   char leitura[100];
   char aux_string[6][10];
@@ -31,22 +31,7 @@ void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_li
       }
       //se for ponto
       else if (sscanf(leitura, "%s %d %d %s %s", aux_string[0], aux_int, aux_int+1, aux_string[1], aux_string[2]) == 5){
-
-        aux_pt = (LISTA_PONTOS*) calloc(1, sizeof(LISTA_PONTOS));
-        strcpy(aux_pt->pt.id, aux_string[0]);
-        aux_pt->pt.x = aux_int[0];
-        aux_pt->pt.y = aux_int[1];
-        aux_pt->pt.cor = codigo_cor(aux_string[1]);
-        aux_pt->pt.tipo = numero_tipo(aux_string[2]);
-
-        if (nova_linha->linha.l==NULL){
-          nova_linha->linha.l = aux_pt;
-          atual = aux_pt;
-        }
-        else{
-          atual->pr[0] = aux_pt;
-          atual = aux_pt;
-        }
+        preenche_linha(aux_string[0], aux_int, nova_linha, &atual);
       }
       //Ligacao de pontos
       else if (sscanf(leitura, "LIGAR: %s %s %s %s", aux_string[0], aux_string[1], aux_string[2], aux_string[3]) == 4){
@@ -76,4 +61,25 @@ LISTA_COMBOIOS * preenche_comboio(char *aux_string, int *aux_int, LISTA_COMBOIOS
   topo_lista_comboios=novo_boio;
 
   return topo_lista_comboios;
+}
+
+void preenche_linha(char *aux_string, int *aux_int, LISTA_LINHAS * nova_linha, LISTA_PONTOS **atual){
+  LISTA_PONTOS *aux_pt = NULL;
+
+  aux_pt = (LISTA_PONTOS*) calloc(1, sizeof(LISTA_PONTOS));
+  strcpy(aux_pt->pt.id, aux_string);
+  aux_pt->pt.x = aux_int[0];
+  aux_pt->pt.y = aux_int[1];
+  aux_pt->pt.cor = codigo_cor(aux_string+10);
+  aux_pt->pt.tipo = numero_tipo(aux_string+20);
+  printf("endereco: %p\n", (void*)nova_linha->linha.l);
+  fflush(stdout);
+  if (nova_linha->linha.l==NULL){
+    nova_linha->linha.l = aux_pt;
+    *atual = aux_pt;
+  }
+  else{
+    (*atual)->pr[0] = aux_pt;
+    *atual = aux_pt;
+  }
 }
