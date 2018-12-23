@@ -85,13 +85,17 @@ void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios){
         printf("COMBOIO %s\n", aux->boio.id);
       printf("\nQual o comboio a mostrar?(Fim para sair)\n");
       scanf("%s", comboio);
+
       if (strcmp(comboio, "Fim")==0)
         break;
+
       if (strlen(comboio)>2){
         printf("Erro, ID invalido\n");
         i=1;
       }
+
       aux=topo_lista_comboios;
+
       for(;aux!=NULL;aux=aux->pr){
         if(strcmp(comboio, aux->boio.id)==0){
           mostra_boio(aux->boio);
