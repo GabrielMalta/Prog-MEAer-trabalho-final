@@ -163,3 +163,5 @@ void desenha_botoes(int dimX, int dimY, int pausa);
 int carregou_botao(int dimX, int dimY, int x, int y);
 
 void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar);
+
+LISTA_GRAF_BOIO * colisoes(LISTA_GRAF_BOIO *lista_graf_boios);
