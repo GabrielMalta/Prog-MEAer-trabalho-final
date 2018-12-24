@@ -1,6 +1,8 @@
-JACOB:
-
-GABRIEL
-- colisoes !?
-- evitar colisoes !!!?
+Melhorar sistem de colisoes(principalmente em interceçoes e quando e criado um comboio novo)
+Locomotivas a piscar quando os comboios param
+Separar a funcao mexercomboios2 em varias
+Acrescentar alavancas nas intercecoes(percebe-se melhor)
 - fumo :D
+Fazer debug do menu
+Design grafico melhor??
+Proteger leitor_configs contra erros na leitura(vale a pena?)

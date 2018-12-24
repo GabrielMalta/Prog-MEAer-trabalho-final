@@ -85,6 +85,7 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
     if (pausa!=1){
       boios_graficos = gera_novos_graf_boios(boios_graficos, topo_lista_comboios, ticks_simulacao);
       boios_graficos = mexe_comboios2(boios_graficos);
+      colisoes(boios_graficos);
       atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY, pausa);
       ticks_simulacao++;
     }
@@ -221,6 +222,31 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
     }
   }
   return lista_graf_boios;
+}
+
+void colisoes(LISTA_GRAF_BOIO *lista_graf_boios){
+  LISTA_GRAF_BOIO *atual, *comparar;
+  int i,j;
+
+  for (atual=lista_graf_boios; atual->pr!=NULL; atual=atual->pr){
+    for(comparar=atual->pr; comparar!=NULL; comparar=comparar->pr){
+      for(i=0; i<atual->graf.boio->dim; i++){
+        for(j=0; j<comparar->graf.boio->dim; j++){
+          if(pow(atual->graf.x[i]-comparar->graf.x[j],2)+pow(atual->graf.y[i]-comparar->graf.y[j],2) < 1.3 * pow(2*RAIO_COMBOIO,2)){
+            if(i==0 && j==0 && atual->graf.veloc == 0){}
+            if(i==0 && j==0 && comparar->graf.veloc == 0){}
+            else if(i==0 && j==0){
+              atual->graf.veloc = 0;
+            }
+            else if(i==0 && j != 0)
+              atual->graf.veloc = 0;
+            else if(j==0 && i != 0)
+              comparar->graf.veloc = 0;
+          }
+        }
+      }
+    }
+  }
 }
 
 LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar){
