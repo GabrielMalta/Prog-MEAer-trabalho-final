@@ -1,5 +1,72 @@
 #include "comboios.h"
 
+Uint32 codigo_cor(char string[]){ //funciona
+  // converte a string de cor para hexadecimal para armazenar
+  if (strcmp("CINZENTO", string) == 0) return hexdec_CINZENTO;
+  if (strcmp("VERMELHO", string) == 0) return hexdec_VERMELHO;
+  if (strcmp("ROXO", string) == 0) return hexdec_ROXO;
+  if (strcmp("AZUL", string) == 0) return hexdec_AZUL;
+  if (strcmp("CIANO", string) == 0) return hexdec_CIANO;
+  if (strcmp("VERDE", string) == 0) return hexdec_VERDE;
+  if (strcmp("AMARELO", string) == 0) return hexdec_AMARELO;
+  if (strcmp("CASTANHO", string) == 0) return hexdec_CASTANHO;
+  if (strcmp("PRETO", string) == 0) return hexdec_PRETO;
+  if (strcmp("BRANCO", string) == 0) return hexdec_BRANCO;
+  printf("Erro leitura de cor\n");
+  exit(0);
+  // return NULL;
+}
+
+char * cor_para_string(int cor){
+  switch(cor){
+    case CINZENTO: return "CINZENTO";
+    case VERMELHO: return "VERMELHO";
+    case ROXO:     return "ROXO";
+    case AZUL:     return "AZUL";
+    case CIANO:    return "CIANO";
+    case VERDE:    return "VERDE";
+    case AMARELO:  return "AMARELO";
+    case CASTANHO: return "CASTANHO";
+    case PRETO:    return "PRETO";
+    case BRANCO:   return "BRANCO";
+  }
+  return 0;
+}
+
+Uint32 cor_converte(int cor){
+  switch(cor){
+    case CINZENTO: return hexdec_CINZENTO;
+    case VERMELHO: return hexdec_VERMELHO;
+    case ROXO:     return hexdec_ROXO;
+    case AZUL:     return hexdec_AZUL;
+    case CIANO:    return hexdec_CIANO;
+    case VERDE:    return hexdec_VERDE;
+    case AMARELO:  return hexdec_AMARELO;
+    case CASTANHO: return hexdec_CASTANHO;
+    case PRETO:    return hexdec_PRETO;
+    case BRANCO:   return hexdec_BRANCO;
+  }
+  return 0;
+}
+
+char * cor_codigo(Uint32 no){
+  // converte o numero para um string de cor correspondente
+  switch(no){
+    case hexdec_CINZENTO: return "Cinzento";
+    case hexdec_VERMELHO: return "Vermelho";
+    case hexdec_ROXO:     return "Roxo";
+    case hexdec_AZUL:     return "Azul";
+    case hexdec_CIANO:    return "Ciano";
+    case hexdec_VERDE:    return "Verde";
+    case hexdec_AMARELO:  return "Amarelo";
+    case hexdec_CASTANHO: return "Castanho";
+    case hexdec_PRETO:    return "Preto";
+    case hexdec_BRANCO:   return "Branco";
+  }
+  printf("Erro cor_numero\n");
+  exit(0);
+}
+
 void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas, int dimensaoX, int dimensaoY){
   LISTA_GRAF_BOIO *boios_graficos = NULL;
   SDL_Event event;
@@ -39,6 +106,50 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
     }
   }
   SDL_Quit();
+}
+
+int inicializa_janela(int dim_X, int dim_Y){
+  if(SDL_Init(SDL_INIT_EVERYTHING) >= 0){
+    janela = SDL_CreateWindow("I like trains",
+    SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, dim_X, dim_Y, SDL_WINDOW_SHOWN);
+    if(janela != 0){
+      pintor = SDL_CreateRenderer(janela, -1, 0);
+      return 1;
+    }
+  }
+  printf("Erro: na abertura do SDL2\n");
+  fflush(stdout);
+  return 0;
+}
+
+LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios, int ticks_simulacao){
+  for(; comboios!=NULL; comboios=comboios->pr){
+    if(ticks_simulacao% ((int) comboios->boio.tempo_spawn*FPS) == 0){
+      lista_graf_boios = cria_grafico_do_comboio(lista_graf_boios, &(comboios->boio));
+    }
+  }
+  return lista_graf_boios;
+}
+
+LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio){
+  int i;
+  int random = rand()%10;
+  LISTA_GRAF_BOIO *novo_graf_boio = calloc(1, sizeof(LISTA_GRAF_BOIO));
+  if (novo_graf_boio == NULL){
+    printf("Erro falta de memória\n");
+    fflush(stdout);
+  }
+  novo_graf_boio->graf.boio=comboio;
+  for(i=0;i<comboio->dim; i++){
+    novo_graf_boio->graf.cor[i]= cor_converte(random);
+    novo_graf_boio->graf.x[i]=comboio->origem->pt.x;
+    novo_graf_boio->graf.y[i]=comboio->origem->pt.y;
+    novo_graf_boio->graf.ultimo_ponto[i]=comboio->origem;
+  }
+  novo_graf_boio->graf.cor[0]=comboio->cor;
+  novo_graf_boio->graf.veloc=comboio->veloc;
+  novo_graf_boio->pr=lista_graf_boios;
+  return novo_graf_boio;
 }
 
 LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
@@ -112,117 +223,6 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
   return lista_graf_boios;
 }
 
-Uint32 codigo_cor(char string[]){ //funciona
-  // converte a string de cor para hexadecimal para armazenar
-  if (strcmp("CINZENTO", string) == 0) return hexdec_CINZENTO;
-  if (strcmp("VERMELHO", string) == 0) return hexdec_VERMELHO;
-  if (strcmp("ROXO", string) == 0) return hexdec_ROXO;
-  if (strcmp("AZUL", string) == 0) return hexdec_AZUL;
-  if (strcmp("CIANO", string) == 0) return hexdec_CIANO;
-  if (strcmp("VERDE", string) == 0) return hexdec_VERDE;
-  if (strcmp("AMARELO", string) == 0) return hexdec_AMARELO;
-  if (strcmp("CASTANHO", string) == 0) return hexdec_CASTANHO;
-  if (strcmp("PRETO", string) == 0) return hexdec_PRETO;
-  if (strcmp("BRANCO", string) == 0) return hexdec_BRANCO;
-  printf("Erro leitura de cor\n");
-  exit(0);
-  // return NULL;
-}
-
-char * cor_para_string(int cor){
- switch(cor){
-   case CINZENTO: return "CINZENTO";
-   case VERMELHO: return "VERMELHO";
-   case ROXO:     return "ROXO";
-   case AZUL:     return "AZUL";
-   case CIANO:    return "CIANO";
-   case VERDE:    return "VERDE";
-   case AMARELO:  return "AMARELO";
-   case CASTANHO: return "CASTANHO";
-   case PRETO:    return "PRETO";
-   case BRANCO:   return "BRANCO";
- }
- return 0;
-}
-
-Uint32 cor_converte(int cor){
- switch(cor){
-   case CINZENTO: return hexdec_CINZENTO;
-   case VERMELHO: return hexdec_VERMELHO;
-   case ROXO:     return hexdec_ROXO;
-   case AZUL:     return hexdec_AZUL;
-   case CIANO:    return hexdec_CIANO;
-   case VERDE:    return hexdec_VERDE;
-   case AMARELO:  return hexdec_AMARELO;
-   case CASTANHO: return hexdec_CASTANHO;
-   case PRETO:    return hexdec_PRETO;
-   case BRANCO:   return hexdec_BRANCO;
- }
- return 0;
-}
-
-char * cor_codigo(Uint32 no){
-  // converte o numero para um string de cor correspondente
-  switch(no){
-    case hexdec_CINZENTO: return "Cinzento";
-    case hexdec_VERMELHO: return "Vermelho";
-    case hexdec_ROXO:     return "Roxo";
-    case hexdec_AZUL:     return "Azul";
-    case hexdec_CIANO:    return "Ciano";
-    case hexdec_VERDE:    return "Verde";
-    case hexdec_AMARELO:  return "Amarelo";
-    case hexdec_CASTANHO: return "Castanho";
-    case hexdec_PRETO:    return "Preto";
-    case hexdec_BRANCO:   return "Branco";
-  }
-  printf("Erro cor_numero\n");
-  exit(0);
-}
-
-int inicializa_janela(int dim_X, int dim_Y){
-  if(SDL_Init(SDL_INIT_EVERYTHING) >= 0){
-    janela = SDL_CreateWindow("I like trains",
-    SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, dim_X, dim_Y, SDL_WINDOW_SHOWN);
-    if(janela != 0){
-      pintor = SDL_CreateRenderer(janela, -1, 0);
-      return 1;
-    }
-  }
-  printf("Erro: na abertura do SDL2\n");
-  fflush(stdout);
-  return 0;
-}
-
-LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio){
-  int i;
-  int random = rand()%10;
-  LISTA_GRAF_BOIO *novo_graf_boio = calloc(1, sizeof(LISTA_GRAF_BOIO));
-  if (novo_graf_boio == NULL){
-    printf("Erro falta de memória\n");
-    fflush(stdout);
-  }
-  novo_graf_boio->graf.boio=comboio;
-  for(i=0;i<comboio->dim; i++){
-    novo_graf_boio->graf.cor[i]= cor_converte(random);
-    novo_graf_boio->graf.x[i]=comboio->origem->pt.x;
-    novo_graf_boio->graf.y[i]=comboio->origem->pt.y;
-    novo_graf_boio->graf.ultimo_ponto[i]=comboio->origem;
-  }
-  novo_graf_boio->graf.cor[0]=comboio->cor;
-  novo_graf_boio->graf.veloc=comboio->veloc;
-  novo_graf_boio->pr=lista_graf_boios;
-  return novo_graf_boio;
-}
-
-LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios, int ticks_simulacao){
-  for(; comboios!=NULL; comboios=comboios->pr){
-    if(ticks_simulacao% ((int) comboios->boio.tempo_spawn*FPS) == 0){
-      lista_graf_boios = cria_grafico_do_comboio(lista_graf_boios, &(comboios->boio));
-    }
-  }
-  return lista_graf_boios;
-}
-
 LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar){
   LISTA_GRAF_BOIO *aux_boio, *ant_boio=NULL;
 
@@ -238,6 +238,17 @@ LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF
   fflush(stdout);
   // mostra_boios_ativos(lista_graf_boios);
   return lista_graf_boios;
+}
+
+void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_graficos, int dimX, int dimY, int pausa){
+
+  SDL_SetRenderDrawColor(pintor, 235, 235, 235, 255);
+  SDL_RenderClear(pintor);
+
+  desenha_ligacoes(topo_lista_linhas);
+  desenha_pontos(topo_lista_linhas);
+  desenha_comboios(boios_graficos);
+  desenha_botoes(dimX,dimY, pausa);
 }
 
 void desenha_pontos(LISTA_LINHAS *topo_lista_linhas){
@@ -259,12 +270,6 @@ void desenha_pontos(LISTA_LINHAS *topo_lista_linhas){
       }
     }
   }
-}
-
-int sinal(int numero){
-  if (numero>0) return 1;
-  if (numero<0) return -1;
-  return 0;
 }
 
 void desenha_ligacoes(LISTA_LINHAS *topo_lista_linhas){
@@ -307,15 +312,27 @@ void desenha_comboios(LISTA_GRAF_BOIO *lista_graf_boios){
   }
 }
 
-void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_graficos, int dimX, int dimY, int pausa){
+void desenha_botoes(int dimX, int dimY, int pausa){
+  SDL_Rect botao_sair, botao_pausa;
 
-  SDL_SetRenderDrawColor(pintor, 235, 235, 235, 255);
-  SDL_RenderClear(pintor);
+  botao_sair.w = LARGURA_BOTAO;
+  botao_sair.h = ALTURA_BOTAO;
+  botao_sair.x = dimX - ESPACAMENTO - LARGURA_BOTAO;
+  botao_sair.y = ESPACAMENTO;
+  botao_pausa.w = LARGURA_BOTAO;
+  botao_pausa.h = ALTURA_BOTAO;
+  botao_pausa.x = dimX - 2*ESPACAMENTO - 2*LARGURA_BOTAO;
+  botao_pausa.y = ESPACAMENTO;
 
-  desenha_ligacoes(topo_lista_linhas);
-  desenha_pontos(topo_lista_linhas);
-  desenha_comboios(boios_graficos);
-  desenha_botoes(dimX,dimY, pausa);
+  SDL_SetRenderDrawColor(pintor, 253, 233, 170, 255);
+  SDL_RenderFillRect(pintor, &botao_sair);
+  SDL_RenderFillRect(pintor, &botao_pausa);
+  SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
+  SDL_RenderDrawRect(pintor, &botao_sair);
+  SDL_RenderDrawRect(pintor, &botao_pausa);
+  stringRGBA(pintor, botao_sair.x+0.35*botao_sair.w, botao_sair.y+0.4*botao_sair.h, "SAIR", 0, 0, 0, 255);
+  if(pausa == 0) stringRGBA(pintor, botao_pausa.x+botao_pausa.w*0.35, botao_pausa.y+0.4*botao_pausa.h, "PAUSA", 0, 0, 0, 255);
+  else stringRGBA(pintor, botao_pausa.x+botao_pausa.w*0.29, botao_pausa.y+0.4*botao_pausa.h, "RETOMAR", 0, 0, 0, 255);
 }
 
 int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios, int dimX, int dimY){
@@ -345,29 +362,6 @@ int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BO
     default: return 0;
   }
   return 0;
-}
-
-void desenha_botoes(int dimX, int dimY, int pausa){
-  SDL_Rect botao_sair, botao_pausa;
-
-  botao_sair.w = LARGURA_BOTAO;
-  botao_sair.h = ALTURA_BOTAO;
-  botao_sair.x = dimX - ESPACAMENTO - LARGURA_BOTAO;
-  botao_sair.y = ESPACAMENTO;
-  botao_pausa.w = LARGURA_BOTAO;
-  botao_pausa.h = ALTURA_BOTAO;
-  botao_pausa.x = dimX - 2*ESPACAMENTO - 2*LARGURA_BOTAO;
-  botao_pausa.y = ESPACAMENTO;
-
-  SDL_SetRenderDrawColor(pintor, 253, 233, 170, 255);
-  SDL_RenderFillRect(pintor, &botao_sair);
-  SDL_RenderFillRect(pintor, &botao_pausa);
-  SDL_SetRenderDrawColor(pintor, 0, 0, 0, 255);
-  SDL_RenderDrawRect(pintor, &botao_sair);
-  SDL_RenderDrawRect(pintor, &botao_pausa);
-  stringRGBA(pintor, botao_sair.x+0.35*botao_sair.w, botao_sair.y+0.4*botao_sair.h, "SAIR", 0, 0, 0, 255);
-  if(pausa == 0) stringRGBA(pintor, botao_pausa.x+botao_pausa.w*0.35, botao_pausa.y+0.4*botao_pausa.h, "PAUSA", 0, 0, 0, 255);
-  else stringRGBA(pintor, botao_pausa.x+botao_pausa.w*0.29, botao_pausa.y+0.4*botao_pausa.h, "RETOMAR", 0, 0, 0, 255);
 }
 
 int carregou_botao(int dimX, int dimY, int x, int y){
@@ -417,3 +411,9 @@ void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar){
   }
   boio_a_parar->graf.veloc=boio_a_parar->graf.boio->veloc;
 }
+
+// int sinal(int numero){
+  //   if (numero>0) return 1;
+  //   if (numero<0) return -1;
+  //   return 0;
+  // }
