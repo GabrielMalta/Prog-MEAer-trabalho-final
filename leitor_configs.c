@@ -97,3 +97,28 @@ void liga_pontos(char aux_string[6][10], LISTA_LINHAS *topo_lista_linhas){
   // mostra_ponto(pt1->pt);
   // mostra_ponto(pt1->pr[1]->pt);
 }
+
+LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_lista_linhas){
+  LISTA_PONTOS *aux_pt;
+  LISTA_LINHAS *linha_atual;
+
+  for(linha_atual=topo_lista_linhas; linha_atual!=NULL; linha_atual=linha_atual->pr){
+    if (strcmp(id_linha, linha_atual->id) == 0){
+      for(aux_pt=linha_atual->linha; aux_pt != NULL; aux_pt=aux_pt->pr[0]){
+        if(strcmp(id_ponto, aux_pt->pt.id) == 0){
+          return aux_pt;
+        }
+      }
+    }
+  }
+  return NULL;
+}
+
+int numero_tipo(char string[]){ //funciona
+  // converte a string de tipo num inteiro para armazenar
+  if (strcmp("EST", string) == 0) return 1;
+  if (strcmp("ENT", string) == 0) return 2;
+  if (strcmp("SAI", string) == 0) return 3;
+  if (strcmp("VIA", string) == 0) return 4;
+  return 0;
+}

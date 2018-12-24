@@ -131,8 +131,6 @@ LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_
 
 LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios);
 
-void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
-
 LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar);
 
 LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y);
@@ -172,3 +170,5 @@ void mostra_linha(LISTA_LINHAS* topo_lista_linhas, char * texto, char*linha);
 void get_id_comboio(char *id_comboio);
 
 void get_coords_origem(char * linha, char *ponto, LISTA_LINHAS * topo_lista_linhas);
+
+// void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);

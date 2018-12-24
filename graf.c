@@ -1,5 +1,117 @@
 #include "comboios.h"
 
+void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas, int dimensaoX, int dimensaoY){
+  LISTA_GRAF_BOIO *boios_graficos = NULL;
+  SDL_Event event;
+  Uint32 temporizador;
+  int fim=0, pausa=0;
+  int ticks_simulacao=0;
+  char cronometro[10];
+
+  // mostra_boios_ativos(boios_graficos);
+  if ( inicializa_janela(dimensaoX,dimensaoY) == 0 ){
+    exit(0);
+  }
+
+  temporizador = SDL_GetTicks();
+  while (fim != 1){
+    if (pausa!=1){
+      boios_graficos = gera_novos_graf_boios(boios_graficos, topo_lista_comboios, ticks_simulacao);
+      boios_graficos = mexe_comboios2(boios_graficos);
+      atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY, pausa);
+      ticks_simulacao++;
+    }
+    else {
+      atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY, pausa);
+    }
+    sprintf(cronometro, "%2d:%2d:%2d", ticks_simulacao/(30*60),(ticks_simulacao/30)%60, ((ticks_simulacao*TICKS_p_FRAME)%1000)/10);
+    stringRGBA(pintor, 10, 10, cronometro, 0, 0, 0, 255);
+    SDL_Delay(TICKS_p_FRAME - SDL_TICKS_PASSED(SDL_GetTicks(), temporizador));
+    temporizador = SDL_GetTicks();
+    SDL_RenderPresent(pintor);
+
+    while (SDL_PollEvent(&event)) switch(eventos_sdl(&event, topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY)){
+      case 2:
+      pausa = 1 - pausa;
+      break;
+      case 1: fim = 1;
+      default: break;
+    }
+  }
+  SDL_Quit();
+}
+
+LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
+  float deltaX, deltaY;
+  float m;
+  float x_a_somar, y_a_somar;
+  int i;
+  LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
+  LISTA_GRAF_BOIO *aux_boio = NULL;
+  for( aux_boio = lista_graf_boios; aux_boio!=NULL; aux_boio=aux_boio->pr){
+    if (aux_boio->graf.veloc == 0) continue;
+    for(i=0; i<aux_boio->graf.boio->dim; i++){
+      pt1 = aux_boio->graf.ultimo_ponto[i];
+
+      if( (pt2 = pt1->pr[aux_boio->graf.alavanca[i]]) != NULL){}
+      else if( (pt2 = pt1->pr[1-aux_boio->graf.alavanca[i]]) != NULL){}
+      else{
+        lista_graf_boios = remove_graf_boio(lista_graf_boios, aux_boio);
+        break;
+      }
+      // else continue;
+
+      if (i!=0){ //se estivermos a mexer uma carruagem
+        deltaX = aux_boio->graf.x[i] - aux_boio->graf.x[i-1];
+        deltaY = aux_boio->graf.y[i] - aux_boio->graf.y[i-1];
+
+        // e ela estiver demasiado perto da anterior, nao a mexer
+        if (sqrt(deltaX*deltaX + deltaY*deltaY) < 2.1*RAIO_COMBOIO) continue;
+      }
+
+      deltaX = pt2->pt.x - pt1->pt.x;
+      deltaY = pt2->pt.y - pt1->pt.y;
+
+      if (deltaX != 0){
+        m = (float) deltaY/deltaX;
+
+        x_a_somar = deltaX/abs(deltaX)  *  aux_boio->graf.veloc/sqrt(m*m+1);
+        y_a_somar = m*x_a_somar;
+      }
+      else{
+        x_a_somar=0;
+        y_a_somar=deltaY/abs(deltaY) * aux_boio->graf.veloc;
+      }
+
+      aux_boio->graf.x[i] += x_a_somar;
+      aux_boio->graf.y[i] += y_a_somar;
+
+      deltaX = pt2->pt.x - aux_boio->graf.x[i]; //reciclar variaveis
+      deltaY = pt2->pt.y - aux_boio->graf.y[i]; //para salvar o ambiente
+
+      if( sqrt(deltaY*deltaY + deltaX*deltaX) < aux_boio->graf.veloc){
+        aux_boio->graf.x[i] = pt2->pt.x;
+        aux_boio->graf.y[i] = pt2->pt.y;
+        aux_boio->graf.ultimo_ponto[i] = pt2;
+        if(i==0) aux_boio->graf.alavanca[i] = pt2->pt.alavanca;
+        if(i!=0) {
+        if (aux_boio->graf.cor[i] == pt2->pt.cor) aux_boio->graf.cor[i] = hexdec_CINZENTO;
+        aux_boio->graf.alavanca[i] = aux_boio->graf.alavanca[i-1];}
+      }
+
+      if (i!=0){
+        deltaX = aux_boio->graf.x[i] - aux_boio->graf.x[i-1];
+        deltaY = aux_boio->graf.y[i] - aux_boio->graf.y[i-1];
+        if(sqrt(deltaX*deltaX + deltaY*deltaY) > 2.2*RAIO_COMBOIO){
+          //se a carruagem que acabamos de mexer ainda estiver demasiado longe, vamos mexê-la outra vez
+          i--;
+        }
+      }
+    }
+  }
+  return lista_graf_boios;
+}
+
 Uint32 codigo_cor(char string[]){ //funciona
   // converte a string de cor para hexadecimal para armazenar
   if (strcmp("CINZENTO", string) == 0) return hexdec_CINZENTO;
@@ -235,47 +347,6 @@ int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BO
   return 0;
 }
 
-void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas, int dimensaoX, int dimensaoY){
-  LISTA_GRAF_BOIO *boios_graficos = NULL;
-  SDL_Event event;
-  Uint32 temporizador;
-  int fim=0, pausa=0;
-  int ticks_simulacao=0;
-  char cronometro[10];
-
-  mostra_boios_ativos(boios_graficos);
-  if ( inicializa_janela(dimensaoX,dimensaoY) == 0 ){
-    exit(0);
-  }
-
-  temporizador = SDL_GetTicks();
-  while (fim != 1){
-    if (pausa!=1){
-      boios_graficos = gera_novos_graf_boios(boios_graficos, topo_lista_comboios, ticks_simulacao);
-      boios_graficos = mexe_comboios2(boios_graficos);
-      atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY, pausa);
-      ticks_simulacao++;
-    }
-    else {
-      atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY, pausa);
-    }
-    sprintf(cronometro, "%2d:%2d:%2d", ticks_simulacao/(30*60),(ticks_simulacao/30)%60, ((ticks_simulacao*TICKS_p_FRAME)%1000)/10);
-    stringRGBA(pintor, 10, 10, cronometro, 0, 0, 0, 255);
-    SDL_Delay(TICKS_p_FRAME - SDL_TICKS_PASSED(SDL_GetTicks(), temporizador));
-    temporizador = SDL_GetTicks();
-    SDL_RenderPresent(pintor);
-
-    while (SDL_PollEvent(&event)) switch(eventos_sdl(&event, topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY)){
-      case 2:
-        pausa = 1 - pausa;
-        break;
-      case 1: fim = 1;
-      default: break;
-    }
-	}
-  SDL_Quit();
-}
-
 void desenha_botoes(int dimX, int dimY, int pausa){
   SDL_Rect botao_sair, botao_pausa;
 
@@ -311,4 +382,38 @@ int carregou_botao(int dimX, int dimY, int x, int y){
     }
   }
   return 0;
+}
+
+LISTA_GRAF_BOIO * procura_locomotiva_por_coords(LISTA_GRAF_BOIO *graf_boios, int x, int y){
+  for(; graf_boios!=NULL; graf_boios=graf_boios->pr){
+    if (pow(x - graf_boios->graf.x[0],2) + pow(y- graf_boios->graf.y[0],2) < pow(RAIO_ESTACAO,2)){
+      return graf_boios;
+    }
+  }
+  return NULL;
+}
+
+LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y){
+  LISTA_PONTOS *aux=NULL;
+  int deltaX, deltaY;
+
+  for(; topo_lista_linhas!=NULL; topo_lista_linhas=topo_lista_linhas->pr){
+
+    for(aux=topo_lista_linhas->linha; aux!=NULL; aux=aux->pr[0]){
+      deltaX = aux->pt.x - x;
+      deltaY = aux->pt.y - y;
+      if(deltaX*deltaX + deltaY*deltaY < RAIO_ESTACAO*RAIO_ESTACAO){
+        return aux;
+      }
+    }
+  }
+  return NULL;
+}
+
+void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar){
+  if (boio_a_parar->graf.veloc != 0){
+    boio_a_parar->graf.veloc =0;
+    return;
+  }
+  boio_a_parar->graf.veloc=boio_a_parar->graf.boio->veloc;
 }
