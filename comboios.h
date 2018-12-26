@@ -12,7 +12,7 @@
 SDL_Window* janela;
 SDL_Renderer* pintor;
 
-#define FPS 60
+#define FPS 30
 #define TICKS_p_FRAME 1000/FPS
 
 #define RAIO_ESTACAO 10

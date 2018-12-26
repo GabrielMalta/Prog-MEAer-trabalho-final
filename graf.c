@@ -253,11 +253,21 @@ void colisoes(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios, int t
       for(i=0; i<atual->graf.boio->dim; i++){
         for(j=0; j<comparar->graf.boio->dim; j++){
           if(pow(atual->graf.x[i]-comparar->graf.x[j],2)+pow(atual->graf.y[i]-comparar->graf.y[j],2) < 1.5 * pow(2*RAIO_COMBOIO,2)){
-            if(i==0 && j != 0)
+            if(comparar->graf.boio->dim == 1 && atual->graf.boio->dim == 1){
+              if(comparar->graf.veloc==0)
+                atual->graf.veloc = 0;
+              else if(atual->graf.veloc==0)
+                comparar->graf.veloc = 0;
+              else if(atual->graf.boio->veloc < comparar->graf.boio->veloc)
+                atual->graf.veloc = 0;
+              else if(atual->graf.boio->veloc > comparar->graf.boio->veloc)
+                comparar->graf.veloc = 0;
+            }
+            else if(i==0 && j != 0)
               atual->graf.veloc = 0;
             else if(i==0 && j==0 && comparar->graf.boio->dim == 1)
               atual->graf.veloc = 0;
-            else if(j==0 && i != 0 && atual->graf.boio->dim > 1)
+            else if(j==0 && i != 0)
               comparar->graf.veloc = 0;
             else if(j==0 && i == 0 && atual->graf.boio->dim == 1)
               comparar->graf.veloc = 0;
