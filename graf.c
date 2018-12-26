@@ -85,7 +85,7 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
     if (pausa!=1){
       boios_graficos = gera_novos_graf_boios(boios_graficos, topo_lista_comboios, ticks_simulacao);
       boios_graficos = mexe_comboios2(boios_graficos);
-      colisoes(boios_graficos);
+      colisoes(boios_graficos, topo_lista_comboios, ticks_simulacao);
       if(ticks_simulacao%10==0)
         pisca_comboios(boios_graficos);
       atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY, pausa);
@@ -236,18 +236,30 @@ LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios){
   return lista_graf_boios;
 }
 
-void colisoes(LISTA_GRAF_BOIO *lista_graf_boios){
+void colisoes(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios, int ticks_simulacao){
   LISTA_GRAF_BOIO *atual, *comparar;
+  LISTA_COMBOIOS *aux;
   int i,j;
 
   for (atual=lista_graf_boios; atual->pr!=NULL; atual=atual->pr){
+    for(aux=comboios; aux!=NULL; aux=aux->pr){
+      if(ticks_simulacao % ((int) comboios->boio.tempo_spawn*FPS) >= comboios->boio.tempo_spawn*FPS-(2.3*aux->boio.dim*RAIO_COMBOIO)/aux->boio.veloc){
+        if(pow(atual->graf.x[0]-aux->boio.origem->pt.x,2)+pow(atual->graf.y[0]-aux->boio.origem->pt.y,2) < 1.4*pow(2*RAIO_COMBOIO,2)){
+          atual->graf.veloc = 0;
+        }
+      }
+    }
     for(comparar=atual->pr; comparar!=NULL; comparar=comparar->pr){
       for(i=0; i<atual->graf.boio->dim; i++){
         for(j=0; j<comparar->graf.boio->dim; j++){
           if(pow(atual->graf.x[i]-comparar->graf.x[j],2)+pow(atual->graf.y[i]-comparar->graf.y[j],2) < 1.5 * pow(2*RAIO_COMBOIO,2)){
             if(i==0 && j != 0)
               atual->graf.veloc = 0;
-            else if(j==0 && i != 0)
+            else if(i==0 && j==0 && comparar->graf.boio->dim == 1)
+              atual->graf.veloc = 0;
+            else if(j==0 && i != 0 && atual->graf.boio->dim > 1)
+              comparar->graf.veloc = 0;
+            else if(j==0 && i == 0 && atual->graf.boio->dim == 1)
               comparar->graf.veloc = 0;
           }
         }

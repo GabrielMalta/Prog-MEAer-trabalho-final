@@ -12,7 +12,7 @@
 SDL_Window* janela;
 SDL_Renderer* pintor;
 
-#define FPS 30
+#define FPS 60
 #define TICKS_p_FRAME 1000/FPS
 
 #define RAIO_ESTACAO 10
@@ -147,7 +147,7 @@ LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMB
 
 LISTA_GRAF_BOIO * mexe_comboios2(LISTA_GRAF_BOIO *lista_graf_boios);
 
-void colisoes(LISTA_GRAF_BOIO *lista_graf_boios);
+void colisoes(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios, int ticks_simulacao);
 
  void pisca_comboios(LISTA_GRAF_BOIO *lista_graf_boios);
 

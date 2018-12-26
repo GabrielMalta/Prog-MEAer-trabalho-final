@@ -1,4 +1,4 @@
-- Melhorar sistem de colisoes(principalmente em interceçoes e quando e criado um comboio novo)
+- Melhorar sistem de colisoes quando estao em linhas diferentes
 
 - Separar a funcao mexercomboios2 em varias
 - Acrescentar setas nas intercecoes(percebe-se melhor)
