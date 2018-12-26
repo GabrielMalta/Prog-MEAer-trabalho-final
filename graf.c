@@ -86,6 +86,8 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
       boios_graficos = gera_novos_graf_boios(boios_graficos, topo_lista_comboios, ticks_simulacao);
       boios_graficos = mexe_comboios2(boios_graficos);
       colisoes(boios_graficos);
+      if(ticks_simulacao%10==0)
+        pisca_comboios(boios_graficos);
       atualiza_render(topo_lista_linhas, boios_graficos, dimensaoX, dimensaoY, pausa);
       ticks_simulacao++;
     }
@@ -246,6 +248,19 @@ void colisoes(LISTA_GRAF_BOIO *lista_graf_boios){
         }
       }
     }
+  }
+}
+
+void pisca_comboios(LISTA_GRAF_BOIO *lista_graf_boios){
+
+  for(;lista_graf_boios!=NULL; lista_graf_boios=lista_graf_boios->pr){
+    if(lista_graf_boios->graf.veloc == 0){
+      if(lista_graf_boios->graf.cor[0]==hexdec_CINZENTO)
+        lista_graf_boios->graf.cor[0]=lista_graf_boios->graf.boio->cor;
+      else
+        lista_graf_boios->graf.cor[0]=hexdec_CINZENTO;
+    }
+
   }
 }
 
