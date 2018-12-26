@@ -126,9 +126,19 @@ int inicializa_janela(int dim_X, int dim_Y){
 }
 
 LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios, int ticks_simulacao){
+  LISTA_GRAF_BOIO *aux;
+  int i, j=0;
   for(; comboios!=NULL; comboios=comboios->pr){
     if(ticks_simulacao% ((int) comboios->boio.tempo_spawn*FPS) == 0){
-      lista_graf_boios = cria_grafico_do_comboio(lista_graf_boios, &(comboios->boio));
+      j=0;
+        for(aux=lista_graf_boios; aux!=NULL; aux=aux->pr){
+          for(i=0; i<aux->graf.boio->dim; i++){
+             if(pow(aux->graf.x[i]-comboios->boio.origem->pt.x,2)+pow(aux->graf.y[i]-comboios->boio.origem->pt.y,2) < pow(2*RAIO_COMBOIO,2))
+              j=1;
+          }
+        }
+        if(j==0)
+          lista_graf_boios = cria_grafico_do_comboio(lista_graf_boios, &(comboios->boio));
     }
   }
   return lista_graf_boios;
@@ -234,13 +244,8 @@ void colisoes(LISTA_GRAF_BOIO *lista_graf_boios){
     for(comparar=atual->pr; comparar!=NULL; comparar=comparar->pr){
       for(i=0; i<atual->graf.boio->dim; i++){
         for(j=0; j<comparar->graf.boio->dim; j++){
-          if(pow(atual->graf.x[i]-comparar->graf.x[j],2)+pow(atual->graf.y[i]-comparar->graf.y[j],2) < 1.3 * pow(2*RAIO_COMBOIO,2)){
-            if(i==0 && j==0 && atual->graf.veloc == 0){}
-            if(i==0 && j==0 && comparar->graf.veloc == 0){}
-            else if(i==0 && j==0){
-              atual->graf.veloc = 0;
-            }
-            else if(i==0 && j != 0)
+          if(pow(atual->graf.x[i]-comparar->graf.x[j],2)+pow(atual->graf.y[i]-comparar->graf.y[j],2) < 1.5 * pow(2*RAIO_COMBOIO,2)){
+            if(i==0 && j != 0)
               atual->graf.veloc = 0;
             else if(j==0 && i != 0)
               comparar->graf.veloc = 0;
@@ -451,6 +456,7 @@ void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar){
     return;
   }
   boio_a_parar->graf.veloc=boio_a_parar->graf.boio->veloc;
+  boio_a_parar->graf.cor[0]=boio_a_parar->graf.boio->cor;
 }
 
 // int sinal(int numero){

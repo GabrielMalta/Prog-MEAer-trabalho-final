@@ -75,8 +75,8 @@ LIGAR: FARO F1 ALTJ A3b
 
 %prototipos de comboios
 %COMBOIO: ID #carruagens cor_locomotiva linha_origem ponto_origem tempo_spawn(segundos) velocidade(pixeis/segundo)
-COMBOIO: C1 4 AMARELO  L1 P1  8  60
-COMBOIO: C2 4 VERMELHO L1 P16 10 60
-COMBOIO: C3 4 AZUL     L2 P1  12 60
-COMBOIO: C4 4 BRANCO   L2 P5  10 60
+COMBOIO: C1 4 AMARELO  L1 P1  15  60
+COMBOIO: C2 4 VERMELHO L1 P16 15 60
+COMBOIO: C3 4 AZUL     L2 P1  15 60
+COMBOIO: C4 4 BRANCO   L2 P5  15 60
 COMBOIO: FT 3 AMARELO  ALTJ A1 15 45
