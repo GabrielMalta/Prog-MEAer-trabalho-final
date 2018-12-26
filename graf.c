@@ -133,7 +133,7 @@ LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_
       j=0;
         for(aux=lista_graf_boios; aux!=NULL; aux=aux->pr){
           for(i=0; i<aux->graf.boio->dim; i++){
-             if(pow(aux->graf.x[i]-comboios->boio.origem->pt.x,2)+pow(aux->graf.y[i]-comboios->boio.origem->pt.y,2) < pow(2*RAIO_COMBOIO,2))
+             if(pow(aux->graf.x[i]-comboios->boio.origem->pt.x,2)+pow(aux->graf.y[i]-comboios->boio.origem->pt.y,2) < 0.9*pow(2*RAIO_COMBOIO,2))
               j=1;
           }
         }
@@ -243,8 +243,8 @@ void colisoes(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios, int t
 
   for (atual=lista_graf_boios; atual->pr!=NULL; atual=atual->pr){
     for(aux=comboios; aux!=NULL; aux=aux->pr){
-      if(ticks_simulacao % ((int) comboios->boio.tempo_spawn*FPS) >= comboios->boio.tempo_spawn*FPS-(2.3*aux->boio.dim*RAIO_COMBOIO)/aux->boio.veloc){
-        if(pow(atual->graf.x[0]-aux->boio.origem->pt.x,2)+pow(atual->graf.y[0]-aux->boio.origem->pt.y,2) < 1.4*pow(2*RAIO_COMBOIO,2)){
+      if(ticks_simulacao % ((int) comboios->boio.tempo_spawn*FPS) >= comboios->boio.tempo_spawn*FPS-(3*aux->boio.dim*RAIO_COMBOIO)/aux->boio.veloc){
+        if(pow(atual->graf.x[0]-aux->boio.origem->pt.x,2)+pow(atual->graf.y[0]-aux->boio.origem->pt.y,2) < 2*pow(2*RAIO_COMBOIO,2)){
           atual->graf.veloc = 0;
         }
       }
