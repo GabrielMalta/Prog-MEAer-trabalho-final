@@ -171,7 +171,7 @@ LISTA_GRAF_BOIO * procura_locomotiva_por_coords(LISTA_GRAF_BOIO *graf_boios, int
 
 LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y);
 
-void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar);
+void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar, LISTA_GRAF_BOIO *boios);
 
 // void mostra_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
 

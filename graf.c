@@ -415,7 +415,7 @@ int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BO
       SDL_GetMouseState( &x, &y);
       aux_pt = procura_ponto_por_coords(topo_lista_linhas, x, y);
       comboio_a_parar = procura_locomotiva_por_coords(topo_lista_graf_boios, x, y);
-      if(comboio_a_parar!=NULL) toggle_andamento_comboio(comboio_a_parar);
+      if(comboio_a_parar!=NULL) toggle_andamento_comboio(comboio_a_parar, topo_lista_graf_boios);
       else if (aux_pt !=NULL && aux_pt->pr[0] != NULL && aux_pt->pr[1] != NULL){
         aux_pt->pt.alavanca = 1 - aux_pt->pt.alavanca;
       }
@@ -472,10 +472,17 @@ LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, 
   return NULL;
 }
 
-void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar){
+void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar, LISTA_GRAF_BOIO *boios){
+  int i;
   if (boio_a_parar->graf.veloc != 0){
     boio_a_parar->graf.veloc =0;
     return;
+  }
+  for(;boios!=NULL; boios=boios->pr){
+    for(i=0; i<boios->graf.boio->dim; i++){
+      if(pow(boios->graf.x[i]-boio_a_parar->graf.x[0], 2)+pow(boios->graf.y[i]-boio_a_parar->graf.y[0], 2) < 1.5 * pow(2*RAIO_COMBOIO, 2) && boio_a_parar!=boios)
+      return;
+    }
   }
   boio_a_parar->graf.veloc=boio_a_parar->graf.boio->veloc;
   boio_a_parar->graf.cor[0]=boio_a_parar->graf.boio->cor;
