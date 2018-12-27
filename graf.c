@@ -243,8 +243,8 @@ void colisoes(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios, int t
 
   for (atual=lista_graf_boios; atual->pr!=NULL; atual=atual->pr){
     for(aux=comboios; aux!=NULL; aux=aux->pr){
-      if(ticks_simulacao % ((int) comboios->boio.tempo_spawn*FPS) >= comboios->boio.tempo_spawn*FPS-(3*aux->boio.dim*RAIO_COMBOIO)/aux->boio.veloc){
-        if(pow(atual->graf.x[0]-aux->boio.origem->pt.x,2)+pow(atual->graf.y[0]-aux->boio.origem->pt.y,2) < 2*pow(2*RAIO_COMBOIO,2)){
+      if((int) (ticks_simulacao % ((int) comboios->boio.tempo_spawn*FPS)) == (int) (comboios->boio.tempo_spawn*FPS-(2.5*aux->boio.dim*RAIO_COMBOIO)/aux->boio.veloc)){
+        if(pow(atual->graf.x[0]-aux->boio.origem->pt.x,2)+pow(atual->graf.y[0]-aux->boio.origem->pt.y,2) < pow(3*aux->boio.dim*RAIO_COMBOIO,2)){
           atual->graf.veloc = 0;
         }
       }
