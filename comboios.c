@@ -8,6 +8,7 @@ void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas){
   while (1){
     system("clear");
     i=0;
+    linha[0] = '\0';
     mostra_linha(topo_lista_linhas, "Qual a lista a mostrar?(Fim para sair)", linha);
     if (strlen(linha)==0)
     break;
@@ -27,7 +28,7 @@ void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas){
       }
     }
     if (i==0)
-    printf("Erro, linha inexistente\n");
+      printf("Erro, linha inexistente\n");
     while(getchar()!='\n');
   }
 }
@@ -321,11 +322,8 @@ void mostra_linha(LISTA_LINHAS* topo_lista_linhas, char * texto, char*linha){
 void mostra_ponto(PONTO pt){
   char tipo[8];
   switch(pt.tipo){
-    case 0: strcpy(tipo, "Erro");      break;
-    case 1: strcpy(tipo, "Estacao");  break;
-    case 2: strcpy(tipo, "Entrada");  break;
-    case 3: strcpy(tipo, "Saida");    break;
-    case 4: strcpy(tipo, "Via");    break;
+    case 1: strcpy(tipo, "Via");      break;
+    case 2: strcpy(tipo, "Estacao");  break;
     default: printf("Erro traducao de tipo\n"); break;
   }
   printf("\nPonto: %s\nTipo: %s\nCor: %s\n", pt.id, tipo, cor_codigo(pt.cor));

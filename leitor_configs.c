@@ -1,12 +1,12 @@
 #include "comboios.h"
 
-void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas, int *dim_X, int *dim_Y, char *nome_ficheiro){
+void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas, int dimJanela[], char *nome_ficheiro){
   FILE *config = fopen(nome_ficheiro, "r");
   LISTA_LINHAS *nova_linha;
   LISTA_PONTOS *atual=NULL;
 
   char leitura[100];
-  char aux_string[6][10];
+  char aux_string[4][10];
   int aux_int[5];
 
   if(config==NULL){
@@ -18,30 +18,29 @@ void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_li
   while( fgets(leitura, 100, config) != NULL){
     if ( (leitura[0] >= '0' && leitura[0] <='9') || (leitura[0] >= 'A' && leitura[0] <='Z') ){
       if (sscanf(leitura, "%d %d", aux_int, aux_int+1) == 2){
-        *dim_X = aux_int[0];
-        *dim_Y = aux_int[1];
+        dimJanela[X] = aux_int[0];
+        dimJanela[Y] = aux_int[1];
       }
-      //se for linha
-      else if (sscanf(leitura, "LINHA: %s", aux_string[0]) == 1){
 
+      else if (sscanf(leitura, "LINHA: %s", aux_string[0]) == 1){
+        //se for linha
         nova_linha = (LISTA_LINHAS*) calloc(1, sizeof(LISTA_LINHAS));
         strcpy(nova_linha->id, aux_string[0]);
         nova_linha->pr=*topo_lista_linhas;
         *topo_lista_linhas=nova_linha;
       }
-      //se for ponto
-      else if (sscanf(leitura, "%s %d %d %s %s", aux_string[0], aux_int, aux_int+1, aux_string[1], aux_string[2]) == 5){
-        preenche_linha(aux_string[0], aux_int, nova_linha, &atual);
-      }
-      //Ligacao de pontos
-      else if (sscanf(leitura, "LIGAR: %s %s %s %s", aux_string[0], aux_string[1], aux_string[2], aux_string[3]) == 4){
-        liga_pontos(aux_string, *topo_lista_linhas);
-      }
-      //se for comboio
-      else if (sscanf(leitura, "COMBOIO: %s %d %s %s %s %d %d", aux_string[0], aux_int, aux_string[1], aux_string[2], aux_string[3], aux_int+1, aux_int+2) == 7){
 
+      else if (sscanf(leitura, "%s %d %d %s %s", aux_string[0], aux_int, aux_int+1, aux_string[1], aux_string[2]) == 5)
+        //se for ponto
+        preenche_linha(aux_string[0], aux_int, nova_linha, &atual);
+
+      else if (sscanf(leitura, "LIGAR: %s %s %s %s", aux_string[0], aux_string[1], aux_string[2], aux_string[3]) == 4)
+        //ligacao de pontos
+        liga_pontos(aux_string, *topo_lista_linhas);
+
+      else if (sscanf(leitura, "COMBOIO: %s %d %s %s %s %d %d", aux_string[0], aux_int, aux_string[1], aux_string[2], aux_string[3], aux_int+1, aux_int+2) == 7)
+        //se for comboio
         *topo_lista_comboios = preenche_comboio(aux_string[0], aux_int, *topo_lista_comboios, *topo_lista_linhas);
-      }
     }
   }
 }
@@ -64,6 +63,7 @@ LISTA_COMBOIOS * preenche_comboio(char *aux_string, int *aux_int, LISTA_COMBOIOS
 }
 
 void preenche_linha(char *aux_string, int *aux_int, LISTA_LINHAS * nova_linha, LISTA_PONTOS **atual){
+  // adiciona uma linha a lista de linhas
   LISTA_PONTOS *aux_pt = NULL;
 
   aux_pt = (LISTA_PONTOS*) calloc(1, sizeof(LISTA_PONTOS));
@@ -83,7 +83,8 @@ void preenche_linha(char *aux_string, int *aux_int, LISTA_LINHAS * nova_linha, L
   }
 }
 
-void liga_pontos(char aux_string[6][10], LISTA_LINHAS *topo_lista_linhas){
+void liga_pontos(char aux_string[4][10], LISTA_LINHAS *topo_lista_linhas){
+  // invocada quando se lê o comando LIGAR no ficheiro de config
   LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
 
   pt1 = procura_ponto(aux_string[0], aux_string[1], topo_lista_linhas);
@@ -94,11 +95,10 @@ void liga_pontos(char aux_string[6][10], LISTA_LINHAS *topo_lista_linhas){
     exit(0);
   }
   pt1->pr[1]=pt2;
-  // mostra_ponto(pt1->pt);
-  // mostra_ponto(pt1->pr[1]->pt);
 }
 
 LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_lista_linhas){
+  // procura o ponto pelo identificador de linha e de ponto
   LISTA_PONTOS *aux_pt;
   LISTA_LINHAS *linha_atual;
 
@@ -114,11 +114,9 @@ LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_
   return NULL;
 }
 
-int numero_tipo(char string[]){ //funciona
+int numero_tipo(char string[]){
   // converte a string de tipo num inteiro para armazenar
-  if (strcmp("EST", string) == 0) return 1;
-  if (strcmp("ENT", string) == 0) return 2;
-  if (strcmp("SAI", string) == 0) return 3;
-  if (strcmp("VIA", string) == 0) return 4;
+  if (strcmp("EST", string) == 0) return 2;
+  if (strcmp("VIA", string) == 0) return 1;
   return 0;
 }

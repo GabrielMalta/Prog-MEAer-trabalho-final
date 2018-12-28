@@ -9,13 +9,13 @@
 int main(int argc, char *argv[]){
   LISTA_LINHAS *topo_lista_linhas = NULL;
   LISTA_COMBOIOS *topo_lista_comboios = NULL;
-  int dimensaoX, dimensaoY;
+  int dimJanela[2];
   int opcao;
   char leitura[100];
 
   srand((unsigned long) &opcao);
 
-  leitor_configs(&topo_lista_comboios, &topo_lista_linhas, &dimensaoX, &dimensaoY, argv[1]);
+  leitor_configs(&topo_lista_comboios, &topo_lista_linhas, dimJanela, argv[1]);
 
   while(1){
     system("clear");
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]){
       case 3: opcao_mostra_comboio(topo_lista_comboios); break;
       case 4: topo_lista_comboios = opcao_elimina_comboio(topo_lista_comboios); break;
       case 5: topo_lista_comboios = opcao_novo_comboio(topo_lista_comboios, topo_lista_linhas); break;
-      case 6: simular(topo_lista_comboios, topo_lista_linhas, dimensaoX, dimensaoY); break;
+      case 6: simular(topo_lista_comboios, topo_lista_linhas, dimJanela); break;
       default: break;
     }
   }
