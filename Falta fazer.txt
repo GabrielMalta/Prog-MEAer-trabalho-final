@@ -1,9 +1,0 @@
-JACOB:
-- Menus anti bert
-- possibilidade de eliminar comboios e linhas da memoria apos a leitura do ficheiro
-- explorar a possibilidade de usar menos typedefs
-
-GABRIEL
-- colisoes !?
-- evitar colisoes !!!?
-- fumo :D
