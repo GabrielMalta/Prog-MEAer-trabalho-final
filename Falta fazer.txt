@@ -1,9 +1,8 @@
-JACOB:
-- Menus anti bert
-- possibilidade de eliminar comboios e linhas da memoria apos a leitura do ficheiro
-- explorar a possibilidade de usar menos typedefs
+- Melhorar sistem de colisoes quando estao em linhas diferentes
 
-GABRIEL
-- colisoes !?
-- evitar colisoes !!!?
+- Separar a funcao mexercomboios2 em varias
+- Acrescentar setas nas intercecoes(percebe-se melhor)
 - fumo :D
+- Fazer debug do menu
+- Design grafico melhor??
+- Proteger leitor_configs contra erros na leitura(vale a pena?)
