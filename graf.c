@@ -415,7 +415,7 @@ int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BO
       SDL_GetMouseState( &x, &y);
       aux_pt = procura_ponto_por_coords(topo_lista_linhas, x, y);
       comboio_a_parar = procura_locomotiva_por_coords(topo_lista_graf_boios, x, y);
-      if(comboio_a_parar!=NULL) toggle_andamento_comboio(comboio_a_parar);
+      if(comboio_a_parar!=NULL) toggle_andamento_comboio(comboio_a_parar, topo_lista_graf_boios);
       else if (aux_pt !=NULL && aux_pt->pr[0] != NULL && aux_pt->pr[1] != NULL){
         aux_pt->pt.alavanca = 1 - aux_pt->pt.alavanca;
       }
