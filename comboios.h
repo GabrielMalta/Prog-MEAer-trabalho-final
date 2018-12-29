@@ -73,7 +73,7 @@ typedef struct{
   int r_bolas;
   Uint32 cor;
   LISTA_PONTOS *origem;
-  int numero_de_servicos;
+  int num_servicos;
   int servicos_restantes;
   float veloc;
 } COMBOIO;

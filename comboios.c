@@ -335,7 +335,7 @@ void mostra_boio(COMBOIO boio){
   printf("Raio das bolas:%d\n", boio.r_bolas);
   printf("Cor locom.:%s\n", cor_Uint32_para_string(boio.cor));
   printf("Ponto origem:%s\n", boio.origem->pt.id);
-  printf("Numero de servicos:%d\n", boio.numero_de_servicos);
+  printf("Numero de servicos:%d\n", boio.num_servicos);
   printf("Velocidade:%.2fpixeis/segundo\n", boio.veloc*FPS);
   fflush(stdout);
 }
@@ -353,6 +353,6 @@ void mostra_graf_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
 
 void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios){
   for(; topo_lista_comboios!=NULL; topo_lista_comboios=topo_lista_comboios->pr){
-    topo_lista_comboios->boio.servicos_restantes = topo_lista_comboios->boio.numero_de_servicos;
+    topo_lista_comboios->boio.servicos_restantes = topo_lista_comboios->boio.num_servicos;
   }
 }
