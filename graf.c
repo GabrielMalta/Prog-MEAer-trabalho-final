@@ -94,7 +94,7 @@ LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_
       existe_boio_demasiado_perto=0;
       for(aux=lista_graf_boios; aux!=NULL; aux=aux->pr){
         for(i=0; i<N_CAR; i++){
-          if(pow(aux->graf.x[i]-comboios->boio.origem->pt.x,2)+pow(aux->graf.y[i]-comboios->boio.origem->pt.y,2) < 0.9*pow(2*RAIO_COMBOIO,2))
+          if(pow(aux->graf.x[i]-comboios->boio.origem->pt.x,2)+pow(aux->graf.y[i]-comboios->boio.origem->pt.y,2) < 2*pow(2*RAIO_COMBOIO,2))
            existe_boio_demasiado_perto=1;
         }
       }
