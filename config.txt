@@ -1,4 +1,4 @@
-% Dimensão da janela Largura x, altura y
+% Dimensão da janela em pixeis, Largura x, altura y
 800 600
 
 LINHA: L1
@@ -65,7 +65,7 @@ B1 80 250 ROXO EST
 B2 50 200 CINZENTO VIA
 B3 25 150 CINZENTO VIA
 
-
+%LIGAR: linhaA pontoA linhaB pontoB
 LIGAR: L1 P26 L2 P1
 LIGAR: L2 P13 L1 P6
 LIGAR: L2 P5a FARO F1
@@ -74,9 +74,9 @@ LIGAR: ALTJ A6 L2 P6b
 LIGAR: FARO F1 ALTJ A3b
 
 %prototipos de comboios
-%COMBOIO: ID #carruagens cor_locomotiva linha_origem ponto_origem tempo_spawn(segundos) velocidade(pixeis/segundo)
-COMBOIO: C1 4 AMARELO  L1 P1  8  50
-COMBOIO: C2 4 VERMELHO L1 P16 10 60
-COMBOIO: C3 4 AZUL     L2 P1  12 70
-COMBOIO: C4 4 BRANCO   L2 P5  10 65
-COMBOIO: FT 3 AMARELO  ALTJ A1 15 45
+%COMBOIO: ID raio_bolas cor_locomotiva linha_origem ponto_origem numero_de_servicos velocidade(pixeis/segundo)
+COMBOIO: C1 7 AMARELO  L1 P1  1  50
+COMBOIO: C2 6 VERMELHO L1 P20 2 60
+COMBOIO: C3 6 AZUL     L2 P1  3 70
+COMBOIO: C4 6 BRANCO   L2 P5  4 65
+COMBOIO: FT 5 AMARELO  ALTJ A1 5 45

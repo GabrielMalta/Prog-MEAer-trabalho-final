@@ -40,20 +40,21 @@ void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_li
 
       else if (sscanf(leitura, "COMBOIO: %s %d %s %s %s %d %d", aux_string[0], aux_int, aux_string[1], aux_string[2], aux_string[3], aux_int+1, aux_int+2) == 7)
         //se for comboio
-        *topo_lista_comboios = preenche_comboio(aux_string[0], aux_int, *topo_lista_comboios, *topo_lista_linhas);
+        *topo_lista_comboios = preenche_comboio(aux_string, aux_int, *topo_lista_comboios, *topo_lista_linhas);
     }
   }
 }
 
-LISTA_COMBOIOS * preenche_comboio(char *aux_string, int *aux_int, LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas){
+LISTA_COMBOIOS * preenche_comboio(char aux_string[][10], int *aux_int, LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas){
   LISTA_COMBOIOS *novo_boio=NULL;
   novo_boio = (LISTA_COMBOIOS*) calloc(1, sizeof(LISTA_COMBOIOS));
 
-  strcpy(novo_boio->boio.id, aux_string);
-  novo_boio->boio.cor = codigo_cor(aux_string+10);
-  novo_boio->boio.dim = aux_int[0];
-  novo_boio->boio.origem = procura_ponto(aux_string+20, aux_string+30, topo_lista_linhas);
-  novo_boio->boio.tempo_spawn = aux_int[1];
+  strcpy(novo_boio->boio.id, aux_string[0]);
+  novo_boio->boio.cor = cor_string_para_Uint32(aux_string[1]);
+  novo_boio->boio.r_bolas = aux_int[0];
+  novo_boio->boio.origem = procura_ponto(aux_string[2], aux_string[3], topo_lista_linhas);
+  novo_boio->boio.numero_de_servicos = aux_int[1];
+  novo_boio->boio.servicos_restantes = aux_int[1];
   novo_boio->boio.veloc = (float) aux_int[2] / FPS;
 
   novo_boio->pr=topo_lista_comboios;
@@ -70,7 +71,7 @@ void preenche_linha(char *aux_string, int *aux_int, LISTA_LINHAS * nova_linha, L
   strcpy(aux_pt->pt.id, aux_string);
   aux_pt->pt.x = aux_int[0];
   aux_pt->pt.y = aux_int[1];
-  aux_pt->pt.cor = codigo_cor(aux_string+10);
+  aux_pt->pt.cor = cor_string_para_Uint32(aux_string+10);
   aux_pt->pt.tipo = numero_tipo(aux_string+20);
 
   if (nova_linha->linha==NULL){

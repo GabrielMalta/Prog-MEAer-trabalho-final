@@ -186,15 +186,15 @@ LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_L
   char string_aux[4][10];
   int int_aux[4];
 
-  int_aux[0]=verifica(0, 3, "Quantas carruagens?");
+  int_aux[0]=verifica(3, 9, "Raio das bolas?");
   int_aux[2]=verifica(10, 100, "Qual a velocidade?");
-  int_aux[1]=verifica(5, 60, "Qual o tempo de spawn?");
-  int_aux[3]=verifica(0, 9, "Qual a cor da locomotiva?\n0-Cinzento\n1-Vermelho\n2-Roxo\n3-Azul\n4-Ciano\n5-Verde\n6-Amarelo\n7-Castanho\n8-Preto\n9-Branco");
-  strcpy(string_aux[1], cor_para_string(int_aux[3]));
+  int_aux[1]=verifica(1, 9999, "Quantos comboios gerar?");
+  int_aux[3]=verifica(1, 9, "Qual a cor da locomotiva?\n1-Vermelho\n2-Roxo\n3-Azul\n4-Ciano\n5-Verde\n6-Amarelo\n7-Castanho\n8-Preto\n9-Branco");
+  strcpy(string_aux[1], menu_cor_para_string(int_aux[3]));
   get_id_comboio(string_aux[0]);
   get_coords_origem(string_aux[2], string_aux[3], topo_lista_linhas);
 
-  topo_lista_comboios = preenche_comboio(string_aux[0], int_aux, topo_lista_comboios, topo_lista_linhas);
+  topo_lista_comboios = preenche_comboio(string_aux, int_aux, topo_lista_comboios, topo_lista_linhas);
 
   system("clear");
   printf("Comboio criado com sucesso!\n");
@@ -326,16 +326,33 @@ void mostra_ponto(PONTO pt){
     case 2: strcpy(tipo, "Estacao");  break;
     default: printf("Erro traducao de tipo\n"); break;
   }
-  printf("\nPonto: %s\nTipo: %s\nCor: %s\n", pt.id, tipo, cor_codigo(pt.cor));
+  printf("\nPonto: %s\nTipo: %s\nCor: %s\n", pt.id, tipo, cor_Uint32_para_string(pt.cor));
   fflush (stdout);
 }
 
 void mostra_boio(COMBOIO boio){
   printf("\n/----COMBOIO %s----/\n", boio.id);
-  printf("Dimensao:%d\n", boio.dim);
-  printf("Cor locom.:%s\n", cor_codigo(boio.cor));
+  printf("Raio das bolas:%d\n", boio.r_bolas);
+  printf("Cor locom.:%s\n", cor_Uint32_para_string(boio.cor));
   printf("Ponto origem:%s\n", boio.origem->pt.id);
-  printf("Tempo de spawn:%.2f\n", boio.tempo_spawn);
+  printf("Numero de servicos:%d\n", boio.numero_de_servicos);
   printf("Velocidade:%.2fpixeis/segundo\n", boio.veloc*FPS);
   fflush(stdout);
+}
+
+void mostra_graf_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
+  system("clear");
+  while(lista_graf_boios!=NULL){
+    printf("Comboio:%s\n", lista_graf_boios->graf.arquetipo->id);
+    printf("Cor locomotiva:%s\n", cor_Uint32_para_string(lista_graf_boios->graf.cor[0]));
+    printf("Numero de servicos restantes:%d\n\n", lista_graf_boios->graf.arquetipo->servicos_restantes);
+    lista_graf_boios=lista_graf_boios->pr;
+  }
+  fflush(stdout);
+}
+
+void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios){
+  for(; topo_lista_comboios!=NULL; topo_lista_comboios=topo_lista_comboios->pr){
+    topo_lista_comboios->boio.servicos_restantes = topo_lista_comboios->boio.numero_de_servicos;
+  }
 }
