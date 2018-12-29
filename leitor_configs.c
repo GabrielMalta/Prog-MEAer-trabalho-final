@@ -53,7 +53,7 @@ LISTA_COMBOIOS * preenche_comboio(char aux_string[][10], int *aux_int, LISTA_COM
   novo_boio->boio.cor = cor_string_para_Uint32(aux_string[1]);
   novo_boio->boio.r_bolas = aux_int[0];
   novo_boio->boio.origem = procura_ponto(aux_string[2], aux_string[3], topo_lista_linhas);
-  novo_boio->boio.numero_de_servicos = aux_int[1];
+  novo_boio->boio.num_servicos = aux_int[1];
   novo_boio->boio.servicos_restantes = aux_int[1];
   novo_boio->boio.veloc = (float) aux_int[2] / FPS;
 
