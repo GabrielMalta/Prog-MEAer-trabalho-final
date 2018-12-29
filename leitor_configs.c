@@ -121,3 +121,19 @@ int numero_tipo(char string[]){
   if (strcmp("VIA", string) == 0) return 1;
   return 0;
 }
+
+Uint32 cor_string_para_Uint32(char string[]){ //funciona
+  // converte a string de cor para Uint32 para armazenar
+  if (strcmp("CINZENTO", string) == 0) return hexdec_CINZENTO;
+  if (strcmp("VERMELHO", string) == 0) return hexdec_VERMELHO;
+  if (strcmp("ROXO", string) == 0) return hexdec_ROXO;
+  if (strcmp("AZUL", string) == 0) return hexdec_AZUL;
+  if (strcmp("CIANO", string) == 0) return hexdec_CIANO;
+  if (strcmp("VERDE", string) == 0) return hexdec_VERDE;
+  if (strcmp("AMARELO", string) == 0) return hexdec_AMARELO;
+  if (strcmp("CASTANHO", string) == 0) return hexdec_CASTANHO;
+  if (strcmp("PRETO", string) == 0) return hexdec_PRETO;
+  if (strcmp("BRANCO", string) == 0) return hexdec_BRANCO;
+  printf("Erro leitura de cor\n");
+  exit(0);
+}

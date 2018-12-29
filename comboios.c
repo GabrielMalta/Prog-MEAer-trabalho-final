@@ -234,6 +234,23 @@ int verifica(int n_min, int n_max, char *texto){
   }
 }
 
+char *menu_cor_para_string(int cor){
+  // menu criacao comboio
+  switch(cor){
+    case CINZENTO: return "CINZENTO";
+    case VERMELHO: return "VERMELHO";
+    case ROXO:     return "ROXO";
+    case AZUL:     return "AZUL";
+    case CIANO:    return "CIANO";
+    case VERDE:    return "VERDE";
+    case AMARELO:  return "AMARELO";
+    case CASTANHO: return "CASTANHO";
+    case PRETO:    return "PRETO";
+    case BRANCO:   return "BRANCO";
+  }
+  return 0;
+}
+
 void get_id_comboio(char *id_comboio){
   char leitura[10];
   while(1){
@@ -340,19 +357,20 @@ void mostra_boio(COMBOIO boio){
   fflush(stdout);
 }
 
-void mostra_graf_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
-  system("clear");
-  while(lista_graf_boios!=NULL){
-    printf("Comboio:%s\n", lista_graf_boios->graf.arquetipo->id);
-    printf("Cor locomotiva:%s\n", cor_Uint32_para_string(lista_graf_boios->graf.cor[0]));
-    printf("Numero de servicos restantes:%d\n\n", lista_graf_boios->graf.arquetipo->servicos_restantes);
-    lista_graf_boios=lista_graf_boios->pr;
+char * cor_Uint32_para_string(Uint32 cor){
+  // converte o Uint32 para um string com o nome da cor
+  switch(cor){
+    case hexdec_CINZENTO: return "Cinzento";
+    case hexdec_VERMELHO: return "Vermelho";
+    case hexdec_ROXO:     return "Roxo";
+    case hexdec_AZUL:     return "Azul";
+    case hexdec_CIANO:    return "Ciano";
+    case hexdec_VERDE:    return "Verde";
+    case hexdec_AMARELO:  return "Amarelo";
+    case hexdec_CASTANHO: return "Castanho";
+    case hexdec_PRETO:    return "Preto";
+    case hexdec_BRANCO:   return "Branco";
   }
-  fflush(stdout);
-}
-
-void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios){
-  for(; topo_lista_comboios!=NULL; topo_lista_comboios=topo_lista_comboios->pr){
-    topo_lista_comboios->boio.servicos_restantes = topo_lista_comboios->boio.num_servicos;
-  }
+  printf("Erro cor_numero\n");
+  exit(0);
 }
