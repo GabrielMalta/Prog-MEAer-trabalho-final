@@ -109,6 +109,8 @@ LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_
 
 int numero_tipo( char string[]);
 
+Uint32 cor_string_para_Uint32(char string[]);
+
 void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas);
 
 LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas);
@@ -121,6 +123,8 @@ LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_L
 
 int verifica(int n_min, int n_max, char *texto);
 
+char *menu_cor_para_string(int cor);
+
 void get_id_comboio(char *id_comboio);
 
 void get_coords_origem(char * linha, char *ponto, LISTA_LINHAS * topo_lista_linhas);
@@ -131,35 +135,35 @@ void mostra_ponto( PONTO pt);
 
 void mostra_boio( COMBOIO boio);
 
-Uint32 cor_string_para_Uint32(char string[]);
-
-Uint32 random_cor(void);
-
 char *cor_Uint32_para_string(Uint32 cor);
 
-char *menu_cor_para_string(int cor);
+Uint32 random_cor(void);
 
 void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas, int dimJanela[]);
 
 int inicializa_janela( int dimJanela[]);
 
-LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios);
+void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios);
 
-LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio);
+LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios);
 
 LISTA_GRAF_BOIO *procura_graf_boio_por_aquetipo(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *arquetipo);
 
+LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio);
+
 LISTA_GRAF_BOIO *mexe_comboios3(LISTA_GRAF_BOIO *lista_graf_boios);
+
+LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar);
 
 void mexe_carruagem(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, LISTA_PONTOS *pt1, LISTA_PONTOS *pt2);
 
 void verifica_se_chegou_ao_ponto(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, LISTA_PONTOS *prox_pt);
 
+void mostra_graf_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
+
 void colisoes(LISTA_GRAF_BOIO *lista_graf_boios);
 
 void pisca_comboios(LISTA_GRAF_BOIO *lista_graf_boios);
-
-LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar);
 
 void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_graficos, int dimJanela[], int pausa);
 
@@ -180,7 +184,3 @@ LISTA_GRAF_BOIO * procura_locomotiva_por_coords(LISTA_GRAF_BOIO *graf_boios, int
 LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y);
 
 void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar, LISTA_GRAF_BOIO *boios);
-
-void mostra_graf_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
-
-void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios);

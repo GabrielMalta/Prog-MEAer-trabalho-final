@@ -1,38 +1,5 @@
 #include "comboios.h"
 
-Uint32 cor_string_para_Uint32(char string[]){ //funciona
-  // converte a string de cor para Uint32 para armazenar
-  if (strcmp("CINZENTO", string) == 0) return hexdec_CINZENTO;
-  if (strcmp("VERMELHO", string) == 0) return hexdec_VERMELHO;
-  if (strcmp("ROXO", string) == 0) return hexdec_ROXO;
-  if (strcmp("AZUL", string) == 0) return hexdec_AZUL;
-  if (strcmp("CIANO", string) == 0) return hexdec_CIANO;
-  if (strcmp("VERDE", string) == 0) return hexdec_VERDE;
-  if (strcmp("AMARELO", string) == 0) return hexdec_AMARELO;
-  if (strcmp("CASTANHO", string) == 0) return hexdec_CASTANHO;
-  if (strcmp("PRETO", string) == 0) return hexdec_PRETO;
-  if (strcmp("BRANCO", string) == 0) return hexdec_BRANCO;
-  printf("Erro leitura de cor\n");
-  exit(0);
-}
-
-char *menu_cor_para_string(int cor){
-  // menu criacao comboio
-  switch(cor){
-    case CINZENTO: return "CINZENTO";
-    case VERMELHO: return "VERMELHO";
-    case ROXO:     return "ROXO";
-    case AZUL:     return "AZUL";
-    case CIANO:    return "CIANO";
-    case VERDE:    return "VERDE";
-    case AMARELO:  return "AMARELO";
-    case CASTANHO: return "CASTANHO";
-    case PRETO:    return "PRETO";
-    case BRANCO:   return "BRANCO";
-  }
-  return 0;
-}
-
 Uint32 random_cor(void){
   int cor = rand()%10;
   switch(cor){
@@ -49,24 +16,6 @@ Uint32 random_cor(void){
   }
   printf("Erro geracao de cor");
   fflush(stdout);
-  exit(0);
-}
-
-char * cor_Uint32_para_string(Uint32 cor){
-  // converte o Uint32 para um string com o nome da cor
-  switch(cor){
-    case hexdec_CINZENTO: return "Cinzento";
-    case hexdec_VERMELHO: return "Vermelho";
-    case hexdec_ROXO:     return "Roxo";
-    case hexdec_AZUL:     return "Azul";
-    case hexdec_CIANO:    return "Ciano";
-    case hexdec_VERDE:    return "Verde";
-    case hexdec_AMARELO:  return "Amarelo";
-    case hexdec_CASTANHO: return "Castanho";
-    case hexdec_PRETO:    return "Preto";
-    case hexdec_BRANCO:   return "Branco";
-  }
-  printf("Erro cor_numero\n");
   exit(0);
 }
 
@@ -130,6 +79,12 @@ int inicializa_janela(int dimJanela[]){
   return 0;
 }
 
+void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios){
+  for(; topo_lista_comboios!=NULL; topo_lista_comboios=topo_lista_comboios->pr){
+    topo_lista_comboios->boio.servicos_restantes = topo_lista_comboios->boio.num_servicos;
+  }
+}
+
 LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios){
   LISTA_GRAF_BOIO *aux;
   int i, existe_boio_demasiado_perto;
@@ -139,7 +94,7 @@ LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_
       existe_boio_demasiado_perto=0;
       for(aux=lista_graf_boios; aux!=NULL; aux=aux->pr){
         for(i=0; i<N_CAR; i++){
-          if(pow(aux->graf.x[i]-comboios->boio.origem->pt.x,2)+pow(aux->graf.y[i]-comboios->boio.origem->pt.y,2) < 0.9*pow(2*RAIO_COMBOIO,2))
+          if(pow(aux->graf.x[i]-comboios->boio.origem->pt.x,2)+pow(aux->graf.y[i]-comboios->boio.origem->pt.y,2) < 2*pow(2*RAIO_COMBOIO,2))
            existe_boio_demasiado_perto=1;
         }
       }
@@ -181,21 +136,6 @@ LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMB
   return novo_graf_boio;
 }
 
-LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar){
-  LISTA_GRAF_BOIO *aux_boio, *ant_boio=NULL;
-
-  for( aux_boio = lista_graf_boios; aux_boio!=eliminar && aux_boio!=NULL; aux_boio=aux_boio->pr) {ant_boio=aux_boio;}
-
-  if(aux_boio == NULL) return lista_graf_boios;
-
-  if(ant_boio == NULL) lista_graf_boios=aux_boio->pr;
-  else ant_boio->pr = aux_boio->pr;
-
-  free(aux_boio);
-  mostra_graf_boios_ativos(lista_graf_boios);
-  return lista_graf_boios;
-}
-
 LISTA_GRAF_BOIO * mexe_comboios3(LISTA_GRAF_BOIO *lista_graf_boios){
   float deltaX, deltaY;
   int i;
@@ -230,11 +170,26 @@ LISTA_GRAF_BOIO * mexe_comboios3(LISTA_GRAF_BOIO *lista_graf_boios){
         deltaX = aux_boio->graf.x[i] - aux_boio->graf.x[i-1]; //reciclar variaveis
         deltaY = aux_boio->graf.y[i] - aux_boio->graf.y[i-1]; //para salvar o ambiente
         if(sqrt(deltaX*deltaX + deltaY*deltaY) > 2.2*aux_boio->graf.arquetipo->r_bolas)
-          //se a carruagem que acabamos de mexer ainda estiver demasiado longe, vamos mexê-la outra vez
-          i--;
+        //se a carruagem que acabamos de mexer ainda estiver demasiado longe, vamos mexê-la outra vez
+        i--;
       }
     }
   }
+  return lista_graf_boios;
+}
+
+LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar){
+  LISTA_GRAF_BOIO *aux_boio, *ant_boio=NULL;
+
+  for( aux_boio = lista_graf_boios; aux_boio!=eliminar && aux_boio!=NULL; aux_boio=aux_boio->pr) {ant_boio=aux_boio;}
+
+  if(aux_boio == NULL) return lista_graf_boios;
+
+  if(ant_boio == NULL) lista_graf_boios=aux_boio->pr;
+  else ant_boio->pr = aux_boio->pr;
+
+  free(aux_boio);
+  mostra_graf_boios_ativos(lista_graf_boios);
   return lista_graf_boios;
 }
 
@@ -281,10 +236,21 @@ void verifica_se_chegou_ao_ponto(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, L
     //muda a cor para cinzento se a cor corresponder com a da estacao;
     if(num_carruagem!=0){
       if (aux_boio->graf.cor[num_carruagem] ==prox_pt->pt.cor && prox_pt->pt.tipo == EST)
-        aux_boio->graf.cor[num_carruagem] = hexdec_CINZENTO;
+      aux_boio->graf.cor[num_carruagem] = hexdec_CINZENTO;
       aux_boio->graf.alavanca[num_carruagem] = aux_boio->graf.alavanca[num_carruagem-1];
     }
   }
+}
+
+void mostra_graf_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
+  system("clear");
+  while(lista_graf_boios!=NULL){
+    printf("Comboio:%s\n", lista_graf_boios->graf.arquetipo->id);
+    printf("Cor locomotiva:%s\n", cor_Uint32_para_string(lista_graf_boios->graf.cor[0]));
+    printf("Numero de servicos restantes:%d\n\n", lista_graf_boios->graf.arquetipo->servicos_restantes);
+    lista_graf_boios=lista_graf_boios->pr;
+  }
+  fflush(stdout);
 }
 
 void colisoes(LISTA_GRAF_BOIO *lista_graf_boios){
