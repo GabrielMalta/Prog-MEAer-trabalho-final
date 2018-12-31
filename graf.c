@@ -19,34 +19,35 @@ Uint32 random_cor(void){
   exit(0);
 }
 
-void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas, int dimJanela[]){
+void simular(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas, int dimJanela[]){
   LISTA_GRAF_BOIO *lista_graf_boios = NULL;
   SDL_Event event;
   Uint32 temporizador;
   int fim=0, pausa=0;
   int ticks_simulacao=0;
   char cronometro[10];
+  int i=1;
 
   if ( inicializa_janela(dimJanela) == 0 ){
     exit(0);
   }
 
-  reset_servicos_restantes(topo_lista_comboios);
+  reset_servicos_restantes(*topo_lista_comboios);
 
   temporizador = SDL_GetTicks();
   while (fim != 1){
     if (pausa!=1){
-      lista_graf_boios = gera_novos_graf_boios(lista_graf_boios, topo_lista_comboios);
+      lista_graf_boios = gera_novos_graf_boios(lista_graf_boios, *topo_lista_comboios);
       lista_graf_boios = mexe_comboios3(lista_graf_boios);
       colisoes(lista_graf_boios);
       if(ticks_simulacao==0) mostra_graf_boios_ativos(lista_graf_boios);
       if(ticks_simulacao%10==0)
         pisca_comboios(lista_graf_boios);
-      atualiza_render(topo_lista_linhas, lista_graf_boios, dimJanela, pausa);
+      atualiza_render(*topo_lista_linhas, lista_graf_boios, dimJanela, pausa);
       ticks_simulacao++;
     }
     else {
-      atualiza_render(topo_lista_linhas, lista_graf_boios, dimJanela, pausa);
+      atualiza_render(*topo_lista_linhas, lista_graf_boios, dimJanela, pausa);
     }
     sprintf(cronometro, "%2d:%2d:%2d", ticks_simulacao/(30*60),(ticks_simulacao/30)%60, ((ticks_simulacao*TICKS_p_FRAME)%1000)/10);
     stringRGBA(pintor, 10, 10, cronometro, 0, 0, 0, 255);
@@ -54,15 +55,40 @@ void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linha
     temporizador = SDL_GetTicks();
     SDL_RenderPresent(pintor);
 
-    while (SDL_PollEvent(&event)) switch(eventos_sdl(&event, topo_lista_linhas, lista_graf_boios, dimJanela)){
+    while (SDL_PollEvent(&event)) switch(eventos_sdl(&event, *topo_lista_linhas, lista_graf_boios, dimJanela)){
       case 2:
       pausa = 1 - pausa;
+      if(i==1){
+        menu(topo_lista_comboios, topo_lista_linhas);
+        elimina_comboio(*topo_lista_linhas, lista_graf_boios);
+      }
+      i=-i;
       break;
       case 1: fim = 1;
       default: break;
     }
   }
   SDL_Quit();
+}
+
+void menu(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas){
+  char leitura[100];
+  int opcao;
+
+    system("clear");
+    printf("Lista de opções:\n0 – Retomar a simulacao\n1 – Mostrar a informação de uma ferrovia\n2 – Eliminar uma ferrovia\n3 – Mostrar a informação de um comboio\n4 – Eliminar um comboio\n5 – Criar um comboio\nSelecione a opção:");
+    fgets(leitura, 100, stdin);
+    if (sscanf(leitura, "%d", &opcao)==1){
+    switch(opcao){
+      case 0: return; break;
+      case 1: opcao_mostra_linha(*topo_lista_linhas); return; break;
+      case 2: *topo_lista_linhas = opcao_elimina_linha(*topo_lista_linhas); return; break;
+      case 3: opcao_mostra_comboio(*topo_lista_comboios); return; break;
+      case 4: *topo_lista_comboios = opcao_elimina_comboio(*topo_lista_comboios); return; break;
+      case 5: *topo_lista_comboios = opcao_novo_comboio(*topo_lista_comboios, *topo_lista_linhas); return; break;
+      default: break;
+      }
+    }
 }
 
 int inicializa_janela(int dimJanela[]){
@@ -108,9 +134,9 @@ LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_
   return lista_graf_boios;
 }
 
-LISTA_GRAF_BOIO *procura_graf_boio_por_aquetipo(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *arquetipo){
+LISTA_GRAF_BOIO *procura_graf_boio_por_aquetipo(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO* arquetipo){
   for(;lista_graf_boios!=NULL; lista_graf_boios=lista_graf_boios->pr){
-    if( lista_graf_boios->graf.arquetipo == arquetipo)
+    if( lista_graf_boios->graf.pr == arquetipo)
       return lista_graf_boios;
   }
   return NULL;
@@ -123,7 +149,8 @@ LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMB
     printf("Erro falta de memória\n");
     fflush(stdout);
   }
-  novo_graf_boio->graf.arquetipo=comboio;
+  novo_graf_boio->graf.arquetipo=*comboio;
+  novo_graf_boio->graf.pr=comboio;
   for(i=0;i<N_CAR; i++){
     novo_graf_boio->graf.cor[i]= random_cor();
     novo_graf_boio->graf.x[i]=comboio->origem->pt.x;
@@ -159,7 +186,7 @@ LISTA_GRAF_BOIO * mexe_comboios3(LISTA_GRAF_BOIO *lista_graf_boios){
         deltaX = aux_boio->graf.x[i] - aux_boio->graf.x[i-1];
         deltaY = aux_boio->graf.y[i] - aux_boio->graf.y[i-1];
         // e ela estiver demasiado perto da anterior, nao a mexer
-        if (sqrt(deltaX*deltaX + deltaY*deltaY) < 2.1*aux_boio->graf.arquetipo->r_bolas) continue;
+        if (sqrt(deltaX*deltaX + deltaY*deltaY) < 2.1*aux_boio->graf.arquetipo.r_bolas) continue;
       }
 
       mexe_carruagem(aux_boio, i, pt1, pt2);
@@ -169,7 +196,7 @@ LISTA_GRAF_BOIO * mexe_comboios3(LISTA_GRAF_BOIO *lista_graf_boios){
       if (i!=0){
         deltaX = aux_boio->graf.x[i] - aux_boio->graf.x[i-1]; //reciclar variaveis
         deltaY = aux_boio->graf.y[i] - aux_boio->graf.y[i-1]; //para salvar o ambiente
-        if(sqrt(deltaX*deltaX + deltaY*deltaY) > 2.2*aux_boio->graf.arquetipo->r_bolas)
+        if(sqrt(deltaX*deltaX + deltaY*deltaY) > 2.2*aux_boio->graf.arquetipo.r_bolas)
         //se a carruagem que acabamos de mexer ainda estiver demasiado longe, vamos mexê-la outra vez
         i--;
       }
@@ -245,9 +272,9 @@ void verifica_se_chegou_ao_ponto(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, L
 void mostra_graf_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
   system("clear");
   while(lista_graf_boios!=NULL){
-    printf("Comboio:%s\n", lista_graf_boios->graf.arquetipo->id);
+    printf("Comboio:%s\n", lista_graf_boios->graf.arquetipo.id);
     printf("Cor locomotiva:%s\n", cor_Uint32_para_string(lista_graf_boios->graf.cor[0]));
-    printf("Numero de servicos restantes:%d\n\n", lista_graf_boios->graf.arquetipo->servicos_restantes);
+    printf("Numero de servicos restantes:%d\n\n", lista_graf_boios->graf.arquetipo.servicos_restantes);
     lista_graf_boios=lista_graf_boios->pr;
   }
   fflush(stdout);
@@ -285,7 +312,7 @@ void pisca_comboios(LISTA_GRAF_BOIO *lista_graf_boios){
   for(;lista_graf_boios!=NULL; lista_graf_boios=lista_graf_boios->pr){
     if(lista_graf_boios->graf.veloc == 0){
       if(lista_graf_boios->graf.cor[0]==hexdec_CINZENTO)
-        lista_graf_boios->graf.cor[0]=lista_graf_boios->graf.arquetipo->cor;
+        lista_graf_boios->graf.cor[0]=lista_graf_boios->graf.arquetipo.cor;
       else
         lista_graf_boios->graf.cor[0]=hexdec_CINZENTO;
     }
@@ -358,8 +385,8 @@ void desenha_comboios(LISTA_GRAF_BOIO *lista_graf_boios){
   int i;
   for( ; lista_graf_boios!=NULL; lista_graf_boios=lista_graf_boios->pr){
     for(i=N_CAR-1; i>=0; i--){
-      filledCircleColor(pintor, lista_graf_boios->graf.x[i], lista_graf_boios->graf.y[i], lista_graf_boios->graf.arquetipo->r_bolas, lista_graf_boios->graf.cor[i]);
-      aacircleColor(pintor, lista_graf_boios->graf.x[i], lista_graf_boios->graf.y[i], lista_graf_boios->graf.arquetipo->r_bolas, hexdec_PRETO);
+      filledCircleColor(pintor, lista_graf_boios->graf.x[i], lista_graf_boios->graf.y[i], lista_graf_boios->graf.arquetipo.r_bolas, lista_graf_boios->graf.cor[i]);
+      aacircleColor(pintor, lista_graf_boios->graf.x[i], lista_graf_boios->graf.y[i], lista_graf_boios->graf.arquetipo.r_bolas, hexdec_PRETO);
     }
   }
 }
@@ -468,6 +495,6 @@ void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar, LISTA_GRAF_BOIO *bo
       return;
     }
   }
-  boio_a_parar->graf.veloc=boio_a_parar->graf.arquetipo->veloc;
-  boio_a_parar->graf.cor[0]=boio_a_parar->graf.arquetipo->cor;
+  boio_a_parar->graf.veloc=boio_a_parar->graf.arquetipo.veloc;
+  boio_a_parar->graf.cor[0]=boio_a_parar->graf.arquetipo.cor;
 }

@@ -84,7 +84,8 @@ typedef struct elem_lista_comboios{
 } LISTA_COMBOIOS;
 
 typedef struct grafico_comboio{
-  COMBOIO *arquetipo;
+  COMBOIO arquetipo;
+  COMBOIO *pr;
   float x[N_CAR], y[N_CAR];
   Uint32 cor[N_CAR];
   LISTA_PONTOS *ultimo_ponto[N_CAR];
@@ -139,7 +140,7 @@ char *cor_Uint32_para_string(Uint32 cor);
 
 Uint32 random_cor(void);
 
-void simular(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas, int dimJanela[]);
+void simular(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas, int dimJanela[]);
 
 int inicializa_janela( int dimJanela[]);
 
@@ -184,3 +185,5 @@ LISTA_GRAF_BOIO * procura_locomotiva_por_coords(LISTA_GRAF_BOIO *graf_boios, int
 LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y);
 
 void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar, LISTA_GRAF_BOIO *boios);
+
+void menu(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas);
