@@ -60,8 +60,8 @@ void simular(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_lin
       pausa = 1 - pausa;
       if(i==1){
         menu(topo_lista_comboios, topo_lista_linhas);
-        elimina_comboio(*topo_lista_linhas, lista_graf_boios);
-      }
+        system("clear");
+            }
       i=-i;
       break;
       case 1: fim = 1;
@@ -158,7 +158,7 @@ LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMB
     novo_graf_boio->graf.ultimo_ponto[i]=comboio->origem;
   }
   novo_graf_boio->graf.cor[0]=comboio->cor;
-  novo_graf_boio->graf.veloc=comboio->veloc;
+  novo_graf_boio->graf.veloc=speed;
   novo_graf_boio->pr=lista_graf_boios;
   return novo_graf_boio;
 }
@@ -495,6 +495,6 @@ void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar, LISTA_GRAF_BOIO *bo
       return;
     }
   }
-  boio_a_parar->graf.veloc=boio_a_parar->graf.arquetipo.veloc;
+  boio_a_parar->graf.veloc=speed;
   boio_a_parar->graf.cor[0]=boio_a_parar->graf.arquetipo.cor;
 }

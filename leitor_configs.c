@@ -38,7 +38,7 @@ void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_li
         //ligacao de pontos
         liga_pontos(aux_string, *topo_lista_linhas);
 
-      else if (sscanf(leitura, "COMBOIO: %s %d %s %s %s %d %d", aux_string[0], aux_int, aux_string[1], aux_string[2], aux_string[3], aux_int+1, aux_int+2) == 7)
+      else if (sscanf(leitura, "COMBOIO: %s %d %s %s %s %d", aux_string[0], aux_int, aux_string[1], aux_string[2], aux_string[3], aux_int+1) == 6)
         //se for comboio
         *topo_lista_comboios = preenche_comboio(aux_string, aux_int, *topo_lista_comboios, *topo_lista_linhas);
     }
@@ -55,7 +55,6 @@ LISTA_COMBOIOS * preenche_comboio(char aux_string[][10], int *aux_int, LISTA_COM
   novo_boio->boio.origem = procura_ponto(aux_string[2], aux_string[3], topo_lista_linhas);
   novo_boio->boio.num_servicos = aux_int[1];
   novo_boio->boio.servicos_restantes = aux_int[1];
-  novo_boio->boio.veloc = (float) aux_int[2] / FPS;
 
   novo_boio->pr=topo_lista_comboios;
   topo_lista_comboios=novo_boio;
