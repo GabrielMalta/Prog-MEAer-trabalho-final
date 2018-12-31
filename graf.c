@@ -114,7 +114,6 @@ void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios){
 LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios){
   LISTA_GRAF_BOIO *aux;
   int i, existe_boio_demasiado_perto;
-
   for(; comboios!=NULL; comboios=comboios->pr){
     if( procura_graf_boio_por_aquetipo(lista_graf_boios, &(comboios->boio) ) == NULL){
       existe_boio_demasiado_perto=0;

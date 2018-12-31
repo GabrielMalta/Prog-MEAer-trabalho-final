@@ -75,8 +75,8 @@ LIGAR: FARO F1 ALTJ A3b
 
 %prototipos de comboios
 %COMBOIO: ID raio_bolas cor_locomotiva linha_origem ponto_origem numero_de_servicos velocidade(pixeis/segundo)
-COMBOIO: C1 7 AMARELO  L1 P1  1
-COMBOIO: C2 6 VERMELHO L1 P20 2
+COMBOIO: C1 7 AMARELO  L1 P1  3
+COMBOIO: C2 6 VERMELHO L1 P20 3
 COMBOIO: C3 6 AZUL     L2 P1  3
-COMBOIO: C4 6 BRANCO   L2 P5  4
-COMBOIO: FT 5 AMARELO  ALTJ A1 5
+COMBOIO: C4 6 BRANCO   L2 P5  3
+COMBOIO: FT 5 AMARELO  ALTJ A1 3
