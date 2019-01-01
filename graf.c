@@ -82,7 +82,7 @@ void menu(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas
     switch(opcao){
       case 0: return; break;
       case 1: opcao_mostra_linha(*topo_lista_linhas); return; break;
-      case 2: *topo_lista_linhas = opcao_elimina_linha(*topo_lista_linhas); return; break;
+      case 2: *topo_lista_linhas = opcao_elimina_linha(*topo_lista_linhas, topo_lista_comboios); return; break;
       case 3: opcao_mostra_comboio(*topo_lista_comboios); return; break;
       case 4: *topo_lista_comboios = opcao_elimina_comboio(*topo_lista_comboios); return; break;
       case 5: *topo_lista_comboios = opcao_novo_comboio(*topo_lista_comboios, *topo_lista_linhas); return; break;
@@ -158,7 +158,7 @@ LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMB
     novo_graf_boio->graf.ultimo_ponto[i]=comboio->origem;
   }
   novo_graf_boio->graf.cor[0]=comboio->cor;
-  novo_graf_boio->graf.veloc=speed;
+  novo_graf_boio->graf.veloc=SPEED;
   novo_graf_boio->pr=lista_graf_boios;
   return novo_graf_boio;
 }
@@ -486,16 +486,19 @@ LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, 
 
 void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar, LISTA_GRAF_BOIO *boios){
   int i;
+  int raio1 = boio_a_parar->graf.arquetipo.r_bolas;
+  int raio2;
   if (boio_a_parar->graf.veloc != 0){
     boio_a_parar->graf.veloc =0;
     return;
   }
   for(;boios!=NULL; boios=boios->pr){
+    raio2 = boios->graf.arquetipo.r_bolas;
     for(i=0; i<N_CAR; i++){
-      if(pow(boios->graf.x[i]-boio_a_parar->graf.x[0], 2)+pow(boios->graf.y[i]-boio_a_parar->graf.y[0], 2) < 1.5 * pow(2*RAIO_COMBOIO, 2) && boio_a_parar!=boios)
+      if(pow(boios->graf.x[i]-boio_a_parar->graf.x[0], 2)+pow(boios->graf.y[i]-boio_a_parar->graf.y[0], 2) < 1.5 * pow(raio1+raio2, 2) && boio_a_parar!=boios)
       return;
     }
   }
-  boio_a_parar->graf.veloc=speed;
+  boio_a_parar->graf.veloc=SPEED;
   boio_a_parar->graf.cor[0]=boio_a_parar->graf.arquetipo.cor;
 }

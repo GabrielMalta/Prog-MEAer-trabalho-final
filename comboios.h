@@ -10,7 +10,7 @@ SDL_Renderer* pintor;
 
 #define FPS 30
 #define TICKS_p_FRAME 1000/FPS
-#define speed 1.5
+#define SPEED 1.5
 
 #define RAIO_ESTACAO 10
 #define RAIO_COMBOIO 6 // Jacob ve se consegues substituir isto
@@ -114,7 +114,11 @@ Uint32 cor_string_para_Uint32(char string[]);
 
 void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas);
 
-LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas);
+LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS **topo_lista_comboios);
+
+LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS *lista_comboios, LISTA_PONTOS *linha);
+
+LISTA_COMBOIOS *elimina_comboio(LISTA_COMBOIOS *lista_comboios, LISTA_COMBOIOS *eliminar);
 
 void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios);
 

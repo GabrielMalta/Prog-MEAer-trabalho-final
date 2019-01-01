@@ -33,11 +33,12 @@ void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas){
   }
 }
 
-LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas){
+LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS **topo_lista_comboios){
   char linha[100];
   int i=0;
   LISTA_LINHAS *aux = topo_lista_linhas, *anterior = NULL;
   LISTA_PONTOS *elimina_lista_pontos;
+  LISTA_COMBOIOS *comboio_a_eliminar;
   while (1){
     system("clear");
     i=0;
@@ -60,6 +61,9 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas){
     for(;aux!=NULL;aux=aux->pr){
       if(strcmp(linha, aux->id)==0){
         i=1;
+        while((comboio_a_eliminar = procura_comboios_na_linha(*topo_lista_comboios, aux->linha))!=NULL)
+          *topo_lista_comboios = elimina_comboio(*topo_lista_comboios, comboio_a_eliminar);
+
         for(; aux->linha!=NULL; aux->linha = aux->linha->pr[0]){
           elimina_lista_pontos = aux->linha;
           free(elimina_lista_pontos);
@@ -162,14 +166,7 @@ LISTA_COMBOIOS * opcao_elimina_comboio(LISTA_COMBOIOS *topo_lista_comboios){
       for(;aux!=NULL;aux=aux->pr){
         if(strcmp(comboio, aux->boio.id)==0){
           i=1;
-          if (anterior == NULL){
-            topo_lista_comboios = topo_lista_comboios->pr;
-            free(aux);
-          }
-          else{
-            anterior->pr=aux->pr;
-            free(aux);
-          }
+          topo_lista_comboios = elimina_comboio(topo_lista_comboios, aux);
         }
         else
         anterior = aux;
@@ -371,4 +368,40 @@ char * cor_Uint32_para_string(Uint32 cor){
   }
   printf("Erro cor_numero\n");
   exit(0);
+}
+
+LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS *lista_comboios, LISTA_PONTOS *linha){
+  //devolve o primeiro comboio que encontrar que tenha partida na linha especificada
+  LISTA_PONTOS *aux_pt = NULL;
+
+  for(;lista_comboios!=NULL; lista_comboios=lista_comboios->pr){
+    for(aux_pt = linha; aux_pt != NULL; aux_pt = aux_pt->pr[0])
+      if(lista_comboios->boio.origem == aux_pt)
+        return lista_comboios;
+  }
+
+  return NULL;
+}
+
+LISTA_COMBOIOS *elimina_comboio(LISTA_COMBOIOS *lista_comboios, LISTA_COMBOIOS *eliminar){
+  LISTA_COMBOIOS *anterior, *atual;
+
+  if(eliminar == lista_comboios){
+    lista_comboios=lista_comboios->pr;
+    free(eliminar);
+    return lista_comboios;
+  }
+
+  for(atual=lista_comboios; atual != NULL && atual != eliminar; anterior=atual, atual=atual->pr){}
+
+  if(atual == NULL){
+    printf("Erro eliminacao comboio");
+    fflush(stdout);
+  }
+  else{
+    anterior->pr=atual->pr;
+    free(atual);
+  }
+
+  return lista_comboios;
 }
