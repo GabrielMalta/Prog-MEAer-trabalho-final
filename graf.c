@@ -71,26 +71,6 @@ void simular(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_lin
   SDL_Quit();
 }
 
-void menu(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas){
-  char leitura[100];
-  int opcao;
-
-    system("clear");
-    printf("Lista de opções:\n0 – Retomar a simulacao\n1 – Mostrar a informação de uma ferrovia\n2 – Eliminar uma ferrovia\n3 – Mostrar a informação de um comboio\n4 – Eliminar um comboio\n5 – Criar um comboio\nSelecione a opção:");
-    fgets(leitura, 100, stdin);
-    if (sscanf(leitura, "%d", &opcao)==1){
-    switch(opcao){
-      case 0: return; break;
-      case 1: opcao_mostra_linha(*topo_lista_linhas); return; break;
-      case 2: *topo_lista_linhas = opcao_elimina_linha(*topo_lista_linhas, topo_lista_comboios); return; break;
-      case 3: opcao_mostra_comboio(*topo_lista_comboios); return; break;
-      case 4: *topo_lista_comboios = opcao_elimina_comboio(*topo_lista_comboios); return; break;
-      case 5: *topo_lista_comboios = opcao_novo_comboio(*topo_lista_comboios, *topo_lista_linhas); return; break;
-      default: break;
-      }
-    }
-}
-
 int inicializa_janela(int dimJanela[]){
   if(SDL_Init(SDL_INIT_EVERYTHING) >= 0){
     janela = SDL_CreateWindow("I like trains",
@@ -502,4 +482,24 @@ void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar, LISTA_GRAF_BOIO *bo
   }
   boio_a_parar->graf.veloc=SPEED;
   boio_a_parar->graf.cor[0]=boio_a_parar->graf.arquetipo.cor;
+}
+
+void menu(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas){
+  char leitura[100];
+  int opcao;
+
+    system("clear");
+    printf("Lista de opções:\n0 – Retomar a simulacao\n1 – Mostrar a informação de uma ferrovia\n2 – Eliminar uma ferrovia\n3 – Mostrar a informação de um comboio\n4 – Eliminar um comboio\n5 – Criar um comboio\nSelecione a opção:");
+    fgets(leitura, 100, stdin);
+    if (sscanf(leitura, "%d", &opcao)==1){
+    switch(opcao){
+      case 0: return; break;
+      case 1: opcao_mostra_linha(*topo_lista_linhas); return; break;
+      case 2: *topo_lista_linhas = opcao_elimina_linha(*topo_lista_linhas, topo_lista_comboios); return; break;
+      case 3: opcao_mostra_comboio(*topo_lista_comboios); return; break;
+      case 4: *topo_lista_comboios = opcao_elimina_comboio(*topo_lista_comboios); return; break;
+      case 5: *topo_lista_comboios = opcao_novo_comboio(*topo_lista_comboios, *topo_lista_linhas); return; break;
+      default: break;
+      }
+    }
 }

@@ -63,7 +63,7 @@ LISTA_COMBOIOS * preenche_comboio(char aux_string[][10], int *aux_int, LISTA_COM
 }
 
 void preenche_linha(char *aux_string, int *aux_int, LISTA_LINHAS * nova_linha, LISTA_PONTOS **atual){
-  // adiciona um ponto a lista de linhas
+  // adiciona um ponto a uma linhas
   LISTA_PONTOS *aux_pt = NULL;
 
   aux_pt = (LISTA_PONTOS*) calloc(1, sizeof(LISTA_PONTOS));

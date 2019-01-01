@@ -99,6 +99,9 @@ typedef struct lista_graf_boios{
   struct lista_graf_boios *pr;
 } LISTA_GRAF_BOIO;
 
+
+/* Ficheiro: leitor_configs.c */
+
 void leitor_configs( LISTA_COMBOIOS **comboios, LISTA_LINHAS **linhas, int dimJanela[], char *nome_ficheiro);
 
 LISTA_COMBOIOS * preenche_comboio(char aux_string[][10], int *aux_int, LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas);
@@ -113,15 +116,12 @@ int numero_tipo( char string[]);
 
 Uint32 cor_string_para_Uint32(char string[]);
 
+
+/* Ficheiro: comboios.c */
+
 void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas);
 
 LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS **topo_lista_comboios);
-
-LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS *lista_comboios, LISTA_PONTOS *linha);
-
-LISTA_COMBOIOS *elimina_comboio(LISTA_COMBOIOS *lista_comboios, LISTA_COMBOIOS *eliminar);
-
-void remove_ligacoes_para_a_linha_eliminada(LISTA_LINHAS *lista_linhas, LISTA_LINHAS *eliminar);
 
 void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios);
 
@@ -144,6 +144,15 @@ void mostra_ponto( PONTO pt);
 void mostra_boio( COMBOIO boio);
 
 char *cor_Uint32_para_string(Uint32 cor);
+
+LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS *lista_comboios, LISTA_PONTOS *linha);
+
+LISTA_COMBOIOS *elimina_comboio(LISTA_COMBOIOS *lista_comboios, LISTA_COMBOIOS *eliminar);
+
+void remove_ligacoes_para_a_linha_eliminada(LISTA_LINHAS *lista_linhas, LISTA_LINHAS *eliminar);
+
+
+/* Ficheiro: graf.c */
 
 Uint32 random_cor(void);
 
