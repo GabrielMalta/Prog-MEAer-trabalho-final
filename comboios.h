@@ -10,6 +10,7 @@ SDL_Renderer* pintor;
 
 #define FPS 30
 #define TICKS_p_FRAME 1000/FPS
+#define speed 1.5
 
 #define RAIO_ESTACAO 10
 #define RAIO_COMBOIO 6 // Jacob ve se consegues substituir isto
@@ -75,7 +76,6 @@ typedef struct{
   LISTA_PONTOS *origem;
   int num_servicos;
   int servicos_restantes;
-  float veloc;
 } COMBOIO;
 
 typedef struct elem_lista_comboios{

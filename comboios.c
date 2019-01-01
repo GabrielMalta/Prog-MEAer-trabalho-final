@@ -187,7 +187,6 @@ LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_L
   int int_aux[4];
 
   int_aux[0]=verifica(3, 9, "Raio das bolas?");
-  int_aux[2]=verifica(10, 100, "Qual a velocidade?");
   int_aux[1]=verifica(1, 9999, "Quantos comboios gerar?");
   int_aux[3]=verifica(1, 9, "Qual a cor da locomotiva?\n1-Vermelho\n2-Roxo\n3-Azul\n4-Ciano\n5-Verde\n6-Amarelo\n7-Castanho\n8-Preto\n9-Branco");
   strcpy(string_aux[1], menu_cor_para_string(int_aux[3]));
@@ -353,7 +352,6 @@ void mostra_boio(COMBOIO boio){
   printf("Cor locom.:%s\n", cor_Uint32_para_string(boio.cor));
   printf("Ponto origem:%s\n", boio.origem->pt.id);
   printf("Numero de servicos:%d\n", boio.num_servicos);
-  printf("Velocidade:%.2fpixeis/segundo\n", boio.veloc*FPS);
   fflush(stdout);
 }
 
