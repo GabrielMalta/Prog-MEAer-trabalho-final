@@ -178,6 +178,7 @@ LISTA_GRAF_BOIO * mexe_comboios3(LISTA_GRAF_BOIO *lista_graf_boios){
       else if( (pt2 = pt1->pr[1-aux_boio->graf.alavanca[i]]) != NULL){}
       else{
         lista_graf_boios = remove_graf_boio(lista_graf_boios, aux_boio);
+        if (lista_graf_boios == NULL) return NULL;
         if ((aux_boio = ant_boio) == NULL) aux_boio = lista_graf_boios;
         break;
       }

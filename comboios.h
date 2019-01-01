@@ -10,7 +10,7 @@ SDL_Renderer* pintor;
 
 #define FPS 30
 #define TICKS_p_FRAME 1000/FPS
-#define SPEED 1.5
+#define SPEED 1.5 // pixeis/tick
 
 #define RAIO_ESTACAO 10
 #define RAIO_COMBOIO 6 // Jacob ve se consegues substituir isto
@@ -52,6 +52,7 @@ SDL_Renderer* pintor;
 
 typedef struct{
   char id[5];
+  struct elem_lista_linhas *linha;
   int x, y;
   Uint32 cor;
   int tipo;
@@ -119,6 +120,8 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOI
 LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS *lista_comboios, LISTA_PONTOS *linha);
 
 LISTA_COMBOIOS *elimina_comboio(LISTA_COMBOIOS *lista_comboios, LISTA_COMBOIOS *eliminar);
+
+void remove_ligacoes_para_a_linha_eliminada(LISTA_LINHAS *lista_linhas, LISTA_LINHAS *eliminar);
 
 void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios);
 

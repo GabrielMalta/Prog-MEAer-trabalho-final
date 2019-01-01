@@ -63,11 +63,12 @@ LISTA_COMBOIOS * preenche_comboio(char aux_string[][10], int *aux_int, LISTA_COM
 }
 
 void preenche_linha(char *aux_string, int *aux_int, LISTA_LINHAS * nova_linha, LISTA_PONTOS **atual){
-  // adiciona uma linha a lista de linhas
+  // adiciona um ponto a lista de linhas
   LISTA_PONTOS *aux_pt = NULL;
 
   aux_pt = (LISTA_PONTOS*) calloc(1, sizeof(LISTA_PONTOS));
   strcpy(aux_pt->pt.id, aux_string);
+  aux_pt->pt.linha=nova_linha;
   aux_pt->pt.x = aux_int[0];
   aux_pt->pt.y = aux_int[1];
   aux_pt->pt.cor = cor_string_para_Uint32(aux_string+10);

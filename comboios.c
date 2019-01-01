@@ -64,6 +64,8 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOI
         while((comboio_a_eliminar = procura_comboios_na_linha(*topo_lista_comboios, aux->linha))!=NULL)
           *topo_lista_comboios = elimina_comboio(*topo_lista_comboios, comboio_a_eliminar);
 
+        remove_ligacoes_para_a_linha_eliminada(topo_lista_linhas, aux);
+
         for(; aux->linha!=NULL; aux->linha = aux->linha->pr[0]){
           elimina_lista_pontos = aux->linha;
           free(elimina_lista_pontos);
@@ -76,6 +78,7 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOI
           anterior->pr=aux->pr;
           free(aux);
         }
+        break;
       }
       else
       anterior = aux;
@@ -347,6 +350,7 @@ void mostra_boio(COMBOIO boio){
   printf("\n/----COMBOIO %s----/\n", boio.id);
   printf("Raio das bolas:%d\n", boio.r_bolas);
   printf("Cor locom.:%s\n", cor_Uint32_para_string(boio.cor));
+  printf("Linha origem:%s\n", boio.origem->pt.linha->id);
   printf("Ponto origem:%s\n", boio.origem->pt.id);
   printf("Numero de servicos:%d\n", boio.num_servicos);
   fflush(stdout);
@@ -404,4 +408,17 @@ LISTA_COMBOIOS *elimina_comboio(LISTA_COMBOIOS *lista_comboios, LISTA_COMBOIOS *
   }
 
   return lista_comboios;
+}
+
+void remove_ligacoes_para_a_linha_eliminada(LISTA_LINHAS *lista_linhas, LISTA_LINHAS *eliminar){
+  LISTA_PONTOS *aux_pt;
+
+  for(;lista_linhas != NULL; lista_linhas=lista_linhas->pr){
+    if (lista_linhas == eliminar)
+      continue;
+    for(aux_pt = lista_linhas->linha ; aux_pt!=NULL; aux_pt=aux_pt->pr[0]){
+      if(aux_pt->pr[1] != NULL && aux_pt->pr[1]->pt.linha == eliminar)
+        aux_pt->pr[1]=NULL;
+    }
+  }
 }
