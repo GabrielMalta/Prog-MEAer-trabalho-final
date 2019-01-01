@@ -167,9 +167,9 @@ LISTA_GRAF_BOIO * mexe_comboios3(LISTA_GRAF_BOIO *lista_graf_boios){
   float deltaX, deltaY;
   int i;
   LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
-  LISTA_GRAF_BOIO *aux_boio = NULL;
+  LISTA_GRAF_BOIO *aux_boio = NULL, *ant_boio = NULL;
 
-  for( aux_boio = lista_graf_boios; aux_boio!=NULL; aux_boio=aux_boio->pr){
+  for( aux_boio = lista_graf_boios; aux_boio!=NULL; ant_boio = aux_boio,aux_boio=aux_boio->pr){
     if (aux_boio->graf.veloc == 0) continue;
     for(i=0; i<N_CAR; i++){
       pt1 = aux_boio->graf.ultimo_ponto[i];
@@ -178,6 +178,7 @@ LISTA_GRAF_BOIO * mexe_comboios3(LISTA_GRAF_BOIO *lista_graf_boios){
       else if( (pt2 = pt1->pr[1-aux_boio->graf.alavanca[i]]) != NULL){}
       else{
         lista_graf_boios = remove_graf_boio(lista_graf_boios, aux_boio);
+        if ((aux_boio = ant_boio) == NULL) aux_boio = lista_graf_boios;
         break;
       }
       // else continue;
