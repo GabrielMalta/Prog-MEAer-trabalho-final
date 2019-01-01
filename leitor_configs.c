@@ -16,8 +16,10 @@ void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_li
   }
 
   while( fgets(leitura, 100, config) != NULL){
-    if ( (leitura[0] >= '0' && leitura[0] <='9') || (leitura[0] >= 'A' && leitura[0] <='Z') ){
-      if (sscanf(leitura, "%d %d", aux_int, aux_int+1) == 2){
+    if ( (leitura[0] >= '0' && leitura[0] <='9')
+      || (leitura[0] >= 'A' && leitura[0] <='Z')
+      || (leitura[0] >= 'a' && leitura[0] <='z') ){
+      if (sscanf(leitura, "JANELA: %d %d", aux_int, aux_int+1) == 2){
         dimJanela[X] = aux_int[0];
         dimJanela[Y] = aux_int[1];
       }

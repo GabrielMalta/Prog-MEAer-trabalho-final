@@ -322,8 +322,10 @@ void desenha_pontos(LISTA_LINHAS *topo_lista_linhas){
         aacircleColor(pintor, ap->pt.x, ap->pt.y, 10, hexdec_PRETO);
       }
       else if (ap->pr[0] != NULL && ap->pr[1] != NULL){
-        filledCircleColor(pintor, ap->pt.x, ap->pt.y, 4, ap->pt.cor);
-        aacircleColor(pintor, ap->pt.x, ap->pt.y, 4, hexdec_PRETO);
+        // filledCircleColor(pintor, ap->pt.x, ap->pt.y, 4, hexdec_PRETO);
+        filledCircleColor(pintor, ap->pt.x, ap->pt.y, 2, ap->pt.cor);
+        aacircleColor(pintor, ap->pt.x, ap->pt.y, 2, hexdec_PRETO);
+        aacircleColor(pintor, ap->pt.x, ap->pt.y, 6, hexdec_PRETO);
       }
       else {
         filledCircleColor(pintor, ap->pt.x, ap->pt.y, 2, ap->pt.cor);
