@@ -32,6 +32,7 @@ void simular(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_lin
   }
 
   reset_servicos_restantes(*topo_lista_comboios);
+  mostra_boios_ativos(*topo_lista_comboios);
 
   temporizador = SDL_GetTicks();
   while (fim != 1){
@@ -39,9 +40,9 @@ void simular(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_lin
       *topo_lista_comboios = mexe_comboios3(*topo_lista_comboios);
       colisoes(*topo_lista_comboios);
 
-      if(ticks_simulacao%10==0)
-        pisca_comboios(*topo_lista_comboios);
+      if(ticks_simulacao%10==0) pisca_comboios(*topo_lista_comboios);
       atualiza_render(*topo_lista_linhas, *topo_lista_comboios, dimJanela, pausa);
+
       ticks_simulacao++;
     }
     else {
@@ -455,6 +456,7 @@ LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS
     comboio->boio.y[i]=-1000;
   }
     comboio->boio.veloc=0;
+    return topo_lista_boios;
   }
   else{
     for(i=0; i<N_CAR; i++){
@@ -464,7 +466,6 @@ LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS
       comboio->boio.veloc=SPEED;
       comboio->boio.estado_piscar=2;
     }
-    comboio->boio.servicos_restantes--;
   }
 
   for(outro_boio=topo_lista_boios; outro_boio!=NULL; outro_boio=outro_boio->pr){
@@ -478,10 +479,23 @@ LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS
           }
           comboio->boio.veloc=0;
           comboio->boio.servicos_restantes++;
-          return topo_lista_boios;
+          break;
         }
       }
     }
   }
+  comboio->boio.servicos_restantes--;
+  mostra_boios_ativos(topo_lista_boios);
   return topo_lista_boios;
+}
+
+void mostra_boios_ativos(LISTA_COMBOIOS *lista_comboios){
+  system("clear");
+  while(lista_comboios!=NULL){
+    printf("Comboio:%s\n", lista_comboios->boio.id);
+    printf("Cor locomotiva:%s\n", cor_Uint32_para_string(lista_comboios->boio.cor[0]));
+    printf("Numero de servicos restantes:%d\n\n", lista_comboios->boio.servicos_restantes);
+    lista_comboios=lista_comboios->pr;
+  }
+  fflush(stdout);
 }
