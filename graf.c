@@ -186,7 +186,7 @@ void colisoes(LISTA_COMBOIOS *lista_boios){
     for(comparar=atual->pr; comparar!=NULL; comparar=comparar->pr){
       for(i=0; i<N_CAR; i++){
         for(j=0; j<N_CAR; j++){
-          if(pow(atual->boio.x[i]-comparar->boio.x[j],2)+pow(atual->boio.y[i]-comparar->boio.y[j],2) < 1.3 * pow(2*RAIO_COMBOIO,2)){
+          if(pow(atual->boio.x[i]-comparar->boio.x[j],2)+pow(atual->boio.y[i]-comparar->boio.y[j],2) < 1.7 * pow(2*RAIO_COMBOIO,2)){
             if(i==0 && j==0 && atual->boio.veloc == 0){}
             if(i==0 && j==0 && comparar->boio.veloc == 0){}
             else if(i==0 && j==0){
@@ -432,8 +432,8 @@ LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS
   int i;
 
   if(aux_boio->boio.servicos_restantes == 0){
-    aux_boio->boio.x=-100;
-    aux_boio->boio.y=-100;
+    aux_boio->boio.x=-1000;
+    aux_boio->boio.y=-1000;
     aux_boio->boio.veloc=0;
   }
   else{
