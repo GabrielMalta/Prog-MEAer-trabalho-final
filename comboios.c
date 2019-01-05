@@ -36,7 +36,7 @@ void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas){
 LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS **topo_lista_comboios){
   char linha[100];
   int i=0;
-  LISTA_LINHAS *aux = topo_lista_linhas, *anterior = NULL;
+  LISTA_LINHAS *aux, *anterior;
   LISTA_PONTOS *elimina_lista_pontos;
   LISTA_COMBOIOS *comboio_a_eliminar;
   while (1){

@@ -23,7 +23,9 @@ int main(int argc, char *argv[]){
         case 3: opcao_mostra_comboio(topo_lista_comboios); break;
         case 4: topo_lista_comboios = opcao_elimina_comboio(topo_lista_comboios); break;
         case 5: topo_lista_comboios = opcao_novo_comboio(topo_lista_comboios, topo_lista_linhas); break;
-        case 6: simular(&topo_lista_comboios, &topo_lista_linhas, dimJanela); break;
+        case 6: simular(&topo_lista_comboios, &topo_lista_linhas, dimJanela);
+                gfxPrimitivesSetFont(NULL,0,0);
+                break;
         default: break;
       }
     }

@@ -26,7 +26,7 @@ void simular(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_lin
   int fim=0, pausa=0;
   int ticks_simulacao=0;
   char cronometro[10];
-  int i=1;
+  int i=-1;
 
   if ( inicializa_janela(dimJanela) == 0 ){
     exit(0);
