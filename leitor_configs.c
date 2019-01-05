@@ -66,6 +66,7 @@ LISTA_COMBOIOS * preenche_comboio(char aux_string[][10], int *aux_int, LISTA_COM
     novo_boio->boio.y[i]=novo_boio->boio.origem->pt.y;
   }
   novo_boio->boio.cor[0] = cor_string_para_Uint32(aux_string[1]);
+  novo_boio->boio.estado_piscar=2;
   novo_boio->pr=topo_lista_comboios;
   topo_lista_comboios=novo_boio;
 

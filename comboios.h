@@ -10,7 +10,7 @@ SDL_Renderer* pintor;
 
 #define FPS 30
 #define TICKS_p_FRAME 1000/FPS
-#define SPEED 1.5 // pixeis/tick
+#define SPEED 3 // pixeis/tick
 
 #define RAIO_ESTACAO 10
 #define RAIO_COMBOIO 6 // Jacob ve se consegues substituir isto
@@ -152,11 +152,13 @@ int inicializa_janela( int dimJanela[]);
 
 void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios);
 
-LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS *topo_lista_boios);
+LISTA_GRAF_BOIO *mexe_comboios3(LISTA_GRAF_BOIO *lista_graf_boios);
 
-void mexe_carruagem(LISTA_COMBOIOS *aux_boio, int num_carruagem, LISTA_PONTOS *pt1, LISTA_PONTOS *pt2);
+LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar);
 
-void verifica_se_chegou_ao_ponto(LISTA_COMBOIOS *aux_boio, int num_carruagem, LISTA_PONTOS *prox_pt);
+void mexe_carruagem(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, LISTA_PONTOS *pt1, LISTA_PONTOS *pt2);
+
+void verifica_se_chegou_ao_ponto(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, LISTA_PONTOS *prox_pt);
 
 void colisoes(LISTA_COMBOIOS *lista_boios);
 
