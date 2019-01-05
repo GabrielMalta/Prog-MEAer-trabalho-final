@@ -89,32 +89,31 @@ void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios){
   }
 }
 
-LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS *lista_graf_boios){
+LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS *topo_lista_boios){
   float deltaX, deltaY;
   int i;
   LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
-  LISTA_GRAF_BOIO *aux_boio = NULL, *ant_boio = NULL;
+  LISTA_COMBOIOS *aux_boio = NULL, *ant_boio = NULL;
 
-  for( aux_boio = lista_graf_boios; aux_boio!=NULL; ant_boio = aux_boio,aux_boio=aux_boio->pr){
-    if (aux_boio->graf.veloc == 0) continue;
+  for( aux_boio = topo_lista_boios; aux_boio!=NULL; ant_boio = aux_boio,aux_boio=aux_boio->pr){
+    if (aux_boio->boio.veloc == 0) continue;
     for(i=0; i<N_CAR; i++){
-      pt1 = aux_boio->graf.ultimo_ponto[i];
+      pt1 = aux_boio->boio.ultimo_ponto[i];
 
-      if( (pt2 = pt1->pr[aux_boio->graf.alavanca[i]]) != NULL){}
-      else if( (pt2 = pt1->pr[1-aux_boio->graf.alavanca[i]]) != NULL){}
+      if( (pt2 = pt1->pr[aux_boio->boio.alavanca[i]]) != NULL){}
+      else if( (pt2 = pt1->pr[1-aux_boio->boio.alavanca[i]]) != NULL){}
       else{
-        lista_graf_boios = remove_graf_boio(lista_graf_boios, aux_boio);
-        if (lista_graf_boios == NULL) return NULL;
-        if ((aux_boio = ant_boio) == NULL) aux_boio = lista_graf_boios;
+        topo_lista_boios = reset_movimento(topo_lista_boios, aux_boio);
+        if (topo_lista_boios == NULL) return NULL;
+        if ((aux_boio = ant_boio) == NULL) aux_boio = topo_lista_boios;
         break;
       }
-      // else continue;
 
       if (i!=0){ //se estivermos a mexer uma carruagem
-        deltaX = aux_boio->graf.x[i] - aux_boio->graf.x[i-1];
-        deltaY = aux_boio->graf.y[i] - aux_boio->graf.y[i-1];
+        deltaX = aux_boio->boio.x[i] - aux_boio->boio.x[i-1];
+        deltaY = aux_boio->boio.y[i] - aux_boio->boio.y[i-1];
         // e ela estiver demasiado perto da anterior, nao a mexer
-        if (sqrt(deltaX*deltaX + deltaY*deltaY) < 2.1*aux_boio->graf.arquetipo.r_bolas) continue;
+        if (sqrt(deltaX*deltaX + deltaY*deltaY) < 2.1*aux_boio->boio.r_bolas) continue;
       }
 
       mexe_carruagem(aux_boio, i, pt1, pt2);
@@ -122,22 +121,18 @@ LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS *lista_graf_boios){
       verifica_se_chegou_ao_ponto(aux_boio, i, pt2);
 
       if (i!=0){
-        deltaX = aux_boio->graf.x[i] - aux_boio->graf.x[i-1]; //reciclar variaveis
-        deltaY = aux_boio->graf.y[i] - aux_boio->graf.y[i-1]; //para salvar o ambiente
-        if(sqrt(deltaX*deltaX + deltaY*deltaY) > 2.2*aux_boio->graf.arquetipo.r_bolas)
+        deltaX = aux_boio->boio.x[i] - aux_boio->boio.x[i-1]; //reciclar variaveis
+        deltaY = aux_boio->boio.y[i] - aux_boio->boio.y[i-1]; //para salvar o ambiente
+        if(sqrt(deltaX*deltaX + deltaY*deltaY) > 2.2*aux_boio->boio.r_bolas)
         //se a carruagem que acabamos de mexer ainda estiver demasiado longe, vamos mexê-la outra vez
         i--;
       }
     }
   }
-  return lista_graf_boios;
+  return topo_lista_boios;
 }
 
 void mexe_carruagem(LISTA_COMBOIOS *aux_boio, int num_carruagem, LISTA_PONTOS *pt1, LISTA_PONTOS *pt2){
-  // LISTA_PONTOS *pt1 = aux_boio->graf.ultimo_ponto[num_carruagem];
-  // LISTA_PONTOS *pt2 = aux_boio->graf.ultimo_ponto[num_carruagem]->pr[aux_boio->graf.alavanca[num_carruagem]];
-
-
   float deltaX = pt2->pt.x - pt1->pt.x;
   float deltaY = pt2->pt.y - pt1->pt.y;
   float m; // declive
@@ -146,38 +141,37 @@ void mexe_carruagem(LISTA_COMBOIOS *aux_boio, int num_carruagem, LISTA_PONTOS *p
   if (deltaX != 0){
     m = (float) deltaY/deltaX;
 
-    x_a_somar = deltaX/abs(deltaX)  *  aux_boio->graf.veloc/sqrt(m*m+1);
+    x_a_somar = deltaX/abs(deltaX)  *  aux_boio->boio.veloc/sqrt(m*m+1);
     y_a_somar = m*x_a_somar;
   }
   else{
     x_a_somar=0;
-    y_a_somar=deltaY/abs(deltaY) * aux_boio->graf.veloc;
+    y_a_somar=deltaY/abs(deltaY) * aux_boio->boio.veloc;
   }
 
-  aux_boio->graf.x[num_carruagem] += x_a_somar;
-  aux_boio->graf.y[num_carruagem] += y_a_somar;
+  aux_boio->boio.x[num_carruagem] += x_a_somar;
+  aux_boio->boio.y[num_carruagem] += y_a_somar;
 }
 
 void verifica_se_chegou_ao_ponto(LISTA_COMBOIOS *aux_boio, int num_carruagem, LISTA_PONTOS *prox_pt){
-  // LISTA_PONTOS *prox_pt = aux_boio->graf.ultimo_ponto[num_carruagem]->pr[aux_boio->graf.alavanca[num_carruagem]];
-  float deltaX = prox_pt->pt.x - aux_boio->graf.x[num_carruagem];
-  float deltaY = prox_pt->pt.y - aux_boio->graf.y[num_carruagem];
+  float deltaX = prox_pt->pt.x - aux_boio->boio.x[num_carruagem];
+  float deltaY = prox_pt->pt.y - aux_boio->boio.y[num_carruagem];
 
   //coloca a carruagem no proximo ponto da linha se a distancia entre os dois for muito pequena
-  if( sqrt(deltaY*deltaY + deltaX*deltaX) < aux_boio->graf.veloc){
-    aux_boio->graf.x[num_carruagem] = prox_pt->pt.x;
-    aux_boio->graf.y[num_carruagem] = prox_pt->pt.y;
-    aux_boio->graf.ultimo_ponto[num_carruagem] = prox_pt;
+  if( sqrt(deltaY*deltaY + deltaX*deltaX) < aux_boio->boio.veloc){
+    aux_boio->boio.x[num_carruagem] = prox_pt->pt.x;
+    aux_boio->boio.y[num_carruagem] = prox_pt->pt.y;
+    aux_boio->boio.ultimo_ponto[num_carruagem] = prox_pt;
 
     //se for a locomotiva, assume o trajeto que estava selecionado pela alavanca
-    if(num_carruagem==0) aux_boio->graf.alavanca[num_carruagem] = prox_pt->pt.alavanca;
+    if(num_carruagem==0) aux_boio->boio.alavanca[num_carruagem] = prox_pt->pt.alavanca;
 
     //se nao for a locomotiva, assume o trajeto da carruagem anterior
     //muda a cor para cinzento se a cor corresponder com a da estacao;
     if(num_carruagem!=0){
-      if (aux_boio->graf.cor[num_carruagem] ==prox_pt->pt.cor && prox_pt->pt.tipo == EST)
-      aux_boio->graf.cor[num_carruagem] = hexdec_CINZENTO;
-      aux_boio->graf.alavanca[num_carruagem] = aux_boio->graf.alavanca[num_carruagem-1];
+      if (aux_boio->boio.cor[num_carruagem] ==prox_pt->pt.cor && prox_pt->pt.tipo == EST)
+      aux_boio->boio.cor[num_carruagem] = hexdec_CINZENTO;
+      aux_boio->boio.alavanca[num_carruagem] = aux_boio->boio.alavanca[num_carruagem-1];
     }
   }
 }
@@ -432,4 +426,21 @@ void menu(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas
       default: break;
       }
     }
+}
+
+LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *aux_boio){
+  int i;
+
+  if(aux_boio->boio.servicos_restantes == 0)
+    topo_lista_boios = elimina_comboio(topo_lista_boios, aux_boio);
+  else{
+    for(i=0; i<N_CAR; i++){
+      aux_boio->boio.ultimo_ponto[i] = aux_boio->boio.origem;
+      aux_boio->boio.x[i] = aux_boio->boio.origem->pt.x;
+      aux_boio->boio.y[i] = aux_boio->boio.origem->pt.y;
+    }
+    aux_boio->boio.servicos_restantes--;
+  }
+
+  return topo_lista_boios;
 }

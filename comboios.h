@@ -89,6 +89,7 @@ typedef struct elem_lista_comboios{
   struct elem_lista_comboios *pr;
 } LISTA_COMBOIOS;
 
+
 /* Ficheiro: leitor_configs.c */
 
 void leitor_configs( LISTA_COMBOIOS **comboios, LISTA_LINHAS **linhas, int dimJanela[], char *nome_ficheiro);
@@ -151,12 +152,6 @@ int inicializa_janela( int dimJanela[]);
 
 void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios);
 
-LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios);
-
-LISTA_GRAF_BOIO *procura_graf_boio_por_aquetipo(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *arquetipo);
-
-LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio);
-
 LISTA_GRAF_BOIO *mexe_comboios3(LISTA_GRAF_BOIO *lista_graf_boios);
 
 LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar);
@@ -190,3 +185,5 @@ LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, 
 void toggle_andamento_comboio(LISTA_COMBOIOS *boio_a_parar, LISTA_COMBOIOS *boios);
 
 void menu(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas);
+
+LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *aux_boio);

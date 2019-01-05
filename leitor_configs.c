@@ -53,6 +53,7 @@ LISTA_COMBOIOS * preenche_comboio(char aux_string[][10], int *aux_int, LISTA_COM
 
   strcpy(novo_boio->boio.id, aux_string[0]);
   novo_boio->boio.cor[0] = cor_string_para_Uint32(aux_string[1]);
+  for(i=1; i<N_CAR; i++) novo_boio->boio.cor[i]=random_cor();
   novo_boio->boio.r_bolas = aux_int[0];
   novo_boio->boio.origem = procura_ponto(aux_string[2], aux_string[3], topo_lista_linhas);
   novo_boio->boio.num_servicos = aux_int[1];
