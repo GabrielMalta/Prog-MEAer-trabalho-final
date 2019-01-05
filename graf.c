@@ -444,6 +444,7 @@ void menu_de_pausa(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lis
       default: break;
       }
     }
+    printf("Pode voltar a janela grafica, clicando em retomar para continuar a simulacao");
 }
 
 LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *comboio){
