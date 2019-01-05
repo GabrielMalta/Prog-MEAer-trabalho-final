@@ -349,7 +349,7 @@ void mostra_ponto(PONTO pt){
 void mostra_boio(COMBOIO boio){
   printf("\n/----COMBOIO %s----/\n", boio.id);
   printf("Raio das bolas:%d\n", boio.r_bolas);
-  printf("Cor locom.:%s\n", cor_Uint32_para_string(boio.cor));
+  printf("Cor locom.:%s\n", cor_Uint32_para_string(boio.cor[0]));
   printf("Linha origem:%s\n", boio.origem->pt.linha->id);
   printf("Ponto origem:%s\n", boio.origem->pt.id);
   printf("Numero de servicos:%d\n", boio.num_servicos);
