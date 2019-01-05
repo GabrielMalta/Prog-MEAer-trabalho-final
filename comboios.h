@@ -187,7 +187,7 @@ LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, 
 
 void toggle_andamento_comboio(LISTA_COMBOIOS *boio_a_parar, LISTA_COMBOIOS *boios);
 
-void menu(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas);
+void menu_de_pausa(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas);
 
 LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *aux_boio);
 

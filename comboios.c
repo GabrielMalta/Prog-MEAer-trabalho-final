@@ -258,7 +258,7 @@ void get_coords_origem(char * linha, char *ponto, LISTA_LINHAS * topo_lista_linh
   while(1){
     system("clear");
     aux=topo_lista_linhas;
-    mostra_linha(topo_lista_linhas, "Qual a lista de origem?", linha);
+    mostra_linha(topo_lista_linhas, "Qual a ferrovia de origem?", linha);
     for(;aux!=NULL;aux=aux->pr){
       if(strcmp(linha, aux->id)==0){
         i=1;
