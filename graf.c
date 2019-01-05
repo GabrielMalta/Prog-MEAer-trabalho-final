@@ -96,6 +96,7 @@ LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS *topo_lista_boios){
   LISTA_COMBOIOS *aux_boio = NULL, *ant_boio = NULL;
 
   for( aux_boio = topo_lista_boios; aux_boio!=NULL; ant_boio = aux_boio,aux_boio=aux_boio->pr){
+    if (aux_boio->boio.x[0] == -200) topo_lista_boios=reset_movimento(topo_lista_boios, aux_boio);
     if (aux_boio->boio.veloc == 0) continue;
     for(i=0; i<N_CAR; i++){
       pt1 = aux_boio->boio.ultimo_ponto[i];
@@ -186,7 +187,7 @@ void colisoes(LISTA_COMBOIOS *lista_boios){
     for(comparar=atual->pr; comparar!=NULL; comparar=comparar->pr){
       for(i=0; i<N_CAR; i++){
         for(j=0; j<N_CAR; j++){
-          if(pow(atual->boio.x[i]-comparar->boio.x[j],2)+pow(atual->boio.y[i]-comparar->boio.y[j],2) < 1.7 * pow(2*RAIO_COMBOIO,2)){
+          if( dist_carruagens(atual, i, comparar, j) < 2.6*RAIO_COMBOIO){
             if(i==0 && j==0 && atual->boio.veloc == 0){}
             if(i==0 && j==0 && comparar->boio.veloc == 0){}
             else if(i==0 && j==0){
@@ -201,6 +202,11 @@ void colisoes(LISTA_COMBOIOS *lista_boios){
       }
     }
   }
+}
+
+float dist_carruagens(LISTA_COMBOIOS *comboio1, int i, LISTA_COMBOIOS *comboio2, int j){
+  // retorna a distancia entre a i-esima carruagem do comboio 1 e a j-esima carruagem do comboio 2
+  return sqrt(pow(comboio1->boio.x[i]-comparar->boio.x[j],2)+pow(comboio1->boio.y[i]-comboio2->boio.y[j],2));
 }
 
 void pisca_comboios(LISTA_COMBOIOS *lista_boios){
@@ -428,8 +434,9 @@ void menu(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas
     }
 }
 
-LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *aux_boio){
-  int i;
+LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *comboio){
+  int i,j;
+  LISTA_COMBOIOS *outro_boio = NULL;
 
   if(aux_boio->boio.servicos_restantes == 0){
     aux_boio->boio.x=-1000;
@@ -441,9 +448,28 @@ LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS
       aux_boio->boio.ultimo_ponto[i] = aux_boio->boio.origem;
       aux_boio->boio.x[i] = aux_boio->boio.origem->pt.x;
       aux_boio->boio.y[i] = aux_boio->boio.origem->pt.y;
+      aux_boio->boio.veloc=SPEED;
     }
     aux_boio->boio.servicos_restantes--;
   }
+
+  for(outro_boio=topo_lista_boios; outro_boio!=NULL; outro_boio=outro_boio->pr){
+    if(outro_boio == comboio) continue;
+    for(i=0; i<N_CAR; i++){
+      for(j=0; j<N_CAR, j++){
+        if(dist_carruagens(comboio, i, outro_boio, j) < 4*RAIO_COMBOIO){
+          aux_boio->boio.x=-200;
+          aux_boio->boio.y=-200;
+          aux_boio->boio.veloc=0;
+          aux_boio->boio.servicos_restantes++;
+          return topo_lista_boios;
+        }
+      }
+    }
+
+  }
+
+
 
   return topo_lista_boios;
 }

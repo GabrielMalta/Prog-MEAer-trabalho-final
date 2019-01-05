@@ -162,6 +162,8 @@ void verifica_se_chegou_ao_ponto(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, L
 
 void colisoes(LISTA_COMBOIOS *lista_boios);
 
+float dist_carruagens(LISTA_COMBOIOS *comboio1, int i, LISTA_COMBOIOS *comboio2, int j);
+
 void pisca_comboios(LISTA_COMBOIOS *lista_boios);
 
 void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS *boios_graficos, int dimJanela[], int pausa);
