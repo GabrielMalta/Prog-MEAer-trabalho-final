@@ -143,7 +143,7 @@ void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios){
 LISTA_COMBOIOS * opcao_elimina_comboio(LISTA_COMBOIOS *topo_lista_comboios){
   char comboio[100], leitura[100];
   int i=0;
-  LISTA_COMBOIOS *aux=topo_lista_comboios, *anterior=NULL;
+  LISTA_COMBOIOS *aux=topo_lista_comboios;
     while(1){
       system("clear");
       i=0;
@@ -171,14 +171,11 @@ LISTA_COMBOIOS * opcao_elimina_comboio(LISTA_COMBOIOS *topo_lista_comboios){
       }
 
       aux=topo_lista_comboios;
-      anterior=NULL;
       for(;aux!=NULL;aux=aux->pr){
         if(strcmp(comboio, aux->boio.id)==0){
           i=1;
           topo_lista_comboios = elimina_comboio(topo_lista_comboios, aux);
         }
-        else
-        anterior = aux;
       }
       if(i==0){
         printf("Erro, comboio inexistente\n");
