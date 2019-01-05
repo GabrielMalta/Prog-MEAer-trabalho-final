@@ -190,3 +190,5 @@ void toggle_andamento_comboio(LISTA_COMBOIOS *boio_a_parar, LISTA_COMBOIOS *boio
 void menu_de_pausa(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas);
 
 LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *aux_boio);
+
+void mostra_boios_ativos(LISTA_COMBOIOS *lista_comboios);
