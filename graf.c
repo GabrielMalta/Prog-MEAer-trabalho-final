@@ -57,7 +57,7 @@ void simular(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_lin
       case 2:
       pausa = 1 - pausa;
       if(i==1){
-        menu(topo_lista_comboios, topo_lista_linhas);
+        menu_de_pausa(topo_lista_comboios, topo_lista_linhas);
         system("clear");
             }
       i=-i;
@@ -425,7 +425,7 @@ void toggle_andamento_comboio(LISTA_COMBOIOS *boio_a_parar, LISTA_COMBOIOS *boio
   boio_a_parar->boio.estado_piscar=2;
 }
 
-void menu(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas){
+void menu_de_pausa(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas){
   char leitura[100];
   int opcao;
 
