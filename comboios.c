@@ -6,7 +6,7 @@ void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas){
   LISTA_LINHAS *aux = topo_lista_linhas;
   LISTA_PONTOS *auxiliar=NULL;
   while (1){
-    
+
     if((i=get_ferrovia_a_mostrar(linha, topo_lista_linhas))==-1)
       break;
 
@@ -90,33 +90,13 @@ int get_ferrovia_a_mostrar(char* linha, LISTA_LINHAS *topo_lista_linhas){
 }
 
 void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios){
-  char comboio[100], leitura[100];
+  char comboio[100];
   int i=0;
   LISTA_COMBOIOS *aux=topo_lista_comboios;
     while(1){
-      system("clear");
-      i=0;
-      aux=topo_lista_comboios;
-      if(topo_lista_comboios== NULL){
-        printf("\nNeste momento nao ha comboios\nPode adicionar comboios utilizando a opcao 5 do menu principal\n");
-        getchar();
+
+      if ((i=get_comboio_a_mostrar(topo_lista_comboios, comboio))==-1)
         break;
-      }
-      printf("\nLista de comboios:\n");
-      for(;aux!=NULL;aux=aux->pr)
-        printf("COMBOIO %s\n", aux->boio.id);
-      printf("\nQual o comboio a mostrar?(Fim para sair)\n");
-
-      fgets(leitura, 100, stdin);
-      sscanf(leitura, "%s", comboio);
-
-      if (strcmp(comboio, "Fim")==0)
-        break;
-
-      if (strlen(comboio)>2){
-        printf("Erro, ID invalido\n");
-        i=1;
-      }
 
       aux=topo_lista_comboios;
 
@@ -133,34 +113,13 @@ void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios){
 }
 
 LISTA_COMBOIOS * opcao_elimina_comboio(LISTA_COMBOIOS *topo_lista_comboios){
-  char comboio[100], leitura[100];
+  char comboio[100];
   int i=0;
   LISTA_COMBOIOS *aux=topo_lista_comboios;
     while(1){
-      system("clear");
-      i=0;
-      aux=topo_lista_comboios;
-      if(topo_lista_comboios== NULL){
-        printf("\nNeste momento nao ha comboios\nPode adicionar comboios utilizando a opcao 5 do menu principal\n");
-        getchar();
+
+      if ((i=get_comboio_a_mostrar(topo_lista_comboios, comboio))==-1)
         break;
-      }
-      printf("\nLista de comboios:\n");
-      for(;aux!=NULL;aux=aux->pr)
-        printf("COMBOIO %s\n", aux->boio.id);
-
-      printf("\nQual o comboio a eliminar?(Fim para sair)\n");
-      fgets(leitura, 100, stdin);
-      sscanf(leitura, "%s", comboio);
-
-      if (strcmp(comboio, "Fim")==0)
-        break;
-
-      if (strlen(comboio)>2){
-        printf("Erro, ID invalido\n");
-        i=1;
-        while(getchar()!='\n');
-      }
 
       aux=topo_lista_comboios;
       for(;aux!=NULL;aux=aux->pr){
@@ -175,6 +134,35 @@ LISTA_COMBOIOS * opcao_elimina_comboio(LISTA_COMBOIOS *topo_lista_comboios){
       }
     }
     return topo_lista_comboios;
+}
+
+int get_comboio_a_mostrar(LISTA_COMBOIOS * topo_lista_comboios, char*comboio){
+  LISTA_COMBOIOS* aux;
+  char leitura[100];
+  int i=0;
+  system("clear");
+  aux=topo_lista_comboios;
+  if(topo_lista_comboios== NULL){
+    printf("\nNeste momento nao ha comboios\nPode adicionar comboios utilizando a opcao 5 do menu principal\n");
+    getchar();
+    return -1;
+  }
+  printf("\nLista de comboios:\n");
+  for(;aux!=NULL;aux=aux->pr)
+    printf("COMBOIO %s\n", aux->boio.id);
+
+  printf("\nQual o comboio a eliminar?(Fim para sair)\n");
+  fgets(leitura, 100, stdin);
+  sscanf(leitura, "%s", comboio);
+
+  if (strcmp(comboio, "Fim")==0)
+  i=-1;
+
+  if (strlen(comboio)>2){
+    printf("Erro, ID invalido\n");
+    i=1;
+  }
+  return i;
 }
 
 LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS * topo_lista_linhas){
