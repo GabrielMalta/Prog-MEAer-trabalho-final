@@ -120,6 +120,8 @@ LISTA_COMBOIOS * opcao_elimina_comboio(LISTA_COMBOIOS *topo_lista_comboios);
 
 LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS * topo_lista_linhas);
 
+int get_comboio_a_mostrar(LISTA_COMBOIOS * topo_lista_comboios, char*comboio);
+
 int verifica(int n_min, int n_max, char *texto);
 
 char *menu_cor_para_string(int cor);

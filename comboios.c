@@ -139,7 +139,8 @@ LISTA_COMBOIOS * opcao_elimina_comboio(LISTA_COMBOIOS *topo_lista_comboios){
 int get_comboio_a_mostrar(LISTA_COMBOIOS * topo_lista_comboios, char*comboio){
   LISTA_COMBOIOS* aux;
   char leitura[100];
-  i=0;
+  int i=0;
+  system("clear");
   aux=topo_lista_comboios;
   if(topo_lista_comboios== NULL){
     printf("\nNeste momento nao ha comboios\nPode adicionar comboios utilizando a opcao 5 do menu principal\n");
@@ -160,7 +161,6 @@ int get_comboio_a_mostrar(LISTA_COMBOIOS * topo_lista_comboios, char*comboio){
   if (strlen(comboio)>2){
     printf("Erro, ID invalido\n");
     i=1;
-    while(getchar()!='\n');
   }
   return i;
 }
