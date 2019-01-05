@@ -40,20 +40,9 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOI
   LISTA_PONTOS *elimina_lista_pontos;
   LISTA_COMBOIOS *comboio_a_eliminar;
   while (1){
-    system("clear");
-    i=0;
-    mostra_linha(topo_lista_linhas, "Qual a lista a mostrar?(Fim para sair)", linha);
-    if (strlen(linha)==0)
-      break;
 
-    if (strcmp(linha, "Fim")==0)
+    if((i=get_ferrovia_a_mostrar(linha, topo_lista_linhas))==-1)
       break;
-
-    if (strlen(linha)>4){
-      printf("Erro, ID invalido\n");
-      while(getchar()!='\n');
-      i=1;
-    }
 
     aux = topo_lista_linhas;
     anterior = NULL;
@@ -84,11 +73,28 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOI
       anterior = aux;
     }
     if (i==0){
-      printf("Erro, linha inexistente\n");
+      printf("Erro, ferrovia inexistente\n");
     while(getchar()!='\n');
     }
   }
   return topo_lista_linhas;
+}
+
+int get_ferrovia_a_mostrar(char* linha, LISTA_LINHAS *topo_lista_linhas){
+  int i;
+  system("clear");
+  i=1;
+  mostra_linha(topo_lista_linhas, "Qual a ferrovia?(Fim para sair)", linha);
+
+  if (strcmp(linha, "Fim")==0)
+    i=-1;
+
+  if (strlen(linha)>4){
+    printf("Erro, ID invalido\n");
+    while(getchar()!='\n');
+    i=2;
+  }
+  return i;
 }
 
 void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios){
@@ -326,7 +332,7 @@ void mostra_linha(LISTA_LINHAS* topo_lista_linhas, char * texto, char*linha){
     linha[0] = '\0';
     return;
   }
-  printf("\nLista de linhas:\n");
+  printf("\nLista de ferrovias:\n");
   for(;topo_lista_linhas!=NULL;topo_lista_linhas=topo_lista_linhas->pr){
     printf("LINHA %s\n", topo_lista_linhas->id);
   }
