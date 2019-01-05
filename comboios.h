@@ -113,6 +113,8 @@ void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas);
 
 LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS **topo_lista_comboios);
 
+int get_ferrovia_a_mostrar(char* linha, LISTA_LINHAS *topo_lista_linhas);
+
 void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios);
 
 LISTA_COMBOIOS * opcao_elimina_comboio(LISTA_COMBOIOS *topo_lista_comboios);
@@ -152,13 +154,11 @@ int inicializa_janela( int dimJanela[]);
 
 void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios);
 
-LISTA_GRAF_BOIO *mexe_comboios3(LISTA_GRAF_BOIO *lista_graf_boios);
+LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS *topo_lista_boios);
 
-LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF_BOIO *eliminar);
+void mexe_carruagem(LISTA_COMBOIOS *aux_boio, int num_carruagem, LISTA_PONTOS *pt1, LISTA_PONTOS *pt2);
 
-void mexe_carruagem(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, LISTA_PONTOS *pt1, LISTA_PONTOS *pt2);
-
-void verifica_se_chegou_ao_ponto(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, LISTA_PONTOS *prox_pt);
+void verifica_se_chegou_ao_ponto(LISTA_COMBOIOS *aux_boio, int num_carruagem, LISTA_PONTOS *prox_pt);
 
 void colisoes(LISTA_COMBOIOS *lista_boios);
 

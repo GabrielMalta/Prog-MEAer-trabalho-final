@@ -439,8 +439,10 @@ LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS
   LISTA_COMBOIOS *outro_boio = NULL;
 
   if(aux_boio->boio.servicos_restantes == 0){
-    aux_boio->boio.x=-1000;
-    aux_boio->boio.y=-1000;
+    for(i=0; i<4; i++){
+    aux_boio->boio.x[0]=-1000;
+    aux_boio->boio.y[0]=-1000;
+  }
     aux_boio->boio.veloc=0;
   }
   else{
