@@ -49,6 +49,7 @@ void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_li
 
 LISTA_COMBOIOS * preenche_comboio(char aux_string[][10], int *aux_int, LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS *topo_lista_linhas){
   LISTA_COMBOIOS *novo_boio=NULL;
+  int i;
   novo_boio = (LISTA_COMBOIOS*) calloc(1, sizeof(LISTA_COMBOIOS));
 
   strcpy(novo_boio->boio.id, aux_string[0]);

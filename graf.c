@@ -36,7 +36,7 @@ void simular(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_lin
   temporizador = SDL_GetTicks();
   while (fim != 1){
     if (pausa!=1){
-      lista_graf_boios = mexe_comboios3(*topo_lista_comboios);
+      *topo_lista_comboios = mexe_comboios3(*topo_lista_comboios);
       colisoes(*topo_lista_comboios);
 
       if(ticks_simulacao%10==0)
@@ -57,7 +57,7 @@ void simular(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_lin
       case 2:
       pausa = 1 - pausa;
       if(i==1){
-        menu(*topo_lista_comboios, topo_lista_linhas);
+        menu(topo_lista_comboios, topo_lista_linhas);
         system("clear");
             }
       i=-i;
@@ -207,10 +207,10 @@ void pisca_comboios(LISTA_COMBOIOS *lista_boios){
 
   for(;lista_boios!=NULL; lista_boios=lista_boios->pr){
     if(lista_boios->boio.veloc == 0){
-      switch(estado_piscar){
-        case 0: estado_piscar=1; break;
-        case 1: estado_piscar=0; break;
-        case 2: estado_piscar=0; break;
+      switch(lista_boios->boio.estado_piscar){
+        case 0: lista_boios->boio.estado_piscar=1; break;
+        case 1: lista_boios->boio.estado_piscar=0; break;
+        case 2: lista_boios->boio.estado_piscar=0; break;
       }
     }
   }
@@ -405,7 +405,7 @@ void toggle_andamento_comboio(LISTA_COMBOIOS *boio_a_parar, LISTA_COMBOIOS *boio
     }
   }
   boio_a_parar->boio.veloc=SPEED;
-  estado_piscar=2;
+  boio_a_parar->boio.estado_piscar=2;
 }
 
 void menu(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas){
