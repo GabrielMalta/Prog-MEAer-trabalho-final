@@ -13,7 +13,6 @@ SDL_Renderer* pintor;
 #define SPEED 3 // pixeis/tick
 
 #define RAIO_ESTACAO 10
-#define RAIO_COMBOIO 6 // Jacob ve se consegues substituir isto
 #define N_CAR 4   // numero de carruagens
 
 #define VIA 1

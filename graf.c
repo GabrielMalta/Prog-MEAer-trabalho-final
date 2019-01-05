@@ -198,7 +198,7 @@ void colisoes(LISTA_COMBOIOS *lista_boios){
     for(comparar=atual->pr; comparar!=NULL; comparar=comparar->pr){
       for(i=0; i<N_CAR; i++){
         for(j=0; j<N_CAR; j++){
-          if( dist_carruagens(atual, i, comparar, j) < 2.6*RAIO_COMBOIO){
+          if( dist_carruagens(atual, i, comparar, j) < 1.3*(atual->boio.r_bolas+comparar->boio.r_bolas)){
             if(i==0 && j==0 && atual->boio.veloc == 0){}
             if(i==0 && j==0 && comparar->boio.veloc == 0){}
             else if(i==0 && j==0){
@@ -449,40 +449,39 @@ LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS
   int i,j;
   LISTA_COMBOIOS *outro_boio = NULL;
 
-  if(aux_boio->boio.servicos_restantes == 0){
+  if(comboio->boio.servicos_restantes == 0){
     for(i=0; i<4; i++){
-    aux_boio->boio.x[0]=-1000;
-    aux_boio->boio.y[0]=-1000;
+    comboio->boio.x[i]=-1000;
+    comboio->boio.y[i]=-1000;
   }
-    aux_boio->boio.veloc=0;
+    comboio->boio.veloc=0;
   }
   else{
     for(i=0; i<N_CAR; i++){
-      aux_boio->boio.ultimo_ponto[i] = aux_boio->boio.origem;
-      aux_boio->boio.x[i] = aux_boio->boio.origem->pt.x;
-      aux_boio->boio.y[i] = aux_boio->boio.origem->pt.y;
-      aux_boio->boio.veloc=SPEED;
+      comboio->boio.ultimo_ponto[i] = comboio->boio.origem;
+      comboio->boio.x[i] = comboio->boio.origem->pt.x;
+      comboio->boio.y[i] = comboio->boio.origem->pt.y;
+      comboio->boio.veloc=SPEED;
+      comboio->boio.estado_piscar=2;
     }
-    aux_boio->boio.servicos_restantes--;
+    comboio->boio.servicos_restantes--;
   }
 
   for(outro_boio=topo_lista_boios; outro_boio!=NULL; outro_boio=outro_boio->pr){
     if(outro_boio == comboio) continue;
     for(i=0; i<N_CAR; i++){
-      for(j=0; j<N_CAR, j++){
-        if(dist_carruagens(comboio, i, outro_boio, j) < 4*RAIO_COMBOIO){
-          aux_boio->boio.x=-200;
-          aux_boio->boio.y=-200;
-          aux_boio->boio.veloc=0;
-          aux_boio->boio.servicos_restantes++;
+      for(j=0; j<N_CAR; j++){
+        if(dist_carruagens(comboio, i, outro_boio, j) < 2*(comboio->boio.r_bolas+outro_boio->boio.r_bolas)){
+          for(i=0; i<4; i++){
+            comboio->boio.x[i]=-200;
+            comboio->boio.y[i]=-200;
+          }
+          comboio->boio.veloc=0;
+          comboio->boio.servicos_restantes++;
           return topo_lista_boios;
         }
       }
     }
-
   }
-
-
-
   return topo_lista_boios;
 }
