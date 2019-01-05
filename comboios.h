@@ -73,6 +73,7 @@ typedef struct elem_lista_linhas{
 typedef struct{
   char id[3];
   int r_bolas;
+  int estado_piscar;
   Uint32 cor[N_CAR];
   LISTA_PONTOS *origem;
   int num_servicos;
@@ -164,29 +165,28 @@ void mexe_carruagem(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, LISTA_PONTOS *
 
 void verifica_se_chegou_ao_ponto(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, LISTA_PONTOS *prox_pt);
 
+void colisoes(LISTA_COMBOIOS *lista_boios);
 
-void colisoes(LISTA_GRAF_BOIO *lista_graf_boios);
+void pisca_comboios(LISTA_COMBOIOS *lista_boios);
 
-void pisca_comboios(LISTA_GRAF_BOIO *lista_graf_boios);
-
-void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *boios_graficos, int dimJanela[], int pausa);
+void atualiza_render(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS *boios_graficos, int dimJanela[], int pausa);
 
 void desenha_pontos(LISTA_LINHAS *linha);
 
 void desenha_ligacoes(LISTA_LINHAS *linha);
 
-void desenha_comboios(LISTA_GRAF_BOIO *lista_graf_boios);
+void desenha_comboios(LISTA_COMBOIOS *lista_boios);
 
 void desenha_botoes(int dimJanela[], int pausa);
 
-int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_GRAF_BOIO *topo_lista_graf_boios, int dimJanela[]);
+int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS *lista_boios, int dimJanela[]);
 
 int carregou_botao(int dimJanela[], int x, int y);
 
-LISTA_GRAF_BOIO * procura_locomotiva_por_coords(LISTA_GRAF_BOIO *graf_boios, int x, int y);
+LISTA_COMBOIOS * procura_locomotiva_por_coords(LISTA_COMBOIOS *lista_boios, int x, int y);
 
 LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y);
 
-void toggle_andamento_comboio(LISTA_GRAF_BOIO *boio_a_parar, LISTA_GRAF_BOIO *boios);
+void toggle_andamento_comboio(LISTA_COMBOIOS *boio_a_parar, LISTA_COMBOIOS *boios);
 
 void menu(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas);
