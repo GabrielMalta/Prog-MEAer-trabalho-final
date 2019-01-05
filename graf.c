@@ -431,8 +431,11 @@ void menu(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas
 LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *aux_boio){
   int i;
 
-  if(aux_boio->boio.servicos_restantes == 0)
-    topo_lista_boios = elimina_comboio(topo_lista_boios, aux_boio);
+  if(aux_boio->boio.servicos_restantes == 0){
+    aux_boio->boio.x=-100;
+    aux_boio->boio.y=-100;
+    aux_boio->boio.veloc=0;
+  }
   else{
     for(i=0; i<N_CAR; i++){
       aux_boio->boio.ultimo_ponto[i] = aux_boio->boio.origem;
