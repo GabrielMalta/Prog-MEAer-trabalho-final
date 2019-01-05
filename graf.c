@@ -37,10 +37,9 @@ void simular(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_lin
   temporizador = SDL_GetTicks();
   while (fim != 1){
     if (pausa!=1){
-      lista_graf_boios = gera_novos_graf_boios(lista_graf_boios, *topo_lista_comboios);
       lista_graf_boios = mexe_comboios3(lista_graf_boios);
       colisoes(lista_graf_boios);
-      if(ticks_simulacao==0) mostra_graf_boios_ativos(lista_graf_boios);
+
       if(ticks_simulacao%10==0)
         pisca_comboios(lista_graf_boios);
       atualiza_render(*topo_lista_linhas, lista_graf_boios, dimJanela, pausa);
@@ -91,57 +90,56 @@ void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios){
   }
 }
 
-LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios){
-  LISTA_GRAF_BOIO *aux;
-  int i, existe_boio_demasiado_perto;
+// LISTA_GRAF_BOIO *gera_novos_graf_boios(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_COMBOIOS *comboios){
+//   LISTA_GRAF_BOIO *aux;
+//   int i, existe_boio_demasiado_perto;
+//
+//   for(; comboios!=NULL; comboios=comboios->pr){
+//     if( procura_graf_boio_por_aquetipo(lista_graf_boios, &(comboios->boio) ) == NULL){
+//       existe_boio_demasiado_perto=0;
+//       for(aux=lista_graf_boios; aux!=NULL; aux=aux->pr){
+//         for(i=0; i<N_CAR; i++){
+//           if(pow(aux->graf.x[i]-comboios->boio.origem->pt.x,2)+pow(aux->graf.y[i]-comboios->boio.origem->pt.y,2) < 2*pow(2*RAIO_COMBOIO,2))
+//            existe_boio_demasiado_perto=1;
+//         }
+//       }
+//       if(existe_boio_demasiado_perto==0 && comboios->boio.servicos_restantes > 0) {
+//         lista_graf_boios = cria_grafico_do_comboio(lista_graf_boios, &(comboios->boio));
+//         comboios->boio.servicos_restantes--;
+//       }
+//     }
+//   }
+//   return lista_graf_boios;
+// }
 
-  for(; comboios!=NULL; comboios=comboios->pr){
-    if( procura_graf_boio_por_aquetipo(lista_graf_boios, &(comboios->boio) ) == NULL){
-      existe_boio_demasiado_perto=0;
-      for(aux=lista_graf_boios; aux!=NULL; aux=aux->pr){
-        for(i=0; i<N_CAR; i++){
-          if(pow(aux->graf.x[i]-comboios->boio.origem->pt.x,2)+pow(aux->graf.y[i]-comboios->boio.origem->pt.y,2) < 2*pow(2*RAIO_COMBOIO,2))
-           existe_boio_demasiado_perto=1;
-        }
-      }
-      if(existe_boio_demasiado_perto==0 && comboios->boio.servicos_restantes > 0) {
-        lista_graf_boios = cria_grafico_do_comboio(lista_graf_boios, &(comboios->boio));
-        comboios->boio.servicos_restantes--;
-        mostra_graf_boios_ativos(lista_graf_boios);
-      }
-    }
-  }
-  return lista_graf_boios;
-}
+// LISTA_GRAF_BOIO *procura_graf_boio_por_aquetipo(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO* arquetipo){
+//   for(;lista_graf_boios!=NULL; lista_graf_boios=lista_graf_boios->pr){
+//     if( lista_graf_boios->graf.pr == arquetipo)
+//       return lista_graf_boios;
+//   }
+//   return NULL;
+// }
 
-LISTA_GRAF_BOIO *procura_graf_boio_por_aquetipo(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO* arquetipo){
-  for(;lista_graf_boios!=NULL; lista_graf_boios=lista_graf_boios->pr){
-    if( lista_graf_boios->graf.pr == arquetipo)
-      return lista_graf_boios;
-  }
-  return NULL;
-}
-
-LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio){
-  int i;
-  LISTA_GRAF_BOIO *novo_graf_boio = calloc(1, sizeof(LISTA_GRAF_BOIO));
-  if (novo_graf_boio == NULL){
-    printf("Erro falta de memória\n");
-    fflush(stdout);
-  }
-  novo_graf_boio->graf.arquetipo=*comboio;
-  novo_graf_boio->graf.pr=comboio;
-  for(i=0;i<N_CAR; i++){
-    novo_graf_boio->graf.cor[i]= random_cor();
-    novo_graf_boio->graf.x[i]=comboio->origem->pt.x;
-    novo_graf_boio->graf.y[i]=comboio->origem->pt.y;
-    novo_graf_boio->graf.ultimo_ponto[i]=comboio->origem;
-  }
-  novo_graf_boio->graf.cor[0]=comboio->cor;
-  novo_graf_boio->graf.veloc=SPEED;
-  novo_graf_boio->pr=lista_graf_boios;
-  return novo_graf_boio;
-}
+// LISTA_GRAF_BOIO *cria_grafico_do_comboio(LISTA_GRAF_BOIO *lista_graf_boios, COMBOIO *comboio){
+//   int i;
+//   LISTA_GRAF_BOIO *novo_graf_boio = calloc(1, sizeof(LISTA_GRAF_BOIO));
+//   if (novo_graf_boio == NULL){
+//     printf("Erro falta de memória\n");
+//     fflush(stdout);
+//   }
+//   novo_graf_boio->graf.arquetipo=*comboio;
+//   novo_graf_boio->graf.pr=comboio;
+//   for(i=0;i<N_CAR; i++){
+//     novo_graf_boio->graf.cor[i]= random_cor();
+//     novo_graf_boio->graf.x[i]=comboio->origem->pt.x;
+//     novo_graf_boio->graf.y[i]=comboio->origem->pt.y;
+//     novo_graf_boio->graf.ultimo_ponto[i]=comboio->origem;
+//   }
+//   novo_graf_boio->graf.cor[0]=comboio->cor;
+//   novo_graf_boio->graf.veloc=SPEED;
+//   novo_graf_boio->pr=lista_graf_boios;
+//   return novo_graf_boio;
+// }
 
 LISTA_GRAF_BOIO * mexe_comboios3(LISTA_GRAF_BOIO *lista_graf_boios){
   float deltaX, deltaY;
@@ -198,7 +196,6 @@ LISTA_GRAF_BOIO * remove_graf_boio(LISTA_GRAF_BOIO *lista_graf_boios, LISTA_GRAF
   else ant_boio->pr = aux_boio->pr;
 
   free(aux_boio);
-  mostra_graf_boios_ativos(lista_graf_boios);
   return lista_graf_boios;
 }
 
@@ -249,17 +246,6 @@ void verifica_se_chegou_ao_ponto(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, L
       aux_boio->graf.alavanca[num_carruagem] = aux_boio->graf.alavanca[num_carruagem-1];
     }
   }
-}
-
-void mostra_graf_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios){
-  system("clear");
-  while(lista_graf_boios!=NULL){
-    printf("Comboio:%s\n", lista_graf_boios->graf.arquetipo.id);
-    printf("Cor locomotiva:%s\n", cor_Uint32_para_string(lista_graf_boios->graf.cor[0]));
-    printf("Numero de servicos restantes:%d\n\n", lista_graf_boios->graf.arquetipo.servicos_restantes);
-    lista_graf_boios=lista_graf_boios->pr;
-  }
-  fflush(stdout);
 }
 
 void colisoes(LISTA_GRAF_BOIO *lista_graf_boios){

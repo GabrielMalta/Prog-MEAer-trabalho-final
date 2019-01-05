@@ -73,32 +73,20 @@ typedef struct elem_lista_linhas{
 typedef struct{
   char id[3];
   int r_bolas;
-  Uint32 cor;
+  Uint32 cor[N_CAR];
   LISTA_PONTOS *origem;
   int num_servicos;
   int servicos_restantes;
+  float x[N_CAR], y[N_CAR];
+  LISTA_PONTOS *ultimo_ponto[N_CAR];
+  int alavanca[N_CAR];
+  float veloc;
 } COMBOIO;
 
 typedef struct elem_lista_comboios{
   COMBOIO boio;
   struct elem_lista_comboios *pr;
 } LISTA_COMBOIOS;
-
-typedef struct grafico_comboio{
-  COMBOIO arquetipo;
-  COMBOIO *pr;
-  float x[N_CAR], y[N_CAR];
-  Uint32 cor[N_CAR];
-  LISTA_PONTOS *ultimo_ponto[N_CAR];
-  int alavanca[N_CAR];
-  float veloc;
-} GRAF_BOIO;
-
-typedef struct lista_graf_boios{
-  GRAF_BOIO graf;
-  struct lista_graf_boios *pr;
-} LISTA_GRAF_BOIO;
-
 
 /* Ficheiro: leitor_configs.c */
 
@@ -176,7 +164,6 @@ void mexe_carruagem(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, LISTA_PONTOS *
 
 void verifica_se_chegou_ao_ponto(LISTA_GRAF_BOIO *aux_boio, int num_carruagem, LISTA_PONTOS *prox_pt);
 
-void mostra_graf_boios_ativos(LISTA_GRAF_BOIO *lista_graf_boios);
 
 void colisoes(LISTA_GRAF_BOIO *lista_graf_boios);
 
