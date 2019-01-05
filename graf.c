@@ -84,8 +84,19 @@ int inicializa_janela(int dimJanela[]){
 }
 
 void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios){
+int i;
   for(; topo_lista_comboios!=NULL; topo_lista_comboios=topo_lista_comboios->pr){
     topo_lista_comboios->boio.servicos_restantes = topo_lista_comboios->boio.num_servicos;
+    topo_lista_comboios->boio.veloc=SPEED;
+    topo_lista_comboios->boio.estado_piscar=2;
+    for(i=0; i<N_CAR; i++) {
+      if(i!=0)
+      topo_lista_comboios->boio.cor[i]=random_cor();
+      topo_lista_comboios->boio.alavanca[i]=0;
+      topo_lista_comboios->boio.ultimo_ponto[i]=topo_lista_comboios->boio.origem;
+      topo_lista_comboios->boio.x[i]=topo_lista_comboios->boio.origem->pt.x;
+      topo_lista_comboios->boio.y[i]=topo_lista_comboios->boio.origem->pt.y;
+    }
   }
 }
 

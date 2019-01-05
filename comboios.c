@@ -6,18 +6,10 @@ void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas){
   LISTA_LINHAS *aux = topo_lista_linhas;
   LISTA_PONTOS *auxiliar=NULL;
   while (1){
-    system("clear");
-    i=0;
-    linha[0] = '\0';
-    mostra_linha(topo_lista_linhas, "Qual a lista a mostrar?(Fim para sair)", linha);
-    if (strlen(linha)==0)
-    break;
-    if (strcmp(linha, "Fim")==0)
-    break;
-    if (strlen(linha)>4){
-      printf("Erro, ID invalido\n");
-      i=1;
-    }
+    
+    if((i=get_ferrovia_a_mostrar(linha, topo_lista_linhas))==-1)
+      break;
+
     aux = topo_lista_linhas;
     for(;aux!=NULL;aux=aux->pr){
       if(strcmp(linha, aux->id)==0){
