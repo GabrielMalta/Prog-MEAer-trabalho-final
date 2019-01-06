@@ -387,7 +387,7 @@ LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS *lista_comboios, LISTA_
     for(aux_pt = linha; aux_pt != NULL; aux_pt = aux_pt->pr[0]){
       if(aux_boios->boio.origem == aux_pt && aux_boios->boio.num_servicos!=-1)
         return aux_boios;
-      for(contador=0;contador<4;contador++)
+      for(contador=0;contador<N_CAR;contador++)
         if(aux_boios->boio.ultimo_ponto[contador]==aux_pt || aux_boios->boio.ultimo_ponto[contador]->pr[1]==aux_pt)
           reset_movimento(&lista_comboios, aux_boios);
       }

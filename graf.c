@@ -453,7 +453,7 @@ void reset_movimento(LISTA_COMBOIOS **topo_lista_boios, LISTA_COMBOIOS *comboio)
   LISTA_COMBOIOS *outro_boio = NULL;
 
   if(comboio->boio.servicos_restantes == 0){
-    for(i=0; i<4; i++){
+    for(i=0; i<N_CAR; i++){
     comboio->boio.x[i]=-1000;
     comboio->boio.y[i]=-1000;
   }
@@ -476,8 +476,8 @@ void reset_movimento(LISTA_COMBOIOS **topo_lista_boios, LISTA_COMBOIOS *comboio)
     if(outro_boio == comboio) continue;
     for(i=0; i<N_CAR; i++){
       for(j=0; j<N_CAR; j++){
-        if(dist_carruagens(comboio, i, outro_boio, j) < 2.3*(comboio->boio.r_bolas+outro_boio->boio.r_bolas)){
-          for(i=0; i<4; i++){
+        if(dist_carruagens(comboio, i, outro_boio, j) < 2.6*(comboio->boio.r_bolas+outro_boio->boio.r_bolas)){
+          for(i=0; i<N_CAR; i++){
             comboio->boio.x[i]=-200;
             comboio->boio.y[i]=-200;
           }
@@ -493,12 +493,11 @@ void reset_movimento(LISTA_COMBOIOS **topo_lista_boios, LISTA_COMBOIOS *comboio)
 }
 
 void mostra_boios_ativos(LISTA_COMBOIOS *lista_comboios){
-  // system("clear");
+  system("clear");
   while(lista_comboios!=NULL){
     printf("Comboio:%s\n", lista_comboios->boio.id);
     printf("Cor locomotiva:%s\n", cor_Uint32_para_string(lista_comboios->boio.cor[0]));
     printf("Numero de servicos restantes:%d\n\n", lista_comboios->boio.servicos_restantes);
-    printf("x:%f\n", lista_comboios->boio.x[0]);
     lista_comboios=lista_comboios->pr;
   }
   fflush(stdout);
