@@ -20,7 +20,7 @@ void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas){
       }
     }
     if (i==0)
-      printf("Erro, linha inexistente\n");
+      printf("Erro, ferrovia inexistente\n");
     while(getchar()!='\n');
   }
 }
@@ -86,7 +86,6 @@ int get_ferrovia_a_mostrar(char* linha, LISTA_LINHAS *topo_lista_linhas){
 
   else if (strlen(linha)>4){
     printf("Erro, ID invalido\n");
-    while(getchar()!='\n');
     i=2;
   }
 
@@ -243,6 +242,7 @@ char *menu_cor_para_string(int cor){
 void get_id_comboio(char * id_comboio, LISTA_COMBOIOS * topo_boios){
   char leitura[10];
   int boio_invalido=0;
+  LISTA_COMBOIOS *aux;
   while(1){
     boio_invalido=0;
     system("clear");
@@ -254,9 +254,9 @@ void get_id_comboio(char * id_comboio, LISTA_COMBOIOS * topo_boios){
         getchar();
         boio_invalido=1;
       }
-      for(;topo_boios!=NULL; topo_boios=topo_boios->pr){
-        if(strcmp(topo_boios->boio.id, id_comboio)==0){
-          printf("Comboio ja existente, insira outro  id\n");
+      for(aux=topo_boios;aux!=NULL; aux=aux->pr){
+        if(strcmp(aux->boio.id, id_comboio)==0){
+          printf("Comboio ja existente, insira outro ID\n");
           getchar();
           boio_invalido=1;
         }
