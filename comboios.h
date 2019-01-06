@@ -155,7 +155,7 @@ int inicializa_janela( int dimJanela[]);
 
 void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios);
 
-LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS *topo_lista_boios);
+LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS **topo_lista_boios);
 
 void mexe_carruagem(LISTA_COMBOIOS *aux_boio, int num_carruagem, LISTA_PONTOS *pt1, LISTA_PONTOS *pt2);
 
@@ -189,6 +189,6 @@ void toggle_andamento_comboio(LISTA_COMBOIOS *boio_a_parar, LISTA_COMBOIOS *boio
 
 void menu_de_pausa(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas);
 
-void reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *aux_boio);
+void reset_movimento(LISTA_COMBOIOS **topo_lista_boios, LISTA_COMBOIOS *aux_boio);
 
 void mostra_boios_ativos(LISTA_COMBOIOS *lista_comboios);

@@ -36,7 +36,7 @@ void simular(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_lin
   temporizador = SDL_GetTicks();
   while (fim != 1){
     if (pausa!=1){
-      *topo_lista_comboios = mexe_comboios3(*topo_lista_comboios);
+      *topo_lista_comboios = mexe_comboios3(topo_lista_comboios);
       colisoes(*topo_lista_comboios);
 
       if(ticks_simulacao%10==0) pisca_comboios(*topo_lista_comboios);
@@ -103,13 +103,13 @@ int i;
   }
 }
 
-LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS *topo_lista_boios){
+LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS **topo_lista_boios){
   float deltaX, deltaY;
   int i;
   LISTA_PONTOS *pt1 = NULL, *pt2 = NULL;
-  LISTA_COMBOIOS *aux_boio = NULL, *ant_boio = NULL;
+  LISTA_COMBOIOS *aux_boio = NULL;
 
-  for( aux_boio = topo_lista_boios; aux_boio!=NULL; ant_boio = aux_boio,aux_boio=aux_boio->pr){
+  for( aux_boio = *topo_lista_boios; aux_boio!=NULL; aux_boio=aux_boio->pr){
     if (aux_boio->boio.x[0] == -200) reset_movimento(topo_lista_boios, aux_boio);
     if (aux_boio->boio.veloc == 0) continue;
     for(i=0; i<N_CAR; i++){
@@ -119,8 +119,6 @@ LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS *topo_lista_boios){
       else if( (pt2 = pt1->pr[1-aux_boio->boio.alavanca[i]]) != NULL){}
       else{
         reset_movimento(topo_lista_boios, aux_boio);
-        if (topo_lista_boios == NULL) return NULL;
-        if ((aux_boio = ant_boio) == NULL) aux_boio = topo_lista_boios;
         break;
       }
 
@@ -144,7 +142,7 @@ LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS *topo_lista_boios){
       }
     }
   }
-  return topo_lista_boios;
+  return *topo_lista_boios;
 }
 
 void mexe_carruagem(LISTA_COMBOIOS *aux_boio, int num_carruagem, LISTA_PONTOS *pt1, LISTA_PONTOS *pt2){
@@ -448,7 +446,7 @@ void menu_de_pausa(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lis
     }
 }
 
-void reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *comboio){
+void reset_movimento(LISTA_COMBOIOS **topo_lista_boios, LISTA_COMBOIOS *comboio){
   int i,j;
   LISTA_COMBOIOS *outro_boio = NULL;
 
@@ -460,6 +458,8 @@ void reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *comboio){
     comboio->boio.veloc=0;
     return;
   }
+  else if(comboio->boio.servicos_restantes == -1)
+    *topo_lista_boios = elimina_comboio(*topo_lista_boios, comboio);
   else{
     for(i=0; i<N_CAR; i++){
       comboio->boio.ultimo_ponto[i] = comboio->boio.origem;
@@ -470,7 +470,7 @@ void reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *comboio){
     }
   }
 
-  for(outro_boio=topo_lista_boios; outro_boio!=NULL; outro_boio=outro_boio->pr){
+  for(outro_boio=*topo_lista_boios; outro_boio!=NULL; outro_boio=outro_boio->pr){
     if(outro_boio == comboio) continue;
     for(i=0; i<N_CAR; i++){
       for(j=0; j<N_CAR; j++){
@@ -487,7 +487,7 @@ void reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *comboio){
     }
   }
   comboio->boio.servicos_restantes--;
-  mostra_boios_ativos(topo_lista_boios);
+  mostra_boios_ativos(*topo_lista_boios);
 }
 
 void mostra_boios_ativos(LISTA_COMBOIOS *lista_comboios){
