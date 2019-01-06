@@ -1,9 +1,8 @@
 #include "comboios.h"
 
 Uint32 random_cor(void){
-  int cor = rand()%10;
+  int cor = rand()%9 + 1;
   switch(cor){
-    case 0: return hexdec_CINZENTO;
     case 1: return hexdec_VERMELHO;
     case 2: return hexdec_ROXO;
     case 3: return hexdec_AZUL;
@@ -57,9 +56,12 @@ void simular(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_lin
     while (SDL_PollEvent(&event)) switch(eventos_sdl(&event, *topo_lista_linhas, *topo_lista_comboios, dimJanela)){
       case 2:
       pausa = 1 - pausa;
+      mostra_boios_ativos(*topo_lista_comboios);
       if(i==1){
         menu_de_pausa(topo_lista_comboios, topo_lista_linhas);
         system("clear");
+        printf("Pode voltar a janela grafica, clicando em retomar para continuar a simulacao");
+        fflush(stdout);
             }
       i=-i;
       break;
@@ -108,7 +110,7 @@ LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS *topo_lista_boios){
   LISTA_COMBOIOS *aux_boio = NULL, *ant_boio = NULL;
 
   for( aux_boio = topo_lista_boios; aux_boio!=NULL; ant_boio = aux_boio,aux_boio=aux_boio->pr){
-    if (aux_boio->boio.x[0] == -200) topo_lista_boios=reset_movimento(topo_lista_boios, aux_boio);
+    if (aux_boio->boio.x[0] == -200) reset_movimento(topo_lista_boios, aux_boio);
     if (aux_boio->boio.veloc == 0) continue;
     for(i=0; i<N_CAR; i++){
       pt1 = aux_boio->boio.ultimo_ponto[i];
@@ -116,7 +118,7 @@ LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS *topo_lista_boios){
       if( (pt2 = pt1->pr[aux_boio->boio.alavanca[i]]) != NULL){}
       else if( (pt2 = pt1->pr[1-aux_boio->boio.alavanca[i]]) != NULL){}
       else{
-        topo_lista_boios = reset_movimento(topo_lista_boios, aux_boio);
+        reset_movimento(topo_lista_boios, aux_boio);
         if (topo_lista_boios == NULL) return NULL;
         if ((aux_boio = ant_boio) == NULL) aux_boio = topo_lista_boios;
         break;
@@ -444,10 +446,9 @@ void menu_de_pausa(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lis
       default: break;
       }
     }
-    printf("Pode voltar a janela grafica, clicando em retomar para continuar a simulacao");
 }
 
-LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *comboio){
+void reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *comboio){
   int i,j;
   LISTA_COMBOIOS *outro_boio = NULL;
 
@@ -457,7 +458,7 @@ LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS
     comboio->boio.y[i]=-1000;
   }
     comboio->boio.veloc=0;
-    return topo_lista_boios;
+    return;
   }
   else{
     for(i=0; i<N_CAR; i++){
@@ -487,7 +488,6 @@ LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS
   }
   comboio->boio.servicos_restantes--;
   mostra_boios_ativos(topo_lista_boios);
-  return topo_lista_boios;
 }
 
 void mostra_boios_ativos(LISTA_COMBOIOS *lista_comboios){

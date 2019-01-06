@@ -54,7 +54,10 @@ LISTA_COMBOIOS * preenche_comboio(char aux_string[][10], int *aux_int, LISTA_COM
 
   strcpy(novo_boio->boio.id, aux_string[0]);
   novo_boio->boio.r_bolas = aux_int[0];
-  novo_boio->boio.origem = procura_ponto(aux_string[2], aux_string[3], topo_lista_linhas);
+  if((novo_boio->boio.origem = procura_ponto(aux_string[2], aux_string[3], topo_lista_linhas))==NULL){
+    printf("Erro de config, ponto de origem do comboio %s nao encontrado\n", novo_boio->boio.id);
+    exit(0);
+  }
   novo_boio->boio.num_servicos = aux_int[1];
   novo_boio->boio.servicos_restantes = aux_int[1];
   novo_boio->boio.veloc=SPEED;
@@ -65,7 +68,10 @@ LISTA_COMBOIOS * preenche_comboio(char aux_string[][10], int *aux_int, LISTA_COM
     novo_boio->boio.x[i]=novo_boio->boio.origem->pt.x;
     novo_boio->boio.y[i]=novo_boio->boio.origem->pt.y;
   }
-  novo_boio->boio.cor[0] = cor_string_para_Uint32(aux_string[1]);
+  if((novo_boio->boio.cor[0] = cor_string_para_Uint32(aux_string[1]))==hexdec_CINZENTO){
+    printf("Erro de config,locomotiva do comboio %s nao pode ser cinzenta\n", novo_boio->boio.id);
+    exit(0);
+  }
   novo_boio->boio.estado_piscar=2;
   novo_boio->pr=topo_lista_comboios;
   topo_lista_comboios=novo_boio;

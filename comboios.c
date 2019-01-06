@@ -42,8 +42,11 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOI
     for(;aux!=NULL;aux=aux->pr){
       if(strcmp(linha, aux->id)==0){
         i=1;
-        while((comboio_a_eliminar = procura_comboios_na_linha(*topo_lista_comboios, aux->linha))!=NULL)
-          *topo_lista_comboios = elimina_comboio(*topo_lista_comboios, comboio_a_eliminar);
+        while((comboio_a_eliminar = procura_comboios_na_linha(*topo_lista_comboios, aux->linha))!=NULL){
+          comboio_a_eliminar->boio.servicos_restantes=0;
+          comboio_a_eliminar->boio.num_servicos=0;
+        }
+          // *topo_lista_comboios = elimina_comboio(*topo_lista_comboios, comboio_a_eliminar);
 
         remove_ligacoes_para_a_linha_eliminada(topo_lista_linhas, aux);
 
@@ -76,16 +79,18 @@ int get_ferrovia_a_mostrar(char* linha, LISTA_LINHAS *topo_lista_linhas){
   int i;
   system("clear");
   i=1;
-  mostra_linha(topo_lista_linhas, "Qual a ferrovia?(Fim para sair)", linha);
+  mostra_linha(topo_lista_linhas, "Qual a ferrovia?(Voltar para regressar ao menu)", linha);
 
-  if (strcmp(linha, "Fim")==0)
-    i=-1;
+  if (strcmp(linha, "Voltar")==0)
+  i=-1;
 
-  if (strlen(linha)>4){
+  else if (strlen(linha)>4){
     printf("Erro, ID invalido\n");
     while(getchar()!='\n');
     i=2;
   }
+
+
   return i;
 }
 
@@ -151,17 +156,18 @@ int get_comboio_a_mostrar(LISTA_COMBOIOS * topo_lista_comboios, char*comboio){
   for(;aux!=NULL;aux=aux->pr)
     printf("COMBOIO %s\n", aux->boio.id);
 
-  printf("\nQual o comboio a eliminar?(Fim para sair)\n");
+  printf("\nQual o comboio a eliminar?(Voltar para regressar ao menu)\n");
   fgets(leitura, 100, stdin);
   sscanf(leitura, "%s", comboio);
 
-  if (strcmp(comboio, "Fim")==0)
-  i=-1;
+  if (strcmp(comboio, "Voltar")==0)
+    i=-1;
 
-  if (strlen(comboio)>2){
+  else if (strlen(comboio)>2){
     printf("Erro, ID invalido\n");
     i=1;
   }
+
   return i;
 }
 
@@ -169,11 +175,11 @@ LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_L
   char string_aux[4][10];
   int int_aux[4];
 
+  get_id_comboio( string_aux[0], topo_lista_comboios);
   int_aux[0]=verifica(3, 9, "Raio das bolas?");
-  int_aux[1]=verifica(1, 9999, "Quantos comboios gerar?");
+  int_aux[1]=verifica(1, 9999, "Qual o numero de servicos?");
   int_aux[3]=verifica(1, 9, "Qual a cor da locomotiva?\n1-Vermelho\n2-Roxo\n3-Azul\n4-Ciano\n5-Verde\n6-Amarelo\n7-Castanho\n8-Preto\n9-Branco");
   strcpy(string_aux[1], menu_cor_para_string(int_aux[3]));
-  get_id_comboio(string_aux[0]);
   get_coords_origem(string_aux[2], string_aux[3], topo_lista_linhas);
 
   topo_lista_comboios = preenche_comboio(string_aux, int_aux, topo_lista_comboios, topo_lista_linhas);
@@ -233,9 +239,11 @@ char *menu_cor_para_string(int cor){
   return 0;
 }
 
-void get_id_comboio(char *id_comboio){
+void get_id_comboio(char * id_comboio, LISTA_COMBOIOS * topo_boios){
   char leitura[10];
+  int boio_invalido=0;
   while(1){
+    boio_invalido=0;
     system("clear");
     printf("Qual o id do comboio?\nMax 2 carateres:");
     fgets(leitura, 10, stdin);
@@ -243,8 +251,16 @@ void get_id_comboio(char *id_comboio){
       if (strlen(id_comboio)==0 || 3<=strlen(id_comboio)){
         printf("Erro, insira um numero de carateres valido\n");
         getchar();
+        boio_invalido=1;
       }
-      else
+      for(;topo_boios!=NULL; topo_boios=topo_boios->pr){
+        if(strcmp(topo_boios->boio.id, id_comboio)==0){
+          printf("Comboio ja existente, insira outro  id\n");
+          getchar();
+          boio_invalido=1;
+        }
+      }
+      if(boio_invalido==0)
         break;
       }
     }
@@ -360,11 +376,16 @@ char * cor_Uint32_para_string(Uint32 cor){
 LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS *lista_comboios, LISTA_PONTOS *linha){
   //devolve o primeiro comboio que encontrar que tenha partida na linha especificada
   LISTA_PONTOS *aux_pt = NULL;
-
-  for(;lista_comboios!=NULL; lista_comboios=lista_comboios->pr){
-    for(aux_pt = linha; aux_pt != NULL; aux_pt = aux_pt->pr[0])
-      if(lista_comboios->boio.origem == aux_pt)
-        return lista_comboios;
+  LISTA_COMBOIOS *aux_boios;
+  int contador;
+  for(aux_boios=lista_comboios;aux_boios!=NULL; aux_boios=aux_boios->pr){
+    for(aux_pt = linha; aux_pt != NULL; aux_pt = aux_pt->pr[0]){
+      if(aux_boios->boio.origem == aux_pt && aux_boios->boio.num_servicos!=0)
+        return aux_boios;
+      for(contador=0;contador<4;contador++)
+        if(aux_boios->boio.ultimo_ponto[contador]==aux_pt || aux_boios->boio.ultimo_ponto[contador]->pr[1]==aux_pt)
+          reset_movimento(lista_comboios, aux_boios);
+      }
   }
 
   return NULL;

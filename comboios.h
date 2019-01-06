@@ -126,7 +126,7 @@ int verifica(int n_min, int n_max, char *texto);
 
 char *menu_cor_para_string(int cor);
 
-void get_id_comboio(char *id_comboio);
+void get_id_comboio(char * id_comboio, LISTA_COMBOIOS * topo_boios);
 
 void get_coords_origem(char * linha, char *ponto, LISTA_LINHAS * topo_lista_linhas);
 
@@ -189,6 +189,6 @@ void toggle_andamento_comboio(LISTA_COMBOIOS *boio_a_parar, LISTA_COMBOIOS *boio
 
 void menu_de_pausa(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas);
 
-LISTA_COMBOIOS *reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *aux_boio);
+void reset_movimento(LISTA_COMBOIOS *topo_lista_boios, LISTA_COMBOIOS *aux_boio);
 
 void mostra_boios_ativos(LISTA_COMBOIOS *lista_comboios);
