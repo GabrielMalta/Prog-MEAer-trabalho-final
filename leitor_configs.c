@@ -60,13 +60,13 @@ LISTA_COMBOIOS * preenche_comboio(char aux_string[][10], int *aux_int, LISTA_COM
   }
   novo_boio->boio.num_servicos = aux_int[1];
   novo_boio->boio.servicos_restantes = aux_int[1];
-  novo_boio->boio.veloc=SPEED;
+  novo_boio->boio.veloc=0;
   for(i=0; i<N_CAR; i++) {
     novo_boio->boio.cor[i]=random_cor();
     novo_boio->boio.alavanca[i]=0;
     novo_boio->boio.ultimo_ponto[i]=novo_boio->boio.origem;
-    novo_boio->boio.x[i]=novo_boio->boio.origem->pt.x;
-    novo_boio->boio.y[i]=novo_boio->boio.origem->pt.y;
+    novo_boio->boio.x[i]=-200;
+    novo_boio->boio.y[i]=-200;
   }
   if((novo_boio->boio.cor[0] = cor_string_para_Uint32(aux_string[1]))==hexdec_CINZENTO){
     printf("Erro de config,locomotiva do comboio %s nao pode ser cinzenta\n", novo_boio->boio.id);

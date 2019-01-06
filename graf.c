@@ -97,8 +97,8 @@ int i;
       topo_lista_comboios->boio.cor[i]=random_cor();
       topo_lista_comboios->boio.alavanca[i]=0;
       topo_lista_comboios->boio.ultimo_ponto[i]=topo_lista_comboios->boio.origem;
-      topo_lista_comboios->boio.x[i]=topo_lista_comboios->boio.origem->pt.x;
-      topo_lista_comboios->boio.y[i]=topo_lista_comboios->boio.origem->pt.y;
+      topo_lista_comboios->boio.x[i]=-200;
+      topo_lista_comboios->boio.y[i]=-200;
     }
   }
 }
@@ -110,7 +110,9 @@ LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS **topo_lista_boios){
   LISTA_COMBOIOS *aux_boio = NULL;
 
   for( aux_boio = *topo_lista_boios; aux_boio!=NULL; aux_boio=aux_boio->pr){
-    if (aux_boio->boio.x[0] == -200) reset_movimento(topo_lista_boios, aux_boio);
+
+    if (aux_boio->boio.x[0] == -200)   reset_movimento(topo_lista_boios, aux_boio);
+
     if (aux_boio->boio.veloc == 0) continue;
     for(i=0; i<N_CAR; i++){
       pt1 = aux_boio->boio.ultimo_ponto[i];
@@ -474,7 +476,7 @@ void reset_movimento(LISTA_COMBOIOS **topo_lista_boios, LISTA_COMBOIOS *comboio)
     if(outro_boio == comboio) continue;
     for(i=0; i<N_CAR; i++){
       for(j=0; j<N_CAR; j++){
-        if(dist_carruagens(comboio, i, outro_boio, j) < 2*(comboio->boio.r_bolas+outro_boio->boio.r_bolas)){
+        if(dist_carruagens(comboio, i, outro_boio, j) < 2.3*(comboio->boio.r_bolas+outro_boio->boio.r_bolas)){
           for(i=0; i<4; i++){
             comboio->boio.x[i]=-200;
             comboio->boio.y[i]=-200;
@@ -491,11 +493,12 @@ void reset_movimento(LISTA_COMBOIOS **topo_lista_boios, LISTA_COMBOIOS *comboio)
 }
 
 void mostra_boios_ativos(LISTA_COMBOIOS *lista_comboios){
-  system("clear");
+  // system("clear");
   while(lista_comboios!=NULL){
     printf("Comboio:%s\n", lista_comboios->boio.id);
     printf("Cor locomotiva:%s\n", cor_Uint32_para_string(lista_comboios->boio.cor[0]));
     printf("Numero de servicos restantes:%d\n\n", lista_comboios->boio.servicos_restantes);
+    printf("x:%f\n", lista_comboios->boio.x[0]);
     lista_comboios=lista_comboios->pr;
   }
   fflush(stdout);
