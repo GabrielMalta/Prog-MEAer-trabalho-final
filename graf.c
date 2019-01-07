@@ -361,7 +361,7 @@ int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIO
       if((comboio_a_parar=procura_locomotiva_por_coords(lista_boios, x, y)) !=NULL)
         toggle_andamento_comboio(comboio_a_parar, lista_boios);
 
-      else if ( (aux_pt = procura_ponto_por_coords(topo_lista_linhas, x, y)) !=NULL
+      else if ((aux_pt = procura_ponto_por_coords(topo_lista_linhas, x, y)) !=NULL
       && aux_pt->pr[0] != NULL && aux_pt->pr[1] != NULL)
         aux_pt->pt.alavanca = 1 - aux_pt->pt.alavanca;
 
@@ -371,7 +371,6 @@ int eventos_sdl(SDL_Event *event, LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIO
       switch(event->key.keysym.sym){
         case SDLK_ESCAPE: return 1;
         default: return 0;
-        // case SDLK_SPACE: pausar a simulacao
       }
     case SDL_QUIT: return 1;
     default: return 0;
@@ -403,6 +402,7 @@ LISTA_COMBOIOS * procura_locomotiva_por_coords(LISTA_COMBOIOS *lista_boios, int 
 }
 
 LISTA_PONTOS * procura_ponto_por_coords(LISTA_LINHAS *topo_lista_linhas, int x, int y){
+  // invocada para procurar o ponto em que se clicou
   LISTA_PONTOS *aux=NULL;
   int deltaX, deltaY;
 
@@ -474,6 +474,8 @@ void reset_movimento(LISTA_COMBOIOS **topo_lista_boios, LISTA_COMBOIOS *comboio)
     return;
   }
   else if(comboio->boio.servicos_restantes == -1)
+    /* os comboios ficam com servicos_restantes = -1 quando a sua linha de linha_origem
+    e eliminada mas estao a andar noutra linha, quando chegam ao fim sao eliminados permanentemente*/
     *topo_lista_boios = elimina_comboio(*topo_lista_boios, comboio);
   else{
     for(i=0; i<N_CAR; i++){
