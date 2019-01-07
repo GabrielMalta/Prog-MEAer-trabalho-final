@@ -8,11 +8,12 @@
 SDL_Window* janela;
 SDL_Renderer* pintor;
 
-#define FPS 30
+#define FPS 30 //numero de vezes por segundo que a janela e atualizada
+
 #define TICKS_p_FRAME 1000/FPS
 #define SPEED 3 // pixeis/tick
 
-#define RAIO_ESTACAO 10
+#define RAIO_ESTACAO 10 //raio bola estacao
 #define N_CAR 3 // numero de carruagens
 
 #define VIA 1
@@ -21,7 +22,7 @@ SDL_Renderer* pintor;
 //dimJanela[]
 #define X 0
 #define Y 1
-
+//codigo das cores
 #define hexdec_CINZENTO 0xff808080
 #define hexdec_VERMELHO 0xff0000ff
 #define hexdec_ROXO 0xff800080
@@ -56,18 +57,18 @@ typedef struct{
   Uint32 cor;
   int tipo;
   int alavanca;
-} PONTO;
+} PONTO //struct do ponto
 
 typedef struct elem_ponto{
   PONTO pt;
   struct elem_ponto *pr[2];
-} LISTA_PONTOS;
+} LISTA_PONTOS; //ferrovia - lista de pontos
 
 typedef struct elem_lista_linhas{
   char id[5];
   LISTA_PONTOS *linha;
   struct elem_lista_linhas *pr;
-} LISTA_LINHAS;
+} LISTA_LINHAS; //lista das ferrovias
 
 typedef struct{
   char id[3];
@@ -81,12 +82,12 @@ typedef struct{
   LISTA_PONTOS *ultimo_ponto[N_CAR];
   int alavanca[N_CAR];
   float veloc;
-} COMBOIO;
+} COMBOIO; // struct do comboio com toda a informacao do config e grafica
 
 typedef struct elem_lista_comboios{
   COMBOIO boio;
   struct elem_lista_comboios *pr;
-} LISTA_COMBOIOS;
+} LISTA_COMBOIOS; //lista dos comboios
 
 
 /* Ficheiro: leitor_configs.c */
