@@ -255,6 +255,7 @@ LISTA_COMBOIOS *elimina_comboio(LISTA_COMBOIOS *lista_comboios, LISTA_COMBOIOS *
     anterior->pr=atual->pr;
     free(atual);
   }
+
   return lista_comboios;
 }
 
