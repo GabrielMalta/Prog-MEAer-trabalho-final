@@ -1,3 +1,7 @@
+// Trabalho realizado por:
+// Gabriel Malta, nº 92680
+// Gonçalo Jacob, 92684
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +15,7 @@ SDL_Renderer* pintor;
 #define FPS 30 //numero de vezes por segundo que a janela e atualizada
 
 #define TICKS_p_FRAME 1000/FPS
-#define SPEED 3 // pixeis/tick
+#define SPEED 2 // pixeis/tick - velocidade dos comboios
 
 #define RAIO_ESTACAO 10 //raio bola estacao
 #define N_CAR 3 // numero de carruagens
@@ -57,7 +61,7 @@ typedef struct{
   Uint32 cor;
   int tipo;
   int alavanca;
-} PONTO //struct do ponto
+} PONTO; //struct do ponto
 
 typedef struct elem_ponto{
   PONTO pt;
@@ -111,13 +115,25 @@ Uint32 cor_string_para_Uint32(char string[]);
 
 void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas);
 
+void mostra_ponto( PONTO pt);
+
 LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS **topo_lista_comboios);
+
+LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS *lista_comboios, LISTA_PONTOS *linha);
+
+void remove_ligacoes_para_a_linha_eliminada(LISTA_LINHAS *lista_linhas, LISTA_LINHAS *eliminar);
 
 int get_ferrovia_a_mostrar(char* linha, LISTA_LINHAS *topo_lista_linhas);
 
+int mostra_linha(LISTA_LINHAS* topo_lista_linhas, char * texto, char*linha);
+
 void opcao_mostra_comboio(LISTA_COMBOIOS *topo_lista_comboios);
 
+void mostra_boio( COMBOIO boio);
+
 LISTA_COMBOIOS * opcao_elimina_comboio(LISTA_COMBOIOS *topo_lista_comboios);
+
+LISTA_COMBOIOS *elimina_comboio(LISTA_COMBOIOS *lista_comboios, LISTA_COMBOIOS *eliminar);
 
 LISTA_COMBOIOS * opcao_novo_comboio(LISTA_COMBOIOS *topo_lista_comboios, LISTA_LINHAS * topo_lista_linhas);
 
@@ -131,19 +147,7 @@ void get_id_comboio(char * id_comboio, LISTA_COMBOIOS * topo_boios);
 
 void get_coords_origem(char * linha, char *ponto, LISTA_LINHAS * topo_lista_linhas);
 
-void mostra_linha(LISTA_LINHAS* topo_lista_linhas, char * texto, char*linha);
-
-void mostra_ponto( PONTO pt);
-
-void mostra_boio( COMBOIO boio);
-
 char *cor_Uint32_para_string(Uint32 cor);
-
-LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS *lista_comboios, LISTA_PONTOS *linha);
-
-LISTA_COMBOIOS *elimina_comboio(LISTA_COMBOIOS *lista_comboios, LISTA_COMBOIOS *eliminar);
-
-void remove_ligacoes_para_a_linha_eliminada(LISTA_LINHAS *lista_linhas, LISTA_LINHAS *eliminar);
 
 
 /* Ficheiro: graf.c */
