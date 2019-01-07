@@ -3,22 +3,22 @@
 void leitor_configs(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lista_linhas, int dimJanela[], char *nome_ficheiro){
   FILE *config = fopen(nome_ficheiro, "r");
   LISTA_LINHAS *nova_linha;
-  LISTA_PONTOS *atual=NULL;
+  LISTA_PONTOS *atual=NULL; //ponto atual
 
   char leitura[100];
-  char aux_string[4][10];
-  int aux_int[5];
+  char aux_string[4][10]; //auxiliar de sscanf
+  int aux_int[5];         //auxiliar de sscanf
 
   if(config==NULL){
-    printf("Erro de abertura de config;\n\"%s\" nao encontrado\n", nome_ficheiro);
-    printf("Utilizacao: ./comboios <ficheiro.txt>\n");
+    printf("Erro de abertura de config;\n\"%s\" nao encontrado\nUtilizacao: ./comboios <ficheiro.txt>\n", nome_ficheiro);
+    fflush(stdout);
     exit(0);
   }
 
   while( fgets(leitura, 100, config) != NULL){
-    if ( (leitura[0] >= '0' && leitura[0] <='9')
-      || (leitura[0] >= 'A' && leitura[0] <='Z')
-      || (leitura[0] >= 'a' && leitura[0] <='z') ){
+    if ((leitura[0] >= '0' && leitura[0] <='9')
+    ||  (leitura[0] >= 'A' && leitura[0] <='Z')
+    ||  (leitura[0] >= 'a' && leitura[0] <='z')) {
       if (sscanf(leitura, "JANELA: %d %d", aux_int, aux_int+1) == 2){
         dimJanela[X] = aux_int[0];
         dimJanela[Y] = aux_int[1];
@@ -80,10 +80,15 @@ LISTA_COMBOIOS * preenche_comboio(char aux_string[][10], int *aux_int, LISTA_COM
 }
 
 void preenche_linha(char *aux_string, int *aux_int, LISTA_LINHAS * nova_linha, LISTA_PONTOS **atual){
-  // adiciona um ponto a uma linhas
+  // adiciona um ponto a nova linha
   LISTA_PONTOS *aux_pt = NULL;
 
   aux_pt = (LISTA_PONTOS*) calloc(1, sizeof(LISTA_PONTOS));
+  if (aux_pt == NULL){
+    printf("Falta de memoria");
+    exit(0);
+  }
+
   strcpy(aux_pt->pt.id, aux_string);
   aux_pt->pt.linha=nova_linha;
   aux_pt->pt.x = aux_int[0];
@@ -134,12 +139,12 @@ LISTA_PONTOS * procura_ponto(char *id_linha, char *id_ponto, LISTA_LINHAS *topo_
 
 int numero_tipo(char string[]){
   // converte a string de tipo num inteiro para armazenar
-  if (strcmp("EST", string) == 0) return 2;
-  if (strcmp("VIA", string) == 0) return 1;
+  if (strcmp("EST", string) == 0) return EST;
+  if (strcmp("VIA", string) == 0) return VIA;
   return 0;
 }
 
-Uint32 cor_string_para_Uint32(char string[]){ //funciona
+Uint32 cor_string_para_Uint32(char string[]){
   // converte a string de cor para Uint32 para armazenar
   if (strcmp("CINZENTO", string) == 0) return hexdec_CINZENTO;
   if (strcmp("VERMELHO", string) == 0) return hexdec_VERMELHO;

@@ -12,13 +12,18 @@
 SDL_Window* janela;
 SDL_Renderer* pintor;
 
-#define FPS 30 //numero de vezes por segundo que a janela e atualizada
+#define FPS 30 //frames/ticks de simulacao por segundo
 
+<<<<<<< HEAD
 #define TICKS_p_FRAME 1000/FPS
 #define SPEED 2 // pixeis/tick - velocidade dos comboios
+=======
+#define TICKS_p_FRAME 1000/FPS //duracao em milisegundos de um frame/tick
+#define SPEED 3 // pixeis/tick de simulacao
+>>>>>>> 5e9e52e77e2ddd118bed182bca98626ad9c989ce
 
 #define RAIO_ESTACAO 10 //raio bola estacao
-#define N_CAR 3 // numero de carruagens
+#define N_CAR 4 // numero de carruagens(incluindo a locomotiva)
 
 #define VIA 1
 #define EST 2
@@ -26,7 +31,8 @@ SDL_Renderer* pintor;
 //dimJanela[]
 #define X 0
 #define Y 1
-//codigo das cores
+
+//hexadecimal das cores
 #define hexdec_CINZENTO 0xff808080
 #define hexdec_VERMELHO 0xff0000ff
 #define hexdec_ROXO 0xff800080
@@ -60,24 +66,29 @@ typedef struct{
   int x, y;
   Uint32 cor;
   int tipo;
+<<<<<<< HEAD
   int alavanca;
 } PONTO; //struct do ponto
+=======
+  int alavanca; //no caso de duas saidas define a que os comboios vao escolher
+} PONTO;
+>>>>>>> 5e9e52e77e2ddd118bed182bca98626ad9c989ce
 
 typedef struct elem_ponto{
   PONTO pt;
-  struct elem_ponto *pr[2];
-} LISTA_PONTOS; //ferrovia - lista de pontos
+  struct elem_ponto *pr[2]; //maximo de duas saidas
+} LISTA_PONTOS; //uma ferrovia - lista de pontos
 
 typedef struct elem_lista_linhas{
   char id[5];
   LISTA_PONTOS *linha;
   struct elem_lista_linhas *pr;
-} LISTA_LINHAS; //lista das ferrovias
+} LISTA_LINHAS; //lista das ferrovias com identificadores
 
 typedef struct{
   char id[3];
   int r_bolas;
-  int estado_piscar;
+  int estado_piscar; //controla o piscar dos comboios quando estao parados
   Uint32 cor[N_CAR];
   LISTA_PONTOS *origem;
   int num_servicos;
@@ -85,7 +96,7 @@ typedef struct{
   float x[N_CAR], y[N_CAR];
   LISTA_PONTOS *ultimo_ponto[N_CAR];
   int alavanca[N_CAR];
-  float veloc;
+  float veloc; //igual a SPEED se estiver em movimento, ou a 0 se estiver parado
 } COMBOIO; // struct do comboio com toda a informacao do config e grafica
 
 typedef struct elem_lista_comboios{

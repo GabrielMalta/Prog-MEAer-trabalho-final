@@ -1,8 +1,0 @@
-- Melhorar sistem de colisoes quando estao em linhas diferentes
-
-- Separar a funcao mexercomboios2 em varias
-- Acrescentar setas nas intercecoes(percebe-se melhor)
-- fumo :D
-- Fazer debug do menu
-- Design grafico melhor??
-- Proteger leitor_configs contra erros na leitura(vale a pena?)

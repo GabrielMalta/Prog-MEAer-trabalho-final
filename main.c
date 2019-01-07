@@ -7,7 +7,7 @@ int main(int argc, char *argv[]){
   int opcao;
   char leitura[100];
 
-  srand((unsigned long) &opcao);
+  srand((unsigned long) &opcao); //praticamente sempre diferente
 
   leitor_configs(&topo_lista_comboios, &topo_lista_linhas, dimJanela, argv[1]);
 
