@@ -13,7 +13,7 @@ SDL_Renderer* pintor;
 #define SPEED 3 // pixeis/tick
 
 #define RAIO_ESTACAO 10
-#define N_CAR 20 // numero de carruagens
+#define N_CAR 3 // numero de carruagens
 
 #define VIA 1
 #define EST 2
