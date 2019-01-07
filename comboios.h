@@ -14,13 +14,8 @@ SDL_Renderer* pintor;
 
 #define FPS 30 //frames/ticks de simulacao por segundo
 
-<<<<<<< HEAD
 #define TICKS_p_FRAME 1000/FPS
 #define SPEED 2 // pixeis/tick - velocidade dos comboios
-=======
-#define TICKS_p_FRAME 1000/FPS //duracao em milisegundos de um frame/tick
-#define SPEED 3 // pixeis/tick de simulacao
->>>>>>> 5e9e52e77e2ddd118bed182bca98626ad9c989ce
 
 #define RAIO_ESTACAO 10 //raio bola estacao
 #define N_CAR 4 // numero de carruagens(incluindo a locomotiva)
@@ -66,13 +61,8 @@ typedef struct{
   int x, y;
   Uint32 cor;
   int tipo;
-<<<<<<< HEAD
-  int alavanca;
-} PONTO; //struct do ponto
-=======
   int alavanca; //no caso de duas saidas define a que os comboios vao escolher
 } PONTO;
->>>>>>> 5e9e52e77e2ddd118bed182bca98626ad9c989ce
 
 typedef struct elem_ponto{
   PONTO pt;
