@@ -113,7 +113,6 @@ LISTA_COMBOIOS * mexe_comboios3(LISTA_COMBOIOS **topo_lista_boios){
   for( aux_boio = *topo_lista_boios; aux_boio!=NULL; aux_boio=aux_boio->pr){
 
     if (aux_boio->boio.x[0] == -200)   reset_movimento(topo_lista_boios, aux_boio);
-
     if (aux_boio->boio.veloc == 0) continue; // se estiver parado
     for(carruagem=0; carruagem<N_CAR; carruagem++){
       pt1 = aux_boio->boio.ultimo_ponto[carruagem];
@@ -467,16 +466,16 @@ void reset_movimento(LISTA_COMBOIOS **topo_lista_boios, LISTA_COMBOIOS *comboio)
 
   if(comboio->boio.servicos_restantes == 0){
     for(i=0; i<N_CAR; i++){
-    comboio->boio.x[i]=-1000; //cemiterio de comboios
+    comboio->boio.x[i]=-1000;
     comboio->boio.y[i]=-1000;
   }
     comboio->boio.veloc=0;
     return;
   }
-  else if(comboio->boio.servicos_restantes == -1)
-    /* os comboios ficam com servicos_restantes = -1 quando a sua linha de linha_origem
-    e eliminada mas estao a andar noutra linha, quando chegam ao fim sao eliminados permanentemente*/
-    *topo_lista_boios = elimina_comboio(*topo_lista_boios, comboio);
+  else if(comboio->boio.servicos_restantes==-1){
+    *topo_lista_boios=elimina_comboio(*topo_lista_boios, comboio);
+    return;
+    }
   else{
     for(i=0; i<N_CAR; i++){
       comboio->boio.ultimo_ponto[i] = comboio->boio.origem;
@@ -491,11 +490,9 @@ void reset_movimento(LISTA_COMBOIOS **topo_lista_boios, LISTA_COMBOIOS *comboio)
     if(outro_boio == comboio) continue;
     for(i=0; i<N_CAR; i++){
       for(j=0; j<N_CAR; j++){
-        // se o comboios que vamos colocar ficar demasiado perto de outro_boio
-        // nao o colocar
-        if(dist_carruagens(comboio, i, outro_boio, j) < 2.6*(comboio->boio.r_bolas+outro_boio->boio.r_bolas)){
-          for(i=0; i<N_CAR; i++){
-            comboio->boio.x[i]=-200; //de volta para a lista de espera
+        if(dist_carruagens(comboio, i, outro_boio, j) < 2*(comboio->boio.r_bolas+outro_boio->boio.r_bolas)){
+          for(i=0; i<4; i++){
+            comboio->boio.x[i]=-200;
             comboio->boio.y[i]=-200;
           }
           comboio->boio.veloc=0;
