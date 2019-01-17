@@ -450,7 +450,7 @@ void menu_de_pausa(LISTA_COMBOIOS **topo_lista_comboios, LISTA_LINHAS **topo_lis
     switch(opcao){
       case 0: return;
       case 1: opcao_mostra_linha(*topo_lista_linhas); break;
-      case 2: *topo_lista_linhas = opcao_elimina_linha(*topo_lista_linhas, topo_lista_comboios); break;
+      case 2: *topo_lista_linhas = opcao_elimina_linha(*topo_lista_linhas, topo_lista_comboios, 1); break;
       case 3: opcao_mostra_comboio(*topo_lista_comboios); break;
       case 4: *topo_lista_comboios = opcao_elimina_comboio(*topo_lista_comboios); break;
       case 5: *topo_lista_comboios = opcao_novo_comboio(*topo_lista_comboios, *topo_lista_linhas); break;

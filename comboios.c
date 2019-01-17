@@ -43,7 +43,7 @@ void mostra_ponto(PONTO pt){
   fflush (stdout);
 }
 
-LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS **topo_lista_comboios){
+LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS **topo_lista_comboios, int simulacao_comecou){
   //opcao 2 - elimina uma linha escolhida pelo utilizador
   char linha[100];
   int i=0;
@@ -62,7 +62,8 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOI
         while((comboio_a_eliminar = procura_comboios_na_linha(*topo_lista_comboios, aux->linha))!=NULL){
           //define servicos_restantes e num_servicos como -1 porque os comboios tem origem na linha a ser eliminada. quando chegarem ao fim da linha serao eliminados
           comboio_a_eliminar->boio.servicos_restantes=-1;
-          reset_movimento(topo_lista_comboios, comboio_a_eliminar);
+          if (simulacao_comecou == 0)
+            reset_movimento(topo_lista_comboios, comboio_a_eliminar);
         }
         //remove ligacoes que a linha tenha com outras linhas
         remove_ligacoes_para_a_linha_eliminada(topo_lista_linhas, aux);

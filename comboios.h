@@ -118,7 +118,7 @@ void opcao_mostra_linha(LISTA_LINHAS *topo_lista_linhas);
 
 void mostra_ponto( PONTO pt);
 
-LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS **topo_lista_comboios);
+LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS **topo_lista_comboios, int simulacao_comecou);
 
 LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS *lista_comboios, LISTA_PONTOS *linha);
 
