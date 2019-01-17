@@ -120,7 +120,7 @@ void mostra_ponto( PONTO pt);
 
 LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOIOS **topo_lista_comboios, int simulacao_comecou);
 
-LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS *lista_comboios, LISTA_PONTOS *linha);
+LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS **lista_comboios, LISTA_PONTOS *linha);
 
 void remove_ligacoes_para_a_linha_eliminada(LISTA_LINHAS *lista_linhas, LISTA_LINHAS *eliminar);
 

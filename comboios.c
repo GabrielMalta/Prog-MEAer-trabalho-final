@@ -59,13 +59,15 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOI
       //verifica se ha alguma linha com o nome da linha escolhida
       if(strcmp(linha, aux->id)==0){
         i=1;
-        while((comboio_a_eliminar = procura_comboios_na_linha(*topo_lista_comboios, aux->linha))!=NULL){
+        while((comboio_a_eliminar = procura_comboios_na_linha(topo_lista_comboios, aux->linha))!=NULL){
           //define servicos_restantes e num_servicos como -1 porque os comboios tem origem na linha a ser eliminada. quando chegarem ao fim da linha serao eliminados
           comboio_a_eliminar->boio.servicos_restantes=-1;
           comboio_a_eliminar->boio.num_servicos=-1;
-          if (simulacao_comecou == 0)
-            reset_movimento(topo_lista_comboios, comboio_a_eliminar);
         }
+        if (simulacao_comecou == 0){
+			for(comboio_a_eliminar = *topo_lista_comboios; comboio_a_eliminar!=NULL; comboio_a_eliminar=comboio_a_eliminar->pr)
+				reset_movimento(topo_lista_comboios, comboio_a_eliminar);
+		}
         //remove ligacoes que a linha tenha com outras linhas
         remove_ligacoes_para_a_linha_eliminada(topo_lista_linhas, aux);
 
@@ -96,19 +98,18 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOI
   return topo_lista_linhas;
 }
 
-LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS *lista_comboios, LISTA_PONTOS *linha){
+LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS **lista_comboios, LISTA_PONTOS *linha){
   //devolve o primeiro comboio que encontrar que tenha partida na linha especificada
   LISTA_PONTOS *aux_pt = NULL;
   LISTA_COMBOIOS *aux_boios;
   int contador;
-  for(aux_boios=lista_comboios;aux_boios!=NULL; aux_boios=aux_boios->pr){
+  for(aux_boios=*lista_comboios;aux_boios!=NULL; aux_boios=aux_boios->pr){
     for(aux_pt = linha; aux_pt != NULL; aux_pt = aux_pt->pr[0]){
-
         //verifica se ha algum comboio a circular na linha
       for(contador=0;contador<N_CAR;contador++){
       //se houver um comboio a circular na linha volta ao seu ponto de origem e fica com menos um  servico restante:
         if(aux_boios->boio.ultimo_ponto[contador]==aux_pt || aux_boios->boio.ultimo_ponto[contador]->pr[1]==aux_pt || aux_boios->boio.ultimo_ponto[contador]->pr[0]==aux_pt)
-          reset_movimento(&lista_comboios, aux_boios);
+          reset_movimento(lista_comboios, aux_boios);
       }
       //verifica se ha algum comboio com origem num ponto da linha escolhida
       if(aux_boios->boio.origem == aux_pt && aux_boios->boio.num_servicos!=-1)
