@@ -88,7 +88,7 @@ int inicializa_janela(int dimJanela[]){
 }
 
 void reset_servicos_restantes(LISTA_COMBOIOS *topo_lista_comboios){
-int i;
+  int i;
   for(; topo_lista_comboios!=NULL; topo_lista_comboios=topo_lista_comboios->pr){
     topo_lista_comboios->boio.servicos_restantes = topo_lista_comboios->boio.num_servicos;
     topo_lista_comboios->boio.veloc=SPEED;
