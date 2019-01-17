@@ -62,6 +62,7 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOI
         while((comboio_a_eliminar = procura_comboios_na_linha(*topo_lista_comboios, aux->linha))!=NULL){
           //define servicos_restantes e num_servicos como -1 porque os comboios tem origem na linha a ser eliminada. quando chegarem ao fim da linha serao eliminados
           comboio_a_eliminar->boio.servicos_restantes=-1;
+          comboio_a_eliminar->boio.num_servicos=-1;
           if (simulacao_comecou == 0)
             reset_movimento(topo_lista_comboios, comboio_a_eliminar);
         }
@@ -90,7 +91,7 @@ LISTA_LINHAS * opcao_elimina_linha(LISTA_LINHAS *topo_lista_linhas, LISTA_COMBOI
     if (i==0){
       printf("Erro, ferrovia inexistente\n");
     while(getchar()!='\n');
-  }
+    }
   }
   return topo_lista_linhas;
 }
@@ -110,7 +111,7 @@ LISTA_COMBOIOS *procura_comboios_na_linha(LISTA_COMBOIOS *lista_comboios, LISTA_
           reset_movimento(&lista_comboios, aux_boios);
       }
       //verifica se ha algum comboio com origem num ponto da linha escolhida
-      if(aux_boios->boio.origem == aux_pt)
+      if(aux_boios->boio.origem == aux_pt && aux_boios->boio.num_servicos!=-1)
         return aux_boios;
     }
   }
